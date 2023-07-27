@@ -16,8 +16,6 @@ from api.endpoints.collection_api import collection_api
 from api.endpoints.favorite_api import favorite_api
 from api.endpoints.inbox_admin_api import inbox_admin_api
 from api.endpoints.inbox_user_api import inbox_user_api
-from api.endpoints.message_deleted_api import message_deleted_api
-from api.endpoints.message_sent_api import message_sent_api
 from api.endpoints.offer_api import offer_api
 from api.endpoints.order_api import order_api
 from api.endpoints.track_api import track_api
@@ -62,8 +60,6 @@ app.register_blueprint(collection_api, url_prefix='/api/collections')
 app.register_blueprint(favorite_api, url_prefix='/api/favorites')
 app.register_blueprint(inbox_admin_api, url_prefix='/api/inbox_admin')
 app.register_blueprint(inbox_user_api, url_prefix='/api/inbox_user')
-app.register_blueprint(message_deleted_api, url_prefix='/api/message_deleted')
-app.register_blueprint(message_sent_api, url_prefix='/api/message_sent')
 app.register_blueprint(offer_api, url_prefix='/api/offers')
 app.register_blueprint(order_api, url_prefix='/api/orders')
 app.register_blueprint(track_api, url_prefix='/api/tracks')

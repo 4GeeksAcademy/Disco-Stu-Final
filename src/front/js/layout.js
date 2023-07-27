@@ -6,6 +6,9 @@ import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
+import UserInbox from "./pages/UserInbox.jsx";
+import UserSentMessages from "./pages/UserSentMessages.jsx";
+import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -28,6 +31,9 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
+                        <Route element={<UserInbox />} path="/messages" />
+                        <Route element={<UserSentMessages />} path="/messages/sent" />
+                        <Route element={<UserDeletedMessages />} path="/messages/trash" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
