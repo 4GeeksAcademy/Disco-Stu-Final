@@ -1,17 +1,21 @@
+// General importations
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ScrollToTop from "./component/scrollToTop";
-import { BackendURL } from "./component/backendURL";
+import injectContext from "./store/appContext";
 
+// Pages
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
+import { RegisterForm } from "./pages/RegisterForm.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
-import injectContext from "./store/appContext";
-import { Artist } from "./component/artist";
 
+//Components
+import { Artist } from "./component/artist";
+import { BackendURL } from "./component/backendURL";
+import ScrollToTop from "./component/scrollToTop";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 
@@ -33,6 +37,7 @@ const Layout = () => {
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
+                        <Route element={<RegisterForm />} path="/register" />
                         <Route element={<UserInbox />} path="/messages" />
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />

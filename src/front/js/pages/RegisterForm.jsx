@@ -1,10 +1,17 @@
-import React, { useState } from "react";
-
+import React, { useContext, useState } from "react";
+import { Context } from "../store/appContext";
 
 
 export const RegisterForm = () => {
+    const { actions } = useContext(Context);
     const [passwordValid, setPasswordValid] = useState(true);
     const [showPassword, setShowPassword] = useState(false); // State for password visibility
+
+    const [userData, setUserData] = useState({
+        name: "",
+        email: "",
+        password: "",
+    });
 
     // Function to show password
     const handleTogglePassword = () => {
@@ -14,10 +21,9 @@ export const RegisterForm = () => {
     // Password validation function
     const validatePassword = (password) => {
 
-        const regex = /^(?=.*\S)(?=.*[A-Z])(?=.*\d)(?=.*[.!?@]).+$/;
-        const minLength = 8;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[.!?@])[A-Za-z\d.!?@]{8,}$/;
 
-        const isValid = regex.test(password) && password.length >= minLength;
+        const isValid = regex.test(password);
 
         setPasswordValid(isValid);
         return isValid;
@@ -25,13 +31,14 @@ export const RegisterForm = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        const username = event.target.username.value;
+        const email = event.target.email.value;
         const password = event.target.password.value;
 
         const isValidPassword = validatePassword(password);
 
-
         if (isValidPassword) {
-            // Your form submission logic here...
+            actions.createUser({ name: username, email, password });
         }
     };
 
@@ -47,16 +54,47 @@ export const RegisterForm = () => {
                         <form className="mb-3" onSubmit={handleSubmit}>
                             <div className="form-group mb-3">
                                 <label htmlFor="username">Username</label>
-                                <input aria-invalid="false" autoFocus="" className="form-control mt-2" id="username" name="username" required type="text" />
+                                <input
+                                    aria-invalid="false"
+                                    autoFocus=""
+                                    className="form-control mt-2"
+                                    id="username"
+                                    name="username"
+                                    required
+                                    type="text"
+                                    value={userData.name}
+                                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                                />
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="email">Email</label>
-                                <input aria-invalid="false" className="form-control mt-2" id="email" name="email" required type="text" />
+                                <input
+                                    aria-invalid="false"
+                                    className="form-control mt-2"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    type="text"
+                                    value={userData.email}
+                                    onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                                />
+
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="password">Contraseña</label>
                                 <div className="input-group mt-2" id="password_group_wrapper">
-                                    <input aria-invalid="false" className="form-control" id="password" maxLength="4096" minLength="8" name="password" required="" type={showPassword ? "text" : "password"} />
+                                    <input
+                                        aria-invalid="false"
+                                        className="form-control"
+                                        id="password"
+                                        maxLength="4096"
+                                        minLength="8"
+                                        name="password"
+                                        required
+                                        type={showPassword ? "text" : "password"}
+                                        value={userData.password}
+                                        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                                    />
                                     <div className="input-group-append" id="show_hide_password">
                                         <span className="input-group-text">
                                             <button type="button" className="border-0" aria-pressed="false" onClick={handleTogglePassword}>
@@ -78,12 +116,12 @@ export const RegisterForm = () => {
                                         </ul>
                                     </small>)}
                             </div>
-                            <div className="form-group form-check mb-3">
+                            {/* <div className="form-group form-check mb-3">
                                 <input className="form-check-input" id="tos" name="tos" required="" type="checkbox" />
                                 <label htmlFor="tos">
                                     Acepto la <a className="inline-link">Política de privacidad</a> y estoy de acuerdo con los <a className="inline-link">Términos de servicio</a>, incluidos los requisitos de edad mínima.                                </label>
-                            </div>
-                            <div className="d-grid gap-2">
+                            </div> */}
+                            <div className="d-grid gap-2 mt-4">
                                 <button type="submit" className="btn btn-success btn-block">Crear cuenta</button>
                             </div>
                         </form>
