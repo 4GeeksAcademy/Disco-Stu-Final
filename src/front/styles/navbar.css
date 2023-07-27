@@ -1,0 +1,22 @@
+
+.search-hover {
+  border: 1px solid #ccc;
+  outline: none;
+  /* background-size: 22px; */
+  /* background-position: 13px; */
+  border-radius: 10px;
+  width: 10px;
+  height: 40px;
+  /* padding: 25px; */
+  transition: all 0.5s;
+}
+
+.search-icon {
+    border-radius: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+}
+.search-hover:hover {
+  width: 350px;
+  padding-left: 10px;
+}
