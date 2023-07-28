@@ -24,7 +24,7 @@ class User(db.Model):
     username = db.Column(db.String(250), unique=True, nullable=False)
     nombre_real = db.Column(db.String(250), unique=True, nullable=False)
     mail = db.Column(db.String(250), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
+    password = db.Column(db.String(250), unique=False, nullable=False)
     direccion_comprador = db.Column(db.String(250))
     ciudad_comprador = db.Column(db.String(250))
     estado_comprador = db.Column(db.String(250))

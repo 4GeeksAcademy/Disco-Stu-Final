@@ -5,11 +5,13 @@ import { Context } from "../store/appContext";
 export const RegisterForm = () => {
     const { actions } = useContext(Context);
     const [passwordValid, setPasswordValid] = useState(true);
-    const [showPassword, setShowPassword] = useState(false); // State for password visibility
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [isRegistered, setIsRegistered] = useState(false);
 
     const [userData, setUserData] = useState({
-        name: "",
-        email: "",
+        username: "",
+        mail: "",
         password: "",
     });
 
@@ -32,13 +34,15 @@ export const RegisterForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         const username = event.target.username.value;
-        const email = event.target.email.value;
+        const mail = event.target.mail.value;
         const password = event.target.password.value;
 
         const isValidPassword = validatePassword(password);
 
         if (isValidPassword) {
-            actions.createUser({ name: username, email, password });
+            actions.createUser({ username: username, mail, password });
+            setIsRegistered(true); // Set the registration status to true
+            setUserData({ username: "", mail: "", password: "" }); // Reset the input fields
         }
     };
 
@@ -62,21 +66,21 @@ export const RegisterForm = () => {
                                     name="username"
                                     required
                                     type="text"
-                                    value={userData.name}
-                                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                                    value={userData.username}
+                                    onChange={(e) => setUserData({ ...userData, username: e.target.value })}
                                 />
                             </div>
                             <div className="form-group mb-3">
-                                <label htmlFor="email">Email</label>
+                                <label htmlFor="mail">Email</label>
                                 <input
                                     aria-invalid="false"
                                     className="form-control mt-2"
-                                    id="email"
-                                    name="email"
+                                    id="mail"
+                                    name="mail"
                                     required
                                     type="text"
-                                    value={userData.email}
-                                    onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                                    value={userData.mail}
+                                    onChange={(e) => setUserData({ ...userData, mail: e.target.value })}
                                 />
 
                             </div>
@@ -108,11 +112,21 @@ export const RegisterForm = () => {
                                     <small className="text-danger">
                                         La contraseña debe cumplir con los siguientes criterios:
                                         <ul>
-                                            <li>Tener al menos un carácter que no sea un espacio</li>
-                                            <li>Tener al menos una letra mayúscula</li>
-                                            <li>Tener al menos un número</li>
-                                            <li>Tener al menos uno de los siguientes caracteres especiales: . ! ? @</li>
-                                            <li>Tener al menos 8 caracteres de longitud</li>
+                                            <li style={{ color: userData.password.length < 8 ? 'red' : 'initial' }}>
+                                                Tener al menos 8 caracteres de longitud
+                                            </li>
+                                            <li style={{ color: !/[a-z]/.test(userData.password) ? 'red' : 'initial' }}>
+                                                Tener al menos una letra minúscula
+                                            </li>
+                                            <li style={{ color: !/[A-Z]/.test(userData.password) ? 'red' : 'initial' }}>
+                                                Tener al menos una letra mayúscula
+                                            </li>
+                                            <li style={{ color: !/\d/.test(userData.password) ? 'red' : 'initial' }}>
+                                                Tener al menos un número
+                                            </li>
+                                            <li style={{ color: !/[.!?@]/.test(userData.password) ? 'red' : 'initial' }}>
+                                                Tener al menos uno de los siguientes caracteres especiales: . ! ? @
+                                            </li>
                                         </ul>
                                     </small>)}
                             </div>
@@ -125,6 +139,11 @@ export const RegisterForm = () => {
                                 <button type="submit" className="btn btn-success btn-block">Crear cuenta</button>
                             </div>
                         </form>
+                        {isRegistered && (
+                            <div className="alert alert-success mt-3">
+                                ¡Registro exitoso! Ahora puedes iniciar sesión.
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>
