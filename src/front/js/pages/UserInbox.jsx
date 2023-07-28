@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ const User_inbox = () => {
 
     const navigate = useNavigate()
     const { store, actions } = useContext(Context)
+    const [selectedItems,  setSelectedItems] = useState([])
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -19,6 +20,10 @@ const User_inbox = () => {
     const handleNavigateWriteMessage = () => {
         navigate('/messages/compose')
     }
+
+    useEffect(() => {
+        actions.getAllMessages()
+    }, [])
 
     return (
         <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
@@ -37,7 +42,7 @@ const User_inbox = () => {
             <div id='messages_center' style={{ width: '100%', paddingLeft: '30px', display: 'flex', flexDirection: 'column' }}>
                 <h1 style={{ width: '100%', fontSize: '20px' }}>Inbox</h1>
                 <div style={{ border: '1px solid #dfdfdf', padding: '8px 8px 8px 15px' }}>
-                    <button style={{backgroundColor: '#f2f2f2'}} type="button" className="btn">Eliminar</button>
+                    <button onClick={() => handleDeleteMessage()} style={{backgroundColor: '#f2f2f2'}} type="button" className="btn">Eliminar</button>
                 </div>
                 <table style={{ fontSize: '14px', marginTop: '10px' }}>
                     <thead style={{ backgroundColor: '#eeeeee', height: '30px' }}>

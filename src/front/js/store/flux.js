@@ -4,6 +4,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
+			users: [
+				{
+					"id": 1,
+					"is_admin": false,
+					"mail": "karai@gmail.com",
+					"nombre_real": "Nombre Quemado 1",
+					"username": "karai"
+				},
+				{
+					"id": 2,
+					"is_admin": false,
+					"mail": "karai2@gmail.com",
+					"nombre_real": "Nombre Quemado 2",
+					"username": "karai2"
+				}
+			]
 		},
 		actions: {
 
@@ -32,13 +48,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getAllMessages: async () => {
 				try {
 					const store = getStore()
-					const response = await fetch(store.url + 'api/inbox_user/messages/' + store.user_id)
+					const response = await fetch('https://karai2mil-refactored-goldfish-rj46xvv7j5p25g46-3001.preview.app.github.dev/api/inbox_user/messages/1')
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
 					const data = await response.json()
 					console.log('Messages obtained succesfully: ', data)
-					setStore({ ...store, inbox: data.inbox })
+					setStore({...store, inbox: data.inbox})
 					setStore({ ...store, sent_messages: data.sent_messages })
 					setStore({ ...store, deleted_messages: data.deleted_messages })
 				} catch (error) {
@@ -48,8 +64,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			sendMessage: async (message_data) => {
 				try {
-					const store = getStore()
-					const response = await fetch(store.url + 'api/inbox_user/messages/sent/' + store.user_id, {
+					console.log(message_data)
+					// const store = getStore()
+					const response = await fetch('https://karai2mil-refactored-goldfish-rj46xvv7j5p25g46-3001.preview.app.github.dev/api/inbox_user/messages/sent/1', {
 						method: 'POST',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -57,10 +74,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					})
 					if (!response.ok) {
-						throw new Error('Response error')
+						console.log('Response error', response.status)
 					}
 					const data = await response.json()
 					console.log('Message sent succesfully', data)
+					const {getAllMessages} = getActions()
+					getAllMessages()
 				} catch (error) {
 					console.log('Error sending message: ', error)
 				}
