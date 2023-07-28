@@ -8,7 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			// Add contact function
 			createUser: async (newUser) => {
 				try {
-					const response = await fetch("https://ferrami-fictional-eureka-wjrxjxj4wr93956x-3001.preview.app.github.dev/user", {
+					const response = await fetch("https://ferrami-ubiquitous-barnacle-wjrxjxj4jpv35qp4-3001.preview.app.github.dev/api/users/user", {
 					  method: "POST",
 					  body: JSON.stringify(newUser),
 					  headers: {
