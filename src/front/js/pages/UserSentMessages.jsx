@@ -16,12 +16,16 @@ const User_sent_messages = () => {
         navigate('/messages/trash')
     }
 
+    const handleNavigateWriteMessage = () => {
+        navigate('/messages/compose')
+    }
+
 
     return (
         <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
             <div id='messages_control' style={{ width: '200px' }}>
                 <div>
-                    <button style={{ width: '100%' }} type="button" className="btn btn-dark">Escribir</button>
+                    <button onClick={() => handleNavigateWriteMessage()} style={{ width: '100%' }} type="button" className="btn btn-dark">Escribir</button>
                 </div>
                 <div style={{ marginTop: '10px' }}>
                     <div>
@@ -46,7 +50,7 @@ const User_sent_messages = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {store.sent_messages > 0 ? (
+                        {store.sent_messages.length > 0 ? (
                             store.sent_messages.map((element, index) => {
                                 const receptor = store.users.find((user) => element.receptor_id === user.id);
                                 return (

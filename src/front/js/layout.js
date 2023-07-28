@@ -11,6 +11,7 @@ import { RegisterForm } from "./pages/RegisterForm.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
+import UserComposeMessage from "./pages/UserComposeMessage.jsx";
 
 //Components
 import { Artist } from "./component/artist";
@@ -41,6 +42,7 @@ const Layout = () => {
                         <Route element={<UserInbox />} path="/messages" />
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />
+                        <Route element={<UserComposeMessage />} path="/messages/compose" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
