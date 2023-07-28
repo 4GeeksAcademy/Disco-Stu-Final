@@ -1,13 +1,13 @@
 
-.search-hover {
+.search-click {
   border: 1px solid #ccc;
   outline: none;
   /* background-size: 22px; */
   /* background-position: 13px; */
   border-radius: 10px;
-  width: 10px;
+  width: 85px;
   height: 40px;
-  /* padding: 25px; */
+  padding: 10px;
   transition: all 0.5s;
 }
 
@@ -16,7 +16,14 @@
     padding-right: 10px;
     font-size: 20px;
 }
-.search-hover:hover {
-  width: 350px;
+.search-click:focus {
+  width: 300px;
   padding-left: 10px;
 }
+
+.search-click {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+}
+
