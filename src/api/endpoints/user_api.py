@@ -35,7 +35,7 @@ def get_token():
     except Exception as e:
         return {"Error": "El email proporcionado no corresponde a ninguno registrado: " + str(e)}, 500
 
-@user_api.route('/user', methods=['POST'])
+@user_api.route('/users/add', methods=['POST'])
 def create_user():
 
     # Datos quemados para nombre y is_admin
@@ -76,7 +76,7 @@ def create_user():
 
     return jsonify({"message": "User created successfully.", "nombre_real": nombre_real}), 200
 
-@user_api.route('/users', methods=['GET'])
+@user_api.route('/users/get', methods=['GET'])
 def get_users():
    
     users = User.query.all()
