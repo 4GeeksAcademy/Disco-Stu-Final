@@ -34,9 +34,11 @@ const User_deleted_messages = () => {
     }
 
     const sendMessage = () => {
-        const fecha = new Date()
+        const fechaActual = new Date()
+        const fecha = fechaActual.getDate() + '/' + (fechaActual.getMonth() + 1) + '/' + fechaActual.getFullYear()
+        const receptor = store.users.find((user) => messageTo === user.username)
         const message_data = {
-            'receptor': messageTo, // Faltaria convertir esto en algun momento a receptor_id
+            'receptor_id': receptor.id, // Faltaria convertir esto en algun momento a receptor_id
             'asunto': subject,
             'mensaje': message,
             'fecha': fecha
@@ -61,21 +63,21 @@ const User_deleted_messages = () => {
                     <fieldset>
                         <legend style={{ fontSize: '17px', backgroundColor: '#eeeeee', padding: '3px 0px 3px 20px' }}><strong>Crear un nuevo mensaje</strong></legend>
                         <div style={{ padding: '14px' }}>
-                            <div class="form-field" style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
+                            <div className="form-field" style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
                                 <label for="to">Enviar mensaje a</label>
-                                <input onChange={(e) => handleMessageTo(e.target.value)} id="to" name="to" required="" size="50" type="text" value={messageTo} />
+                                <input onChange={(e) => handleMessageTo(e.target.value)} id="to" name="to" required={true} size="50" type="text" value={messageTo} />
                             </div>
-                            <div class="form-field" style={{ display: 'flex', flexDirection: 'column', width: '40%', marginTop: '30px' }}>
+                            <div className="form-field" style={{ display: 'flex', flexDirection: 'column', width: '40%', marginTop: '30px' }}>
                                 <label for="subject">Asunto</label>
                                 <div style={{ display: 'flex' }}>
-                                    <input onChange={(e) => handleSubject(e.target.value)} id="subject" maxlength="80" name="subject" required="true" size="50" type="text" value={subject} />
+                                    <input onChange={(e) => handleSubject(e.target.value)} id="subject" maxLength="80" name="subject" required={true} size="50" type="text" value={subject} />
                                     <span id="input_counter_subject" className="input_counter" style={{ margin: '5px 5px' }}>{subject.length}/80</span>
                                 </div>
                             </div>
-                            <div class="form-field" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginTop: '30px' }}>
+                            <div className="form-field" style={{ display: 'flex', flexDirection: 'column', width: '100%', marginTop: '30px' }}>
                                 <label for="message">Mensaje</label>
-                                <textarea onChange={(e) => handleMessage(e.target.value)} style={{height: '150px'}} class="monospace_font countable" id="message" maxlength="1600" name="message"></textarea>
-                                <span id="input_counter_message" class="input_counter" style={{ margin: '5px 5px' }}>{message.length}/1600</span>
+                                <textarea onChange={(e) => handleMessage(e.target.value)} style={{height: '150px'}} className="monospace_font countable" id="message" maxLength="1600" name="message"></textarea>
+                                <span id="input_counter_message" className="input_counter" style={{ margin: '5px 5px' }}>{message.length}/1600</span>
                             </div>
                             <button onClick={() => sendMessage()} type="button" className="btn btn-dark">Enviar</button>
                         </div>
