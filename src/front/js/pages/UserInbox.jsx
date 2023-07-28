@@ -16,11 +16,15 @@ const User_inbox = () => {
         navigate('/messages/trash')
     }
 
+    const handleNavigateWriteMessage = () => {
+        navigate('/messages/compose')
+    }
+
     return (
         <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
             <div id='messages_control' style={{ width: '200px' }}>
                 <div>
-                    <button style={{ width: '100%' }} type="button" className="btn btn-dark">Escribir</button>
+                    <button onClick={() => handleNavigateWriteMessage()} style={{ width: '100%' }} type="button" className="btn btn-dark">Escribir</button>
                 </div>
                 <div style={{ marginTop: '10px' }}>
                     <div>
@@ -45,7 +49,7 @@ const User_inbox = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {store.inbox > 0 ? (
+                        {store.inbox.length > 0 ? (
                             store.inbox.map((element, index) => {
                                 const emisor = store.users.find((user) => element.emisor_id === user.id);
                                 return (
