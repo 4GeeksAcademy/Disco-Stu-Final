@@ -21,7 +21,7 @@ def get_all_messages(user_id):
     inbox = []
     for element in messages:
         message_dict = {
-            'message_id': element.id,
+            'id': element.id,
             'emisor_id': element.emisor_id,
             'asunto': element.asunto,
             'mensaje': element.mensaje,
@@ -32,7 +32,7 @@ def get_all_messages(user_id):
     sent = []
     for element in sent_messages:
         sent_message_dict = {
-            'message_id': element.id,
+            'id': element.id,
             'receptor_id': element.receptor_id,
             'asunto': element.asunto,
             'mensaje': element.mensaje,
@@ -43,7 +43,7 @@ def get_all_messages(user_id):
     deleted = []
     for element in deleted_messages:
         deleted_message_dict = {
-            'message_id': element.id,
+            'id': element.id,
             'emisor_id': element.emisor_id,
             'asunto': element.asunto,
             'mensaje': element.mensaje,

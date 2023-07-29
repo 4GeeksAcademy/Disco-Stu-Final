@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ const User_deleted_messages = () => {
 
     const navigate = useNavigate()
     const { store, actions } = useContext(Context)
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const handleNavigateInbox = () => {
         navigate('/messages')
@@ -17,6 +18,28 @@ const User_deleted_messages = () => {
 
     const handleNavigateWriteMessage = () => {
         navigate('/messages/compose')
+    }
+
+    const toggleSelectMessage = (index) => {
+        setSelectedItems((prevSelectedItems) => {
+          if (prevSelectedItems.includes(index)) {
+            return prevSelectedItems.filter((selected) => selected !== index);
+          } else {
+            return [...prevSelectedItems, index];
+          }
+        });
+    };
+
+    const handleRecoverMessage = () => {
+        const selectedItemsCopy = [...selectedItems];
+        setSelectedItems([]);
+        console.log(selectedItems)
+        selectedItemsCopy.map(element => {
+            const message_data = {
+                'message_id': element
+            }
+            actions.recoverDeletedMessage(message_data)
+        })
     }
 
     return (
@@ -36,7 +59,7 @@ const User_deleted_messages = () => {
             <div id='messages_center' style={{ width: '100%', paddingLeft: '30px', display: 'flex', flexDirection: 'column' }}>
                 <h1 style={{ width: '100%', fontSize: '20px' }}>Papelera</h1>
                 <div style={{ border: '1px solid #dfdfdf', padding: '8px 8px 8px 15px' }}>
-                    <button style={{backgroundColor: '#f2f2f2'}} type="button" className="btn">Volver a la bandeja de entrada</button>
+                    <button onClick={() => handleRecoverMessage()} style={{backgroundColor: '#f2f2f2'}} type="button" className="btn">Volver a la bandeja de entrada</button>
                 </div>
                 <table style={{ fontSize: '14px', marginTop: '10px' }}>
                     <thead style={{ backgroundColor: '#eeeeee', height: '30px' }}>
@@ -52,8 +75,8 @@ const User_deleted_messages = () => {
                             store.deleted_messages.map((element, index) => {
                                 const emisor = store.users.find((user) => element.emisor_id === user.id);
                                 return (
-                                    <tr key={index}>
-                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input type="checkbox" /></td>
+                                    <tr key={element.id}>
+                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input onChange={() => toggleSelectMessage(element.id)} type="checkbox" /></td>
                                         <td style={{ width: '25%' }}>{emisor.username}</td>
                                         <td style={{ width: '54%' }}>{element.asunto}</td>
                                         <td style={{ width: '18%' }}>{element.fecha}</td>
@@ -62,7 +85,7 @@ const User_deleted_messages = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="4">Alo</td>
+                                <td colSpan="4"></td>
                             </tr>
                         )}
                     </tbody>

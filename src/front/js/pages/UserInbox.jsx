@@ -7,7 +7,7 @@ const User_inbox = () => {
 
     const navigate = useNavigate()
     const { store, actions } = useContext(Context)
-    const [selectedItems,  setSelectedItems] = useState([])
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -24,6 +24,28 @@ const User_inbox = () => {
     useEffect(() => {
         actions.getAllMessages()
     }, [])
+
+    const toggleSelectMessage = (index) => {
+        // Verificar si el índice ya está seleccionado para añadirlo o removerlo de la lista
+        setSelectedItems((prevSelectedItems) => {
+          if (prevSelectedItems.includes(index)) {
+            return prevSelectedItems.filter((selected) => selected !== index);
+          } else {
+            return [...prevSelectedItems, index];
+          }
+        });
+    };
+
+    const handleDeleteMessage = () => {
+        const selectedItemsCopy = [...selectedItems]
+        setSelectedItems([])
+        selectedItemsCopy.map(element => {
+            const message_data = {
+                'message_id': element
+            }
+            actions.deleteMessage(message_data)
+        })
+    }
 
     return (
         <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
@@ -58,8 +80,8 @@ const User_inbox = () => {
                             store.inbox.map((element, index) => {
                                 const emisor = store.users.find((user) => element.emisor_id === user.id);
                                 return (
-                                    <tr key={index}>
-                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input type="checkbox" /></td>
+                                    <tr key={element.id}>
+                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input type="checkbox" onChange={() => toggleSelectMessage(element.id)} /></td>
                                         <td style={{ width: '25%' }}>{emisor.username}</td>
                                         <td style={{ width: '54%' }}>{element.asunto}</td>
                                         <td style={{ width: '18%' }}>{element.fecha}</td>
@@ -68,7 +90,7 @@ const User_inbox = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="4">Alo</td>
+                                <td colSpan="4"></td>
                             </tr>
                         )}
                     </tbody>
