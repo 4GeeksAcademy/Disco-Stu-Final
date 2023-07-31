@@ -194,6 +194,46 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 
 				return data;
+			},
+			getAllArticles: async () =>{
+				const backendUrl = process.env.BACKEND_URL + "api/articles/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artículos");
+
+				const data = await response.json();
+				
+				if(response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			},
+			getAllArtists: async () =>{
+				const backendUrl = process.env.BACKEND_URL + "api/artists/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artistas");
+
+				const data = await response.json();
+				
+				if(response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
 			}
 		}
 	};

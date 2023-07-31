@@ -1,19 +1,59 @@
 """
 This module takes care of starting the API Server for users, Loading the DB and Adding the endpoints
 """
-import requests, time
-from flask import Flask, request, jsonify, url_for, Blueprint
+import requests, time, secrets, string, os
+from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 from api.models import db, Articulo, Tracks, Artista
 from api.utils import generate_sitemap, APIException
+
 
 utils_api = Blueprint('utils_api', __name__)
 
 """
 Solo para pruebas iniciales. Este método no debería estar en productivo
 """
+def generate_unique_string(length):
+    alphabet = string.ascii_letters + string.digits
+    unique_string = ''.join(secrets.choice(alphabet) for _ in range(length))
+    return unique_string
+
+def fetch_image(url):
+    url = url + "?key=RXfBUdaMFaqAXOnguGZG&secret=mVbHxlSJOTEIiUJYPsFXSynoEpmtPHqB"
+
+    headers = {
+        'User-Agent': 'Disco-stu/1.0 (+http://disco-stu.net)',
+    }
+
+    response = requests.get(url, headers=headers)
+    print("fetch image done")
+    if response.ok:
+        return response.content
+    else:
+        print(f"Request failed with status code: {response.status_code}")
+        print("Response content:")
+        #print(response.text)  # This will show the content of the response, including any error messages
+
+        raise Exception(f"Failed to fetch the image from {url}. Status code: {response.status_code}")
+    
+def saveImages(image_url):
+    directory_name = "src/api/images"
+    image_data = fetch_image(image_url)
+    file_name = generate_unique_string(10) + ".jpeg"
+
+    folder_path = os.path.join(os.getcwd(), directory_name)
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, "wb") as f:
+        f.write(image_data)
+
+    return file_name
+
+@utils_api.route('/images/<string:image_name>', methods=['GET'])
+def serve_image(image_name):
+    return send_from_directory('api/images', image_name)
+
 @utils_api.route('/load_initial_realeases', methods=['GET'])
 def load_initial_realeases():
-    url="https://api.discogs.com/database/search?genre=HIP+HOP&type=master&key=RXfBUdaMFaqAXOnguGZG&secret=mVbHxlSJOTEIiUJYPsFXSynoEpmtPHqB&per_page=40&page=1"
+    url="https://api.discogs.com/database/search?genre=blues&type=master&key=RXfBUdaMFaqAXOnguGZG&secret=mVbHxlSJOTEIiUJYPsFXSynoEpmtPHqB&per_page=40&page=1"
     final_realases = []
     release_item = {}
 
@@ -26,7 +66,8 @@ def load_initial_realeases():
         release_item = {}
         single_release = {}
         single_release["titulo"] = release["title"]
-        single_release["url_imagen"] = release["cover_image"]
+        #single_release["url_imagen"] = release["cover_image"]
+        single_release["url_imagen"] = saveImages(release["cover_image"])
         single_release["sello"] = release["catno"]
         single_release["formato"] = release["format"][0]
         if(release["genre"]):
@@ -68,14 +109,16 @@ def load_initial_realeases():
                 single_artist["nombre_real"] = data_artist.get("nombre_real", "unasigned")
                 single_artist["perfil"] = data_artist.get("profile", "unasigned")
                 if "images" in data_artist and data_artist["images"]:
-                    single_artist["url_imagen"] = data_artist["images"][0].get("resource_url", "unasigned")
+                    #single_artist["url_imagen"] = data_artist["images"][0].get("resource_url", "unasigned")
+                    if data_artist["images"][0].get("resource_url", "unasigned") != "unasigned":
+                        single_artist["url_imagen"] = saveImages( data_artist["images"][0].get("resource_url"))
                 else:
                     single_artist["url_imagen"] = "unasigned"
             
             release_item["artist"] = single_artist
 
         final_realases.append(release_item)
-        time.sleep(1)
+        time.sleep(4)
 
     #UNA VEZ OBTENIDO LOS DATOS DE API EXTERNA PROCEDEMOS A TRABAJAR LOCALMENTE LAS INSERCIONES DE BD
     session = db.session

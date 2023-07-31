@@ -20,6 +20,7 @@ import { BackendURL } from "./component/backendURL";
 import ScrollToTop from "./component/scrollToTop";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import { GalleryTemplate } from "./pages/gallery_template";
 
 //create your first component
 const Layout = () => {
@@ -37,6 +38,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Artist />} path="/artists" />
+                        <Route element={<GalleryTemplate />} path="/gallery_template" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<RegisterForm />} path="/register" />
