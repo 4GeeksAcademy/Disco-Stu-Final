@@ -42,12 +42,29 @@ class Articulo(db.Model):
     url_imagen = db.Column(db.String(250))
     artista_id = db.Column(db.Integer, db.ForeignKey('artista.id'))
     titulo = db.Column(db.String(250), nullable=False)
-    sello = db.Column(db.String(250), unique=True)
+    sello = db.Column(db.String(250), unique=False)
     formato = db.Column(db.String(250))
     pais = db.Column(db.String(250), nullable=False)
     publicado = db.Column(db.String(250), nullable=False)
     genero = db.Column(db.String(250), nullable=False)
-    estilos = db.Column(db.String(250), nullable=False)
+    estilos = db.Column(db.String(250))
+
+    artista = db.relationship('Artista', uselist=False, back_populates='articulo', cascade='all, delete-orphan', single_parent=True)
+    tracks = db.relationship('Tracks', back_populates='articulo', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'url_imagen': self.url_imagen,
+            'artista_id': self.artista_id,
+            'titulo': self.titulo,
+            'sello': self.sello,
+            'formato': self.formato,
+            'pais': self.pais,
+            'publicado': self.publicado,
+            'genero': self.genero,
+            'estilos': self.estilos
+        }
 
 class Tracks(db.Model):
     __tablename__ = 'tracks'
@@ -55,6 +72,17 @@ class Tracks(db.Model):
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
     nombre = db.Column(db.String(250))
     posicion = db.Column(db.String(250))
+
+    #articulo = db.relationship('Articulo', backref='tracks', overlaps="tracks_relacion")
+    articulo = db.relationship('Articulo', back_populates='tracks')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'articulo_id': self.articulo_id,
+            'nombre': self.nombre,
+            'posicion': self.posicion
+        }
 
 class Favoritos(db.Model):
     __tablename__ = 'favoritos'
@@ -135,10 +163,22 @@ class Pedido_articulos(db.Model):
 class Artista(db.Model):
     __tablename__ = 'artista'
     id = db.Column(db.Integer, primary_key=True)
-    url_imagen = db.Column(db.String(250))
+    url_imagen = db.Column(db.Text)
     nombre = db.Column(db.String(250))
     nombre_real = db.Column(db.String(250))
-    perfil = db.Column(db.String(250))
+    perfil = db.Column(db.Text)
+
+    #articulo = db.relationship('Articulo', uselist=False, backref='artista', overlaps="articulo_relacion")
+    articulo = db.relationship('Articulo', uselist=False, back_populates='artista', cascade='all, delete-orphan', single_parent=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'url_imagen': self.url_imagen,
+            'nombre': self.nombre,
+            'nombre_real': self.nombre_real,
+            'perfil': self.perfil
+        }
 
 
 
