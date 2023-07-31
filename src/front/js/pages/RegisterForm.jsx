@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
+import { Link } from "react-router-dom";
 
 
 export const RegisterForm = () => {
@@ -138,6 +139,10 @@ export const RegisterForm = () => {
                             <div className="d-grid gap-2 mt-4">
                                 <button type="submit" className="btn btn-success btn-block">Crear cuenta</button>
                             </div>
+                            <p className="text-center mt-3">
+                                ¿Ya tienes una cuenta?
+                                <Link to="/login" className="ms-2">Inicia sesión</Link>
+                            </p>
                         </form>
                         {isRegistered && (
                             <div className="alert alert-success mt-3">
