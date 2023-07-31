@@ -8,9 +8,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				{
 					"id": 1,
 					"is_admin": false,
-					"mail": "karai@gmail.com",
+					"mail": "karai1@gmail.com",
 					"nombre_real": "Nombre Quemado 1",
-					"username": "karai"
+					"username": "karai1"
 				},
 				{
 					"id": 2,
@@ -48,7 +48,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getAllMessages: async () => {
 				try {
 					const store = getStore()
-					const response = await fetch('https://karai2mil-refactored-goldfish-rj46xvv7j5p25g46-3001.preview.app.github.dev/api/inbox_user/messages/1')
+					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/1')
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
@@ -66,7 +66,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					console.log(message_data)
 					// const store = getStore()
-					const response = await fetch('https://karai2mil-refactored-goldfish-rj46xvv7j5p25g46-3001.preview.app.github.dev/api/inbox_user/messages/sent/1', {
+					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/sent/1', {
 						method: 'POST',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -87,8 +87,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			deleteMessage: async (message_data) => {
 				try {
-					const store = getStore()
-					const response = await fetch(store.url + 'api/inbox_user/messages/trash/' + store.user_id, {
+					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/trash', {
 						method: 'POST',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -96,10 +95,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					})
 					if (!response.ok) {
-						throw new Error('Response error')
+						console.log('Response error: ', response.status)
 					}
 					const data = await response.json()
 					console.log('Message deleted succesfully', data)
+					const {getAllMessages} = getActions()
+					getAllMessages()
 				} catch (error) {
 					console.log('Error deleting message: ', error)
 				}
@@ -107,8 +108,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			recoverDeletedMessage: async (message_data) => {
 				try {
-					const store = getStore()
-					const response = await fetch(store.url + 'api/inbox_user/messages/' + store.user_id, {
+					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages', {
 						method: 'POST',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -120,6 +120,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Message recovered succesfully', data)
+					const {getAllMessages} = getActions()
+					getAllMessages()
 				} catch (error) {
 					console.log('Error recovering message: ', error)
 				}
@@ -127,8 +129,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			deleteSentMessage: async (message_data) => {
 				try {
-					const store = getStore()
-					const response = await fetch(store.url + 'api/inbox_user/messages/sent/' + store.user_id, {
+					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/sent', {
 						method: 'DELETE',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -140,6 +141,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Sent message deleted succesfully', data)
+					const {getAllMessages} = getActions()
+					getAllMessages()
 				} catch (error) {
 					console.log('Error deleting sent message: ', error)
 				}

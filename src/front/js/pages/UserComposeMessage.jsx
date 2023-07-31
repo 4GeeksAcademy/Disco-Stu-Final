@@ -44,6 +44,7 @@ const User_deleted_messages = () => {
             'fecha': fecha
         }
         actions.sendMessage(message_data)
+        navigate('/messages')
     }
 
 
