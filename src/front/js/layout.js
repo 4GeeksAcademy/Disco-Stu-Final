@@ -15,7 +15,7 @@ import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
 
 //Components
-import { Artist } from "./component/artist";
+import { Artist } from "./pages/artist";
 import { BackendURL } from "./component/backendURL";
 import ScrollToTop from "./component/scrollToTop";
 import { Navbar } from "./component/navbar";

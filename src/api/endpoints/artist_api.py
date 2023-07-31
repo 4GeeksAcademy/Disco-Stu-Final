@@ -11,17 +11,36 @@ artist_api = Blueprint('artist_api', __name__)
 def hello_user(artist_name):
     return {"message": "hello " + artist_name}, 200
 
-@artist_api.route('/artists/add', methods=['POST'])
-def add_artist():
+@artist_api.route('/', methods=['GET'])
+def get_all():
+    artists = Artista.query.all()
+    print("artists size: " + str(len(artists)))
+    response = [artist.to_dict() for artist in artists]
+
+    return jsonify(response), 200
+
+@artist_api.route('/delete_all', methods=['GET'])
+def delete_all():
+    Artista.query.delete()
+    db.session.commit()
+
+    return jsonify({"message": "All items deleted"}), 200
+
+@artist_api.route('/create', methods=['POST'])
+def create_artist():
     artist_data = request.get_json()
     
     if artist_data:
-        artist = Artista(**artist_data)
-        db.session.add(artist)
-        db.session.commit()
+        try:
+            artist = Artista(**artist_data)
+            db.session.add(artist)
+            db.session.commit()
+        except Exception as e:
+            print("#artist_api" + str(e))
+            return jsonify({"message": "Ha ocurrido un error con la base de datos"})
 
-        return jsonify({'message': 'Artist added successfully'}), 200
+        return jsonify({'message': 'Artista creado satisfactoriamente'}), 200
     else:
-        return jsonify({'message': 'Invalid JSON data in the request'}), 400
+        return jsonify({'message': 'Petición JSON inválida'}), 400
 
 
