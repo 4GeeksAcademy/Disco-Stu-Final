@@ -53,7 +53,7 @@ def serve_image(image_name):
 
 @utils_api.route('/load_initial_realeases', methods=['GET'])
 def load_initial_realeases():
-    url="https://api.discogs.com/database/search?genre=blues&type=master&key=RXfBUdaMFaqAXOnguGZG&secret=mVbHxlSJOTEIiUJYPsFXSynoEpmtPHqB&per_page=40&page=1"
+    url="https://api.discogs.com/database/search?genre=rock&type=master&key=RXfBUdaMFaqAXOnguGZG&secret=mVbHxlSJOTEIiUJYPsFXSynoEpmtPHqB&per_page=40&page=1"
     final_realases = []
     release_item = {}
 

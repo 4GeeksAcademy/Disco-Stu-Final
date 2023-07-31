@@ -40,6 +40,7 @@ export const GalleryTemplate = () => {
               effect="blur"
               alt={`Image ${index + 1}`}
             />
+            <p>{article.titulo}</p>
           </div>
         ))}
       </div>
@@ -56,6 +57,7 @@ export const GalleryTemplate = () => {
               effect="blur"
               alt={`Image ${index + 1}`}
             />
+            <p>{artist.nombre}</p>
           </div>
         ))}
       </div>
