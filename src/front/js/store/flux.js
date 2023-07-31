@@ -188,8 +188,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al intentar guardar Artista");
 
 				const data = await response.json();
-				
-				if(response.status == 400) {
+
+				if (response.status == 400) {
 					throw new Error(data.message);
 				}
 
