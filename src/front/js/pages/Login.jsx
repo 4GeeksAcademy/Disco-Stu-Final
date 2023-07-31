@@ -1,15 +1,15 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { Context } from "../store/appContext";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
     const { actions } = useContext(Context);
     const formRef = useRef(null);
-    const [username, setUsername] = useState("");
-    const [mail, setMail] = useState("");
+    const [usernameOrMail, setUsernameOrMail] = useState(""); // Renombrar para unificar el campo
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
     const [loginSuccess, setLoginSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         document.addEventListener("click", handleDocumentClick);
@@ -23,20 +23,21 @@ export const Login = () => {
         setError("");
         setLoginSuccess(false);
 
-        if (!username && !mail || !password) { // Cambia esta línea para verificar el campo correcto
+        if (!usernameOrMail || !password) {
             setError("Por favor ingrese usuario y contraseña");
             return;
         }
 
-        const data = { username_or_mail: mail || username, password }; // Cambia el nombre del campo
-
         try {
-            await actions.login(data);
+            await actions.login({ username_or_mail: usernameOrMail, password });
+
             setLoginSuccess(true);
+            setError("");
         } catch (err) {
             setError(
                 "Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo"
             );
+            setLoginSuccess(false);
         }
     };
 
@@ -48,7 +49,7 @@ export const Login = () => {
         if (
             formRef.current &&
             !formRef.current.contains(event.target) &&
-            event.target.getAttribute("id") !== "show_hide_password" // Exclude the password toggle button from closing the password input
+            event.target.getAttribute("id") !== "show_hide_password"
         ) {
             setShowPassword(false);
             setLoginSuccess(false);
@@ -62,26 +63,23 @@ export const Login = () => {
                     <div className="col-lg-3 col-md-3 col-sm-2 col-xs-3"></div>
                     <div className="col-lg-6 col-md-6 col-sm-8 col-xs-6">
                         <h1 className="text-center mb-4">Inicia sesión en DiscoStu</h1>
-                        {error && <div className="alert alert-danger">{error}</div>}
-                        {loginSuccess && (
-                            <div className="alert alert-success">Inicio de sesión exitoso</div>
-                        )}
                         <form className="mb-3" ref={formRef}>
                             <div className="form-group mb-3">
-                                <label htmlFor="username">Nombre de usuario o correo: </label>
+                                <div className="form-group mb-3">
+                                    {loginSuccess && <div className="alert alert-success">Inicio de sesión exitoso</div>}
+                                    {error && <div className="alert alert-danger">{error}</div>}
+                                </div>
+                                <label htmlFor="usernameOrMail">Nombre de usuario o correo: </label>
                                 <input
                                     aria-invalid="false"
                                     autoFocus=""
                                     className="form-control mt-2"
-                                    id="mail"
-                                    name="mail"
+                                    id="usernameOrMail" // Cambiar el id para que coincida con el htmlFor
+                                    name="usernameOrMail" // Cambiar el name para que coincida con el estado
                                     required
                                     type="text"
-                                    value={mail}
-                                    onChange={(e) => {
-                                        setMail(e.target.value);
-                                        setUsername(e.target.value); // Update username value as well
-                                    }}
+                                    value={usernameOrMail}
+                                    onChange={(e) => setUsernameOrMail(e.target.value)}
                                     onKeyPress={(e) => {
                                         if (e.key === "Enter") {
                                             handleLogin(e);
@@ -122,8 +120,7 @@ export const Login = () => {
                                                 <i
                                                     role="img"
                                                     aria-hidden="true"
-                                                    className={`far ${showPassword ? "fa-eye" : "fa-eye-slash"
-                                                        }`}
+                                                    className={`far ${showPassword ? "fa-eye" : "fa-eye-slash"}`}
                                                 ></i>
                                             </button>
                                         </span>
@@ -141,7 +138,7 @@ export const Login = () => {
                             </div>
                             <p className="text-center mt-3">
                                 ¿No eres usuario de DiscoStu?
-                                <a href="/register">Crea una cuenta</a>
+                                <a href="/register" className="ms-2">Crea una cuenta</a>
                             </p>
                         </form>
                     </div>

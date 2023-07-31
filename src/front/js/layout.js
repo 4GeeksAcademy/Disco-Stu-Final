@@ -4,10 +4,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "./store/appContext";
 
 // Pages
-import  Home  from "./pages/Home.jsx";
+import Home from "./pages/Home.jsx";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import { RegisterForm } from "./pages/RegisterForm.jsx";
+import { Login } from "./pages/Login.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
@@ -26,7 +27,7 @@ const Layout = () => {
     // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
 
-    if(!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL/ >;
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
     return (
         <div>
@@ -39,6 +40,7 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<RegisterForm />} path="/register" />
+                        <Route element={<Login />} path="/login" />
                         <Route element={<UserInbox />} path="/messages" />
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />

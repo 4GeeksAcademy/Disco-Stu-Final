@@ -26,12 +26,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			// Add contact function
 			createUser: async (newUser) => {
 				try {
-					const response = await fetch("https://ferrami-ubiquitous-barnacle-wjrxjxj4jpv35qp4-3001.preview.app.github.dev/api/users/user", {
-					  method: "POST",
-					  body: JSON.stringify(newUser),
-					  headers: {
-						"Content-Type": "application/json"
-					  }
+					const response = await fetch("https://ferrami-ubiquitous-space-robot-74vw4w4xqjr2w65g-3001.preview.app.github.dev/api/users/register", {
+						method: "POST",
+						body: JSON.stringify(newUser),
+						headers: {
+							"Content-Type": "application/json"
+						}
 					});
 
 					if (response.ok) {
@@ -45,6 +45,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			login: async ({ username_or_mail, password }) => {
+				try {
+					const response = await fetch("https://ferrami-ubiquitous-space-robot-74vw4w4xqjr2w65g-3001.preview.app.github.dev/api/users/login", {
+						method: 'POST',
+						body: JSON.stringify({ username_or_mail, password }),
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+
+					if (!response.ok) {
+						const responseData = await response.json();
+						throw new Error(responseData.message || "Invalid username or password");
+					}
+
+					const data = await response.json();
+					const token = data.token;
+
+					sessionStorage.setItem('token', token);
+
+					setStore({ authToken: token, isAuthenticated: true });
+
+				} catch (error) {
+					console.error('Error in login:', error.message);
+				}
+			},
+
 			getAllMessages: async () => {
 				try {
 					const store = getStore()
@@ -54,7 +81,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Messages obtained succesfully: ', data)
-					setStore({...store, inbox: data.inbox})
+					setStore({ ...store, inbox: data.inbox })
 					setStore({ ...store, sent_messages: data.sent_messages })
 					setStore({ ...store, deleted_messages: data.deleted_messages })
 				} catch (error) {
@@ -78,7 +105,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Message sent succesfully', data)
-					const {getAllMessages} = getActions()
+					const { getAllMessages } = getActions()
 					getAllMessages()
 				} catch (error) {
 					console.log('Error sending message: ', error)
@@ -99,7 +126,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Message deleted succesfully', data)
-					const {getAllMessages} = getActions()
+					const { getAllMessages } = getActions()
 					getAllMessages()
 				} catch (error) {
 					console.log('Error deleting message: ', error)
@@ -120,7 +147,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Message recovered succesfully', data)
-					const {getAllMessages} = getActions()
+					const { getAllMessages } = getActions()
 					getAllMessages()
 				} catch (error) {
 					console.log('Error recovering message: ', error)
@@ -141,7 +168,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Sent message deleted succesfully', data)
-					const {getAllMessages} = getActions()
+					const { getAllMessages } = getActions()
 					getAllMessages()
 				} catch (error) {
 					console.log('Error deleting sent message: ', error)

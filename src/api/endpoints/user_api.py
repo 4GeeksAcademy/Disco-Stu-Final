@@ -59,26 +59,34 @@ def create_user():
     return jsonify({"message": "User created successfully.", "nombre_real": nombre_real}), 200
 
 @user_api.route('/login', methods=['POST'])
-def get_token():
+def login():
     try:
-        email = request.json.get('email')
-        password = request.json.get('password')
+        data = request.json
+        username_or_mail = data.get('username_or_mail')  # Aquí usa el nombre correcto del campo
+        password = data.get('password')
 
-        login_user = User.query.filter_by(email=email).one()
-        password_db = login_user.password
-        true_o_false = check_password_hash(password_db, password)
+        print(username_or_mail)
 
-        if true_o_false:
-            # Lógica para crear y enviar el token
-            user_id = login_user.id
-            access_token = create_access_token(identity=user_id)
-            return {'access_token': access_token}, 200
+        if not username_or_mail or not password:
+            return jsonify({"error": "Nombre de usuario o correo electrónico y contraseña son requeridos"}), 400
 
-        else:
-            return {"Error": "Contraseña incorrecta"}, 401
+        user = User.query.filter(
+            (User.username == username_or_mail) | (User.mail == username_or_mail)
+        ).first()
+
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        if not check_password_hash(user.password, password):
+            return jsonify({"error": "Contraseña incorrecta"}), 401
+
+        access_token = create_access_token(identity=user.id)
+        response_data = {'access_token': access_token, 'user_id': user.id}
+        return jsonify(response_data), 200
 
     except Exception as e:
-        return {"Error": "El email proporcionado no corresponde a ninguno registrado: " + str(e)}, 500
+        return jsonify({"Error": "Ocurrió un error durante el proceso de inicio de sesión: " + str(e)}), 500
+
 
 @user_api.route('/userslist', methods=['GET'])
 def get_users():

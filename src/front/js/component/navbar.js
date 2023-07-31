@@ -28,7 +28,7 @@ export const Navbar = () => {
 
 	return (
 
-		<nav className="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient text-white">
+		<nav className="navbar navbar-expand-lg navbar-dark bg-black text-white">
 			<div className="container-fluid">
 				<Link className="nav-link" to="/">
 					<span className="navbar-brand text-white" href="#">
@@ -86,7 +86,7 @@ export const Navbar = () => {
 
 					</ul>
 					<form className="d-flex">
-						<Link to="/" className="nav-link text-white" href="#" tabIndex="-1" aria-disabled="true">Iniciar sesión</Link>
+						<Link to="/login" className="nav-link text-white" href="#" tabIndex="-1" aria-disabled="true">Iniciar sesión</Link>
 						<Link to="/register">
 							<button className="btn btn-success" type="submit">Registrarse</button>
 						</Link>
