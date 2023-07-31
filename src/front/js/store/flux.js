@@ -174,6 +174,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log('Error deleting sent message: ', error)
 				}
 			},
+			createArtist: async (artist) => {
+				const backendUrl = process.env.BACKEND_URL + "api/artists/create";
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(artist)
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar guardar Artista");
+
+				const data = await response.json();
+				
+				if(response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			}
 		}
 	};
 };
