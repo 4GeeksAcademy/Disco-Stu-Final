@@ -105,3 +105,10 @@ def get_users():
         users_data.append(user_data)
 
     return jsonify(users_data), 200
+
+@user_api.route('/delete_all', methods=['GET'])
+def delete_all():
+    User.query.delete()
+    db.session.commit()
+
+    return jsonify({"message": "All users deleted"})
