@@ -82,6 +82,7 @@
 		"react-lazyload": "^3.2.0",
 		"react-paginate": "^8.2.0",
 		"react-polyfills": "0.0.1",
-		"react-router-dom": "^6.3.0"
+		"react-router-dom": "^6.3.0",
+		"sweetalert2": "^11.7.20"
 	}
 }
