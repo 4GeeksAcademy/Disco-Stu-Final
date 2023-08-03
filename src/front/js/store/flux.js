@@ -4,22 +4,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
-			users: [
-				{
-					"id": 1,
-					"is_admin": false,
-					"mail": "karai1@gmail.com",
-					"nombre_real": "Nombre Quemado 1",
-					"username": "karai1"
-				},
-				{
-					"id": 2,
-					"is_admin": false,
-					"mail": "karai2@gmail.com",
-					"nombre_real": "Nombre Quemado 2",
-					"username": "karai2"
-				}
-			]
+			explorer_articles: [],
+			filtered_explorer_articles: [],
+			on_filtered_or_explorer: true
 		},
 		actions: {
 
@@ -195,7 +182,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
-			getAllArticles: async () =>{
+			getAllArticles: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/";
 				const response = await fetch(backendUrl, {
 					method: "GET",
@@ -208,14 +195,21 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al intentar obtener Artículos");
 
 				const data = await response.json();
-				
-				if(response.status == 400) {
+				console.log(data)
+
+				const store = getStore()
+				setStore({ 
+					...store, 
+					explorer_articles: data, 
+					on_filtered_or_explorer: true })
+
+				if (response.status == 400) {
 					throw new Error(data.message);
 				}
 
 				return data;
 			},
-			getAllArticlesByGenre: async (genre) =>{
+			getAllArticlesByGenre: async (genre) => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/genre/" + genre;
 				const response = await fetch(backendUrl, {
 					method: "GET",
@@ -228,14 +222,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al intentar obtener Artículos");
 
 				const data = await response.json();
-				
-				if(response.status == 400) {
+
+				if (response.status == 400) {
 					throw new Error(data.message);
 				}
 
 				return data;
 			},
-			getAllArtists: async () =>{
+			getAllArtists: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/artists/";
 				const response = await fetch(backendUrl, {
 					method: "GET",
@@ -248,12 +242,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al intentar obtener Artistas");
 
 				const data = await response.json();
-				
-				if(response.status == 400) {
+
+				if (response.status == 400) {
 					throw new Error(data.message);
 				}
 
 				return data;
+			},
+
+			expandedSearch: async (searchContent) => {
+				try {
+					console.log(searchContent)
+					const backendUrl = process.env.BACKEND_URL + "api/searchbar/search/" + searchContent;
+					const response = await fetch(backendUrl)
+					if (!response.ok)
+						throw new Error("Error on searching response");
+
+					const data = await response.json();
+					// console.log(data)
+					const store = getStore()
+					setStore({ ...store, filtered_explorer_articles: [] })
+					setStore({
+						...store,
+						filtered_explorer_articles: data.articles,
+						on_filtered_or_explorer: false
+					})
+
+				} catch (error) {
+					console.log('Error in searching', error)
+				}
 			}
 		}
 	};

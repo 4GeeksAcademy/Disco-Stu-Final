@@ -1,39 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import "../../styles/navbar.css";
+import SearchBar from "./SearchBar.jsx";
+import logoNabVar from '../../img/LOGO_NAVBAR.png'
 
 
 export const Navbar = () => {
-	const [isExpanded, setIsExpanded] = useState(false);
-	const searchRef = useRef(null);
 
-	useEffect(() => {
-		const handleOutsideClick = (event) => {
-			if (searchRef.current && !searchRef.current.contains(event.target)) {
-				setIsExpanded(false);
-			}
-		};
+	const navigate = useNavigate()
 
-		document.addEventListener("click", handleOutsideClick);
-
-		return () => {
-			document.removeEventListener("click", handleOutsideClick);
-		};
-	}, []);
-
-	const handleSearchIconClick = () => {
-		setIsExpanded(!isExpanded);
-	};
+	const handlerNavigateToExplorer = () => {
+		navigate('/explorer')
+	}
 
 	return (
 
 		<nav className="navbar navbar-expand-lg navbar-dark bg-black text-white">
 			<div className="container-fluid">
 				<Link className="nav-link" to="/">
-					<span className="navbar-brand text-white" href="#">
-						DiscoStu
-					</span>
+					<img style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
 				</Link>
 				<button
 					className="navbar-toggler"
@@ -48,24 +34,19 @@ export const Navbar = () => {
 				</button>
 				<div className="collapse navbar-collapse" id="navbarScroll">
 					<ul className="navbar-nav me-auto my-2 my-lg-0">
-						<div className={`input-group ${isExpanded ? "expanded" : ""}`} ref={searchRef}>
-							<input
-								id="search-input"
-								className={`search-click border-start-0 ${isExpanded ? "expanded" : ""}`}
-								type="search"
-								placeholder="Buscar artistas, álbumes y otros..."
-								aria-label="Search"
-							/>
-							<span
-								id="search-icon"
-								className="search-icon input-group-text bg-white border-end-0"
-								onClick={handleSearchIconClick}
-							>
-								<i className="fa-solid fa-magnifying-glass"></i>
-							</span>
-						</div>
 
-						<li className="nav-item dropdown mx-3">
+						<SearchBar />
+
+						<p
+							onClick={() => handlerNavigateToExplorer()}
+							style={{
+								padding: '9px 0px 0px 18px',
+								margin: 0,
+								cursor: 'pointer'
+							}}>
+							Explorar
+						</p>
+						{/* <li className="nav-item dropdown mx-3">
 							<Link
 								to=""
 								className="nav-link dropdown-toggle text-white"
@@ -77,12 +58,9 @@ export const Navbar = () => {
 								Explorar
 							</Link>
 							<ul className="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-								<li><a className="dropdown-item" href="#">Action</a></li>
-								<li><a className="dropdown-item" href="#">Another action</a></li>
-								<li><hr className="dropdown-divider" /></li>
-								<li><a className="dropdown-item" href="#">Something else here</a></li>
+								<li><a className="dropdown-item" href="#">Explorar contenido</a></li>
 							</ul>
-						</li>
+						</li> */}
 
 					</ul>
 					<form className="d-flex">

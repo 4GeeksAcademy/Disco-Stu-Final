@@ -19,6 +19,7 @@ from api.endpoints.inbox_admin_api import inbox_admin_api
 from api.endpoints.inbox_user_api import inbox_user_api
 from api.endpoints.offer_api import offer_api
 from api.endpoints.order_api import order_api
+from api.endpoints.searchbar_api import searchbar_api
 from api.endpoints.track_api import track_api
 from api.endpoints.user_api import user_api
 from api.endpoints.utils import utils_api
@@ -66,6 +67,7 @@ app.register_blueprint(inbox_admin_api, url_prefix='/api/inbox_admin')
 app.register_blueprint(inbox_user_api, url_prefix='/api/inbox_user')
 app.register_blueprint(offer_api, url_prefix='/api/offers')
 app.register_blueprint(order_api, url_prefix='/api/orders')
+app.register_blueprint(searchbar_api, url_prefix='/api/searchbar')
 app.register_blueprint(track_api, url_prefix='/api/tracks')
 app.register_blueprint(user_api, url_prefix='/api/users')
 app.register_blueprint(utils_api, url_prefix='/api/utils')

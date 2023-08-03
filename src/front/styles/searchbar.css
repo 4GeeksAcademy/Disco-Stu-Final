@@ -1,0 +1,54 @@
+
+.search-click {
+  border: 1px solid #ccc;
+  outline: none;
+  /* background-size: 22px; */
+  /* background-position: 13px; */
+  border-radius: 10px;
+  width: 280px;
+  height: 40px;
+  padding: 10px;
+  transition: all 0.5s;
+}
+
+.search-icon {
+    border-radius: 10px;
+    padding-right: 10px;
+    font-size: 1.2rem;
+}
+.search-click:focus {
+  width: 320px;
+  padding-left: 10px;
+}
+
+.search-click {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+}
+
+.search-click::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.loading-icon {
+  position: absolute;
+  top: 19px;
+  margin-left: 280px;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border-top: 2px solid black; /* Color del borde superior del icono */
+  animation: spin 1s linear infinite; /* Animación giratoria */
+}
+
+/* Animación giratoria */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
