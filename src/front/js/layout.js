@@ -40,7 +40,11 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
+<<<<<<< HEAD
                         <Route element={<Explorer />} path='/explorer' />
+=======
+                        <Route element={<Article />} path="/articles" />
+>>>>>>> 5e013ef (commit temporal para bajar cambios de develop que se necesitan para probar funcionalidades)
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<RegisterForm />} path="/register" />
