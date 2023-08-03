@@ -1,15 +1,16 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Login = () => {
-    const { actions } = useContext(Context);
+    const { store, actions } = useContext(Context);
+    const navigate = useNavigate();
     const formRef = useRef(null);
-    const [usernameOrMail, setUsernameOrMail] = useState(""); // Renombrar para unificar el campo
+    const [usernameOrMail, setUsernameOrMail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loginSuccess, setLoginSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
 
     useEffect(() => {
         document.addEventListener("click", handleDocumentClick);
@@ -20,24 +21,26 @@ export const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError("");
-        setLoginSuccess(false);
 
         if (!usernameOrMail || !password) {
-            setError("Por favor ingrese usuario y contraseña");
+            setErrorMessage("Por favor ingrese usuario y contraseña");
             return;
         }
 
         try {
-            await actions.login({ username_or_mail: usernameOrMail, password });
 
-            setLoginSuccess(true);
-            setError("");
+            const loginResponse = await actions.login({ username_or_mail: usernameOrMail, password });
+
+            // Verificamos si el usuario es administrador (puedes ajustar esta condición según la lógica de tu aplicación)
+            if (loginResponse.is_admin) {
+                // Si es administrador, redirigimos al admin-panel
+                navigate("/admin-panel");
+            } else {
+                // Si no es administrador, redirigimos a la página principal (o la ruta que desees)
+                navigate("/");
+            }
         } catch (err) {
-            setError(
-                "Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo"
-            );
-            setLoginSuccess(false);
+            setErrorMessage("Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo");
         }
     };
 
@@ -52,7 +55,6 @@ export const Login = () => {
             event.target.getAttribute("id") !== "show_hide_password"
         ) {
             setShowPassword(false);
-            setLoginSuccess(false);
         }
     };
 
@@ -65,21 +67,23 @@ export const Login = () => {
                         <h1 className="text-center mb-4">Inicia sesión en DiscoStu</h1>
                         <form className="mb-3" ref={formRef}>
                             <div className="form-group mb-3">
-                                <div className="form-group mb-3">
-                                    {loginSuccess && <div className="alert alert-success">Inicio de sesión exitoso</div>}
-                                    {error && <div className="alert alert-danger">{error}</div>}
-                                </div>
+
+                                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
                                 <label htmlFor="usernameOrMail">Nombre de usuario o correo: </label>
                                 <input
                                     aria-invalid="false"
                                     autoFocus=""
                                     className="form-control mt-2"
-                                    id="usernameOrMail" // Cambiar el id para que coincida con el htmlFor
-                                    name="usernameOrMail" // Cambiar el name para que coincida con el estado
+                                    id="usernameOrMail"
+                                    name="usernameOrMail"
                                     required
                                     type="text"
                                     value={usernameOrMail}
-                                    onChange={(e) => setUsernameOrMail(e.target.value)}
+                                    onChange={(e) => {
+                                        setErrorMessage('');
+                                        setUsernameOrMail(e.target.value);
+                                    }}
                                     onKeyPress={(e) => {
                                         if (e.key === "Enter") {
                                             handleLogin(e);
@@ -99,7 +103,10 @@ export const Login = () => {
                                         required
                                         type={showPassword ? "text" : "password"}
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => {
+                                            setErrorMessage('');
+                                            setPassword(e.target.value);
+                                        }}
                                         onKeyPress={(e) => {
                                             if (e.key === "Enter") {
                                                 handleLogin(e);
