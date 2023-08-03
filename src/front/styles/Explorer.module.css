@@ -1,0 +1,30 @@
+.filterCenter {
+    padding: 40px 0px 0px 80px;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+}
+.contentCenter {
+    width: 80%;
+    padding: 20px 40px 0px 0px;
+    display: flex;
+    flex-direction: column;
+}
+.generalDiv {
+    display: flex;
+}
+.upperFilter{
+    display: flex;
+    list-style-type: none;
+    width: 90%;
+    border-bottom: solid 2px #e0dfdf;
+    padding-left: 10px;
+}
+
+.content{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Ajusta el ancho de las columnas según sea necesario */
+    gap: 20px; /* Espacio entre los elementos (artículos) */
+    list-style-type: none;
+    padding: 10px 60px 0px 0px;
+}
