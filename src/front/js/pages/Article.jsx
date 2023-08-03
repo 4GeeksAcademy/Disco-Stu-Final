@@ -1,12 +1,34 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
+import * as Yup from 'yup';
 
 const Article = () => {
-    const[isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const initialValues = () => {}
-    const validationSchema = () => {}
-    const handleSubmit = () => {}
+    const initialValues = {
+        title: '',
+        sello: '',
+        formato: '',
+        publicado: '',
+        genero: '',
+        estilos: ''
+    };
+
+    const validationSchema = Yup.object().shape({
+        titulo: Yup.string().required("Titulo es un campo requerido"),
+        sello: Yup.string().required("Sello es un campo requerido"),
+        pais: Yup.string().required("País es un campo requerido"),
+        publicado: Yup.string().required("Publicado es un campo requerido"),
+        genero: Yup.string().required("Género es un campo requerido")
+    })
+
+    const handleSubmit = (values) => {
+        setIsSubmitting(true);
+        setTimeout(() => {
+            console.log("values: " + values);
+            setIsSubmitting(false);
+        }, 2000);
+    }
 
     return (
         <div className="container">
@@ -52,7 +74,7 @@ const Article = () => {
                         <ErrorMessage name="estilos" component="div" className="error" />
                     </div>
                     <button type="submit" disabled="{isSubmitting}">
-                        {isSubmitting ? 'Procesando...': "Envíado"}
+                        {isSubmitting ? 'Procesando...' : "Envíado"}
                     </button>
                 </Form>
             </Formik>
