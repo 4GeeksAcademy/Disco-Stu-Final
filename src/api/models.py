@@ -119,6 +119,14 @@ class Bandeja_de_entrada_admin(db.Model):
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
 
+class Archivo_mensajes_admin(db.Model):
+    __tablename__= 'archivo_mensajes_admin'
+    id = db.Column(db.Integer, primary_key=True)
+    emisor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    asunto = db.Column(db.String(250))
+    mensaje = db.Column(db.String(250))
+    fecha = db.Column(db.String(250))
+
 class Mensajes_enviados(db.Model):
     _tablename__ = 'mensajes_enviados'
     id = db.Column(db.Integer, primary_key=True)

@@ -1,4 +1,6 @@
 from flask import jsonify, url_for
+import re
+import unicodedata
 
 class APIException(Exception):
     status_code = 400
@@ -39,3 +41,19 @@ def generate_sitemap(app):
         <p>Start working on your project by following the <a href="https://start.4geeksacademy.com/starters/full-stack" target="_blank">Quick Start</a></p>
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
+
+def Normalize (text):
+
+    # Convertir a minúsculas
+    normalized_text = text.lower()
+
+    # # Eliminar caracteres especiales
+    # normalized_text = re.sub(r'[^\w\s]', '', normalized_text)
+
+    # Eliminar espacios adicionales
+    normalized_text = ' '.join(normalized_text.strip().split())
+
+    #Eliminar acentos y diacríticos
+    normalized_text = ''.join(c for c in unicodedata.normalize('NFD', normalized_text) if unicodedata.category(c) != 'Mn')
+
+    return (normalized_text)
