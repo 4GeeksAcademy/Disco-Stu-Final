@@ -14,6 +14,7 @@ import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
 import Explorer from './pages/Explorer.jsx'
+import Offers from './pages/Offers.jsx'
 
 //Components
 import { Artist } from "./pages/artist";
@@ -49,6 +50,7 @@ const Layout = () => {
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />
                         <Route element={<UserComposeMessage />} path="/messages/compose" />
+                        <Route element={<Offers />} path="/offers" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
