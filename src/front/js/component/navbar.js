@@ -9,12 +9,10 @@ import { Context } from "../store/appContext";
 
 export const Navbar = () => {
 	const navigate = useNavigate()
-  const { store, actions } = useContext(Context);
-	const { isLoggedIn, isAdmin, userId } = store.user;
+	const { store, actions } = useContext(Context);
+	const { isLoggedIn } = store.user;
 
 	console.log("Is Logged In:", isLoggedIn);
-	console.log("Is Admin:", isAdmin);
-	console.log("UserID:", userId);
 
 	const handlerNavigateToExplorer = () => {
 		navigate('/explorer')

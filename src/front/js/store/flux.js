@@ -8,10 +8,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			explorer_articles: [],
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
-      user: {
-				isAdmin: false,
+
+			user: {
 				isLoggedIn: false,
-				UserID: null
 			},
 		},
 		actions: {
@@ -19,7 +18,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			// Add contact function
 			createUser: async (newUser) => {
 				try {
-					const backendUrl = process.env.BACKEND_URL + "api/users/register";
+					const backendUrl = process.env.BACKEND_URL + "api/users/signup";
 					const response = await fetch(backendUrl, {
 						method: "POST",
 						body: JSON.stringify(newUser),
@@ -63,15 +62,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					localStorage.setItem('token', token);
 
-					const isAdmin = data.is_admin === 'true';
-					const userID = data.user_id;
-					setStore({
-						user: {
-							isLoggedIn: false,
-							isAdmin: isAdmin,
-							userId: userID
-						},
-					});
+					const user = data.user_id;
+
+					localStorage.setItem('user', user);
 
 					await getActions().checkAuthentication(); // Espera a que checkAuthentication termine antes de continuar
 
@@ -289,10 +282,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				console.log(data)
 
 				const store = getStore()
-				setStore({ 
-					...store, 
-					explorer_articles: data, 
-					on_filtered_or_explorer: true })
+				setStore({
+					...store,
+					explorer_articles: data,
+					on_filtered_or_explorer: true
+				})
 
 
 				if (response.status == 400) {

@@ -14,49 +14,24 @@ user_api = Blueprint('user_api', __name__)
 jwt_manager = JWTManager()
 
 
-@user_api.route('/hello_user/<string:user_name>', methods=['GET'])
-def crear_usuario(user_name):
-    return {"message": "hello " + user_name}, 200
-
-
 @user_api.route('/signup', methods=['POST'])
 def signup():
 
-    # Datos quemados para nombre y is_admin
-    nombre_usuario = "En espera a editar"
     admin_default = False
+    usuario = request.json.get("usuario")
+    correo = request.json.get("correo")
+    contrasenha = request.json.get("contrasenha")
 
-    username = request.json.get("username")
-    mail = request.json.get("mail")
-    password = request.json.get("password")
-
-    # Si el campo "name" está presente en la solicitud y no está vacío, usar ese valor como nombre real
-    nombre_real_manual = request.json.get("name")
-    if nombre_real_manual and nombre_real_manual.strip():
-        nombre_real = nombre_real_manual
-    else:
-        # Si no se proporciona un nombre, generar un En espera a editar no repetido
-        last_quemado = User.query.filter(User.nombre_real.like(
-            f"{nombre_usuario} %")).order_by(User.id.desc()).first()
-        if last_quemado:
-            last_number = int(last_quemado.nombre_real.split()[-1])
-            new_number = last_number + 1
-        else:
-            new_number = 1
-        nombre_real = f"{nombre_usuario} {new_number}"
-
-    is_admin = request.json.get("is_admin", admin_default)
-
-    if not mail or not password:
+    if not correo or not contrasenha:
         return jsonify({"error": "Correo y contraseña son requeridos"}), 400
 
-    existing_user = User.query.filter_by(mail=mail).first()
+    existing_user = User.query.filter_by(correo=correo).first()
     if existing_user:
         return jsonify({"error": "El correo ya existe"}), 400
 
-    password_hash = generate_password_hash(password)
-    new_user = User(username=username, nombre_real=nombre_real,
-                    mail=mail, password=password_hash, is_admin=is_admin)
+    password_hash = generate_password_hash(contrasenha)
+    new_user = User(usuario=usuario,
+                    correo=correo, contrasenha=password_hash, is_admin=admin_default)
     db.session.add(new_user)
     db.session.commit()
 
@@ -68,24 +43,24 @@ def create_token():
     try:
         data = request.get_json()
 
-        username_or_mail = data.get('username_or_mail')
-        password = data.get('password')
+        usuario_o_correo = data.get('usuario_o_correo')
+        contrasenha = data.get('contrasenha')
 
-        if not username_or_mail or not password:
+        if not usuario_o_correo or not contrasenha:
             return jsonify({"error": "Nombre de usuario o correo electrónico y contraseña son requeridos"}), 400
 
         user = User.query.filter(
-            (User.username == username_or_mail) | (
-                User.mail == username_or_mail)
+            (User.usuario == usuario_o_correo) | (
+                User.contrasenha == usuario_o_correo)
         ).first()
 
         if not user:
             return jsonify({"error": "Usuario o contraseña incorrecta"}), 404
 
-        if not check_password_hash(user.password, password):
+        if not check_password_hash(user.contrasenha, contrasenha):
             return jsonify({"error": "Contraseña incorrecta"}), 401
 
-        access_token = create_access_token(identity=user.mail)
+        access_token = create_access_token(identity=user.correo)
 
         return jsonify({
             'access_token': access_token,
@@ -136,9 +111,19 @@ def user_profile(user_id):
 
     response_body = {
         "id": user.id,
-        "name": user.nombre_real,
-        "email": user.mail,
-        'is_admin': user.is_admin
+        "nombre": user.nombre,
+        "usuario": user.usuario,
+        "correo": user.correo,
+        "is_admin": user.is_admin,
+        "direccion_comprador": user.direccion_comprador,
+        "ciudad_comprador": user.ciudad_comprador,
+        "estado_comprador":  user.estado_comprador,
+        "codigo_postal_comprador": user.codigo_postal_comprador,
+        "pais_comprador": user.pais_comprador,
+        "telefono_comprador": user.telefono_comprador,
+        "valoracion": user.valoracion,
+        "cantidad_de_valoraciones": user.cantidad_de_valoraciones
+
     }
     return jsonify(response_body), 200
 
