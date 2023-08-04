@@ -38,12 +38,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			login: async ({ username_or_mail, password }) => {
+			login: async ({ usuario_o_correo, contrasenha }) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/users/login";
 					const response = await fetch(backendUrl, {
 						method: 'POST',
-						body: JSON.stringify({ username_or_mail, password }),
+						body: JSON.stringify({ usuario_o_correo, contrasenha }),
 						headers: {
 							"Content-Type": "application/json"
 						}
@@ -55,11 +55,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 
 					const data = await response.json();
-
 					console.log('Data from login:', data); // Agrega este log para verificar el contenido de la respuesta
-
 					const token = data.access_token;
-
 					localStorage.setItem('token', token);
 
 					const user = data.user_id;
@@ -67,10 +64,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					localStorage.setItem('user', user);
 
 					await getActions().checkAuthentication(); // Espera a que checkAuthentication termine antes de continuar
-
 					return data;
-
-
 				} catch (error) {
 					throw new Error("Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo");
 				}
@@ -99,6 +93,34 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				});
 			},
+
+			getUserById: async (userId) => {
+				const backendUrl = process.env.BACKEND_URL + "api/users/profile/";
+
+				try {
+					const token = localStorage.getItem('token')
+					const response = await fetch(`${backendUrl}${userId}`, {
+						method: 'GET',
+						headers: {
+							Authorization: 'Bearer' + token,
+						}
+					});
+
+					if (!response.ok) {
+						const responseData = await response.json();
+						throw new Error(responseData.error || "Error al obtener información del usuario");
+					}
+
+					const userData = await response.json();
+
+					return userData;
+
+				} catch (error) {
+					// Si hay un error en la solicitud o en el procesamiento de la respuesta, lanza un error con un mensaje genérico
+					throw new Error("Error al obtener información del usuario. Por favor, inténtelo de nuevo más tarde.");
+				}
+			},
+
 
 			getAllUsersInfo: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/users/all_users";

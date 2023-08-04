@@ -101,31 +101,34 @@ def logout():
     return response
 
 
-@user_api.route('/profile/<int:user_id>')
-@jwt_required()
-@regular_user_required
+@user_api.route('/profile/<int:user_id>', methods=['GET'])
+# @jwt_required()
+# @regular_user_required
 def user_profile(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"error": "Usuario no encontrado"}), 404
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
 
-    response_body = {
-        "id": user.id,
-        "nombre": user.nombre,
-        "usuario": user.usuario,
-        "correo": user.correo,
-        "is_admin": user.is_admin,
-        "direccion_comprador": user.direccion_comprador,
-        "ciudad_comprador": user.ciudad_comprador,
-        "estado_comprador":  user.estado_comprador,
-        "codigo_postal_comprador": user.codigo_postal_comprador,
-        "pais_comprador": user.pais_comprador,
-        "telefono_comprador": user.telefono_comprador,
-        "valoracion": user.valoracion,
-        "cantidad_de_valoraciones": user.cantidad_de_valoraciones
+        response_body = {
+            "id": user.id,
+            "nombre": user.nombre,
+            "usuario": user.usuario,
+            "correo": user.correo,
+            "is_admin": user.is_admin,
+            "direccion_comprador": user.direccion_comprador,
+            "ciudad_comprador": user.ciudad_comprador,
+            "estado_comprador":  user.estado_comprador,
+            "codigo_postal_comprador": user.codigo_postal_comprador,
+            "pais_comprador": user.pais_comprador,
+            "telefono_comprador": user.telefono_comprador,
+            "valoracion": user.valoracion,
+            "cantidad_de_valoraciones": user.cantidad_de_valoraciones
+        }
+        return jsonify(response_body), 200
 
-    }
-    return jsonify(response_body), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener información del usuario"}), 500
 
 
 @user_api.route('/all_users', methods=['GET'])

@@ -65,13 +65,13 @@ export const Navbar = () => {
 									<li className="nav-item dropdown mx-3">
 										<div className="d-flex align-items-center">
 											<li className="nav-item me-3 me-lg-0">
-												<Link to="" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
+												<Link to="/user-profile" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
 											</li>
 											<li className="nav-item me-3 me-lg-0">
 												<Link to="" className="nav-link text-white"><i className="fas fa-shopping-cart"></i></Link>
 											</li>
 											<li className="nav-item me-3 me-lg-0">
-												<Link to="" className="nav-link text-white"><i class="fa-solid fa-message"></i></Link>
+												<Link to="/messages" className="nav-link text-white"><i className="fa-solid fa-message"></i></Link>
 											</li>
 											<div
 												className="nav-link dropdown-toggle text-white"
@@ -84,9 +84,9 @@ export const Navbar = () => {
 											</div>
 											<ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black" aria-labelledby="navbarScrollingDropdown">
 												<li><hr className="dropdown-divider" /></li>
-												<li><Link className="dropdown-item" to="/admin-panel"><i class="fa-solid fa-face-smile-wink"></i> Perfil</Link></li>
-												<li><Link className="dropdown-item" to="/admin-panel"> <i class="fa-solid fa-circle-question"></i> Ayuda</Link></li>
-												<li><Link className="dropdown-item" to="/admin-panel"> <i class="fa-solid fa-gear"></i> Configuración</Link></li>
+												<li><Link className="dropdown-item" to="/user-profile"><i className="fa-solid fa-face-smile-wink"></i> Perfil</Link></li>
+												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-circle-question"></i> Ayuda</Link></li>
+												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-gear"></i> Configuración</Link></li>
 												<li>
 													<button
 														onClick={handleLogoutClick}
