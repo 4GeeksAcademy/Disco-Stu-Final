@@ -11,7 +11,7 @@ import { RegisterForm } from "./pages/RegisterForm.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
-import { Contact } from "./pages/Contact.jsx"
+import { ContactForm } from "./pages/Contact.jsx"
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
@@ -41,7 +41,7 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<Contact />} path="/contact" />
+                        <Route element={<ContactForm />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
                         <Route element={<Demo />} path="/demo" />
