@@ -4,7 +4,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
-			user: {
+
+			explorer_articles: [],
+			filtered_explorer_articles: [],
+			on_filtered_or_explorer: true,
+      user: {
 				isAdmin: false,
 				isLoggedIn: false,
 				UserID: null
@@ -282,6 +286,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al intentar obtener Artículos");
 
 				const data = await response.json();
+				console.log(data)
+
+				const store = getStore()
+				setStore({ 
+					...store, 
+					explorer_articles: data, 
+					on_filtered_or_explorer: true })
+
 
 				if (response.status == 400) {
 					throw new Error(data.message);
@@ -328,6 +340,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 
 				return data;
+			},
+
+			expandedSearch: async (searchContent) => {
+				try {
+					console.log(searchContent)
+					const backendUrl = process.env.BACKEND_URL + "api/searchbar/search/" + searchContent;
+					const response = await fetch(backendUrl)
+					if (!response.ok)
+						throw new Error("Error on searching response");
+
+					const data = await response.json();
+					// console.log(data)
+					const store = getStore()
+					setStore({ ...store, filtered_explorer_articles: [] })
+					setStore({
+						...store,
+						filtered_explorer_articles: data.articles,
+						on_filtered_or_explorer: false
+					})
+
+				} catch (error) {
+					console.log('Error in searching', error)
+				}
 			}
 		}
 	};

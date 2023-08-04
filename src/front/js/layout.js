@@ -16,6 +16,9 @@ import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
+
+import Explorer from './pages/Explorer.jsx'
+
 import { AdminUsers } from "./pages/AdminUsers.jsx"
 
 //Components
@@ -44,6 +47,7 @@ const Layout = () => {
                         <Route element={<ContactForm />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
+                        <Route element={<Explorer />} path='/explorer' />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<RegisterForm />} path="/register" />
