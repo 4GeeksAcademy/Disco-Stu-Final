@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Context } from "../store/appContext";
 
@@ -6,20 +7,15 @@ export const UserProfile = () => {
     const [userData, setUserData] = useState(null);
     const { store, actions } = useContext(Context);
 
-    const randomIMG = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-2.webp";
+    const randomIMG = "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png";
 
     useEffect(() => {
 
         const fetchUserData = async () => {
             try {
-
-                const uid = localStorage.getItem('user');
-                const userId = uid;
+                const userId = localStorage.getItem('user');
                 const userData = await actions.getUserById(userId);
-
                 console.log(userData);
-                setUserData(userData);
-
             } catch (error) {
                 console.error("Error al obtener la información del usuario:", error);
             }
@@ -42,16 +38,17 @@ export const UserProfile = () => {
 
                     </div>
                     <div className="ms-3" style={{ marginTop: '130px' }}>
-                        {/* <h5>{userData}</h5>
-                                <p>{userData}</p> */}
+                        <h5>{userData}</h5>
+                        <p>{userData}</p>
                     </div>
                 </div>
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                     <div className="d-flex justify-content-end text-center py-1">
 
-                        <button type="button" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
+                        <Link to="/edit_user" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
                             <i className="fa-solid fa-gear"></i> Configuración
-                        </button>
+                        </Link>
+
 
                     </div>
                 </div>

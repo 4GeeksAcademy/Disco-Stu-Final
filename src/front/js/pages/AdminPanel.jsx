@@ -15,29 +15,30 @@ export const AdminPanel = () => {
 
     return (
 
-        <div className="container mt-3">
-            <main>
-                <div className="row">
-                    <div className="col-lg-3 col-md-3 col-sm-2 col-xs-3">
+        <div className="container-fluid px-0 mx-0">
+
+            <div className="card border-0 rounded-0">
+                <div className=" text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
+                    <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                     </div>
-                    <div className="col-lg-6 col-md-6 col-sm-8 col-xs-6">
-                        <h1 className="text-center mb-4">Vista Admin</h1>
+                    <div className="ms-3" style={{ marginTop: '130px' }}>
                     </div>
-                    <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
-                        <div id='messages_control' style={{ width: '200px' }}>
-                            <div style={{ marginTop: '10px' }}>
-                                <div>
-                                    <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Notificaciones</button>
-                                    <button onClick={() => handleNavigateUsers()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Usuarios</button>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+                <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
+                    <div className="d-flex justify-content-end text-center py-1">
+
+                        <Link to="/user-profile" className="nav-link text-dark btn" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
+                            Cancelar
+                        </Link>
+                        <button type="button" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
+                            <i className="fa-solid fa-gear"></i> Guardar datos
+                        </button>
 
                     </div>
-                </div >
-            </main >
-        </div >
-
-
+                </div>
+                <div className="card-body p-4 text-black">
+                </div>
+            </div>
+        </div>
     );
 };

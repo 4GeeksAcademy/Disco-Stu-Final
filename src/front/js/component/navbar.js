@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import SearchBar from "./SearchBar.jsx";
@@ -10,15 +10,13 @@ import { Context } from "../store/appContext";
 export const Navbar = () => {
 	const navigate = useNavigate()
 	const { store, actions } = useContext(Context);
-	const { isLoggedIn } = store.user;
-
-	console.log("Is Logged In:", isLoggedIn);
+	const { isLoggedIn } = store;
 
 	const handlerNavigateToExplorer = () => {
 		navigate('/explorer')
 	}
 
-	const handleLoginClick = () => {
+	const handleLoginClick = (e) => {
 		sessionStorage.setItem("lastVisitedPage", window.location.href);
 		navigate("/login");
 	};
@@ -48,7 +46,7 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse" id="navbarScroll">
 					<ul className="navbar-nav me-auto my-2 my-lg-0">
 						<SearchBar />
-						<p
+						<li
 							onClick={() => handlerNavigateToExplorer()}
 							style={{
 								padding: '9px 0px 0px 18px',
@@ -56,7 +54,7 @@ export const Navbar = () => {
 								cursor: 'pointer'
 							}}>
 							Explorar
-						</p>
+						</li>
 					</ul>
 					<form className="d-flex">
 						{isLoggedIn ? (
@@ -112,7 +110,7 @@ export const Navbar = () => {
 								>
 									Iniciar sesión
 								</button>
-								<Link to="/register">
+								<Link to="/signup">
 									<button className="btn btn-success" type="submit">
 										Registrarse
 									</button>

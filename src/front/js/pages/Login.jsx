@@ -1,18 +1,18 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 import fondo from '../../img/LOGO2.png';
 
 export const Login = () => {
-    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const formRef = useRef(null);
     const { actions } = useContext(Context);
     const [usernameOrMail, setUsernameOrMail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.addEventListener("click", handleDocumentClick);
@@ -23,21 +23,27 @@ export const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setErrorMessage(""); // Limpiar el mensaje de error anterior
+
         if (!usernameOrMail || !password) {
             setErrorMessage("Por favor ingrese usuario y contraseña");
             return;
         }
 
         try {
-            const loginResponse = await actions.login({
-                usuario_o_correo: usernameOrMail,
-                contrasenha: password,
+            const userData = await actions.login({
+                username_or_email: usernameOrMail,
+                password: password,
             });
-            if (loginResponse.is_admin) {
+
+            console.log("El usuario es Admin? :", userData.is_admin);
+
+            if (userData.is_admin) {
                 navigate("/admin-panel");
             } else {
                 navigate("/");
             }
+
         } catch (err) {
             setErrorMessage(
                 "Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo"
@@ -154,7 +160,7 @@ export const Login = () => {
                             </div>
                             <p className="text-center mt-3">
                                 ¿No eres usuario de DiscoStu?
-                                <a href="/register" className="ms-2">
+                                <a href="/signup" className="ms-2">
                                     Crea una cuenta
                                 </a>
                             </p>

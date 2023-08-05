@@ -1,6 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			isLoggedIn: false,
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
@@ -9,14 +10,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
 
-			user: {
-				isLoggedIn: false,
-			},
 		},
 		actions: {
-
-			// Add contact function
-			createUser: async (newUser) => {
+			registerNewUser: async (newUser) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/users/signup";
 					const response = await fetch(backendUrl, {
@@ -30,79 +26,82 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						console.log("User has been created:", data);
+						return true;
 					} else {
-						console.error("Error creating user. Status:", response.status);
+
+						const errorResponse = await response.json();
+						throw new Error(errorResponse.message); // Throw an error with the server's error message
 					}
+
 				} catch (error) {
 					console.error("Error adding contact:", error);
+					throw error;
 				}
 			},
 
-			login: async ({ usuario_o_correo, contrasenha }) => {
+			login: async ({ username_or_email, password }) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/users/login";
 					const response = await fetch(backendUrl, {
 						method: 'POST',
-						body: JSON.stringify({ usuario_o_correo, contrasenha }),
+						body: JSON.stringify({ username_or_email, password }),
 						headers: {
 							"Content-Type": "application/json"
 						}
 					});
 
+					const responseData = await response.json(); // Leer el cuerpo de la respuesta solo una vez
+
 					if (!response.ok) {
-						const response_data = await response.json();
-						throw new Error(response_data.error || "Usuario o contraseña incorrecta");
+						throw new Error(responseData.error || "Usuario o contraseña incorrecta");
 					}
 
-					const data = await response.json();
-					console.log('Data from login:', data); // Agrega este log para verificar el contenido de la respuesta
-					const token = data.access_token;
-					localStorage.setItem('token', token);
+					const token = responseData.access_token;
+					sessionStorage.setItem('token', token);
 
-					const user = data.user_id;
+					const { checkAuthentication } = getActions();
+					await checkAuthentication();
 
-					localStorage.setItem('user', user);
+					return responseData;
 
-					await getActions().checkAuthentication(); // Espera a que checkAuthentication termine antes de continuar
-					return data;
 				} catch (error) {
 					throw new Error("Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo");
 				}
 			},
 
 			checkAuthentication: async () => {
-				const token = localStorage.getItem('token');
-				if (token) {
-					// Establecer isLoggedIn en true directamente, ya que no hay una llamada asíncrona aquí
-					setStore({ user: { isLoggedIn: true } });
-				} else {
-					// Si no hay token, establecer isLoggedIn en false
-					setStore({ user: { isLoggedIn: false } });
+				try {
+					const token = sessionStorage.getItem('token');
+					if (token) {
+						setStore({ isLoggedIn: true });
+					} else {
+						setStore({ isLoggedIn: false });
+					}
+					return token;
+				} catch (error) {
+					throw new Error("Error al verificar la autenticación");
 				}
-
-				return token;
 			},
-
 
 			logout: () => {
 				localStorage.removeItem('token');
+				localStorage.removeItem('isLoggedIn');
 				setStore({
 					user: {
 						isLoggedIn: false,
-						isAdmin: false,
 					}
 				});
 			},
 
 			getUserById: async (userId) => {
+				const token = localStorage.getItem('token')
 				const backendUrl = process.env.BACKEND_URL + "api/users/profile/";
 
 				try {
-					const token = localStorage.getItem('token')
 					const response = await fetch(`${backendUrl}${userId}`, {
 						method: 'GET',
 						headers: {
-							Authorization: 'Bearer' + token,
+							Authorization: `Bearer ${token}`
 						}
 					});
 
@@ -120,6 +119,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw new Error("Error al obtener información del usuario. Por favor, inténtelo de nuevo más tarde.");
 				}
 			},
+
+			editUser: async (userId, userData) => {
+				const token = localStorage.getItem('token');
+				const backendUrl = process.env.BACKEND_URL + "api/users/edit_user/";
+
+				try {
+					const response = await fetch(`${backendUrl}${userId}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`,
+						},
+						body: JSON.stringify(userData), // Convierte el objeto userData a JSON
+					});
+
+					if (!response.ok) {
+						const responseData = await response.json();
+						throw new Error(responseData.error || "Error al editar el usuario");
+					}
+
+					const responseData = await response.json();
+					return responseData.message; // Devuelve el mensaje del servidor
+
+				} catch (error) {
+					// Si hay un error en la solicitud o en el procesamiento de la respuesta, lanza un error con un mensaje genérico
+					throw new Error("Error al editar el usuario. Por favor, inténtelo de nuevo más tarde.");
+				}
+			},
+
 
 
 			getAllUsersInfo: async () => {
