@@ -4,6 +4,7 @@ import styles from "../../styles/Explorer.module.css";
 import ArticleCard from '../component/ArticleCardExplorer.jsx';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { Link } from 'react-router-dom';
 
 
 
@@ -53,12 +54,17 @@ const Explorer = () => {
                                 const [artist, title] = element.titulo.split(' - ')
                                 return (
                                     <li key={index}>
-                                        <ArticleCard
-                                            key={index}
-                                            title={title}
-                                            artist={artist}
-                                            url_imagen={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen}
-                                        />
+                                        <Link
+                                            to={`/article/${element.id}`}
+                                            state={{element: element}}
+                                        >
+                                            <ArticleCard
+                                                key={index}
+                                                title={title}
+                                                artist={artist}
+                                                url_imagen={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen}
+                                            />
+                                        </Link>
                                     </li>
                                 )
                             })
