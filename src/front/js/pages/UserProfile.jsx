@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const UserProfile = () => {
-    const [userData, setUserData] = useState(null);
-    const { store, actions } = useContext(Context);
+    const [userData] = useState(null);
+    const { actions } = useContext(Context);
 
     const randomIMG = "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png";
 
@@ -13,9 +13,9 @@ export const UserProfile = () => {
 
         const fetchUserData = async () => {
             try {
-                const userId = localStorage.getItem('user');
+                const userId = localStorage.getItem('userID');
                 const userData = await actions.getUserById(userId);
-                console.log(userData);
+                console.log("Data de usuario",userData);
             } catch (error) {
                 console.error("Error al obtener la información del usuario:", error);
             }

@@ -155,7 +155,7 @@ def edit_user(user_id):
         data = request.get_json()
         user.nombre = data.get('name', user.nombre)
         user.correo = data.get('email', user.correo)
-        user.contrasenha = data.get('password', user.contrasenha)
+        # user.contrasenha = data.get('password', user.contrasenha)
         user.direccion_comprador = data.get(
             'address', user.direccion_comprador)
         user.ciudad_comprador = data.get('city', user.direccion_comprador)
@@ -187,9 +187,9 @@ def get_users():
         for user in users:
             user_data = {
                 'id': user.id,
-                'username': user.username,
-                'nombre_real': user.nombre_real,
-                'mail': user.mail,
+                'username': user.usuario,
+                'name': user.nombre,
+                'email': user.correo,
                 'is_admin': user.is_admin
             }
             user_list.append(user_data)
@@ -206,17 +206,3 @@ def delete_all():
     db.session.commit()
 
     return jsonify({"message": "Todos los usuarios han sido eliminados"})
-
-    @user_api.route('/delete_user/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"message": "Usuario no encontrado"}), 404
-
-    try:
-        db.session.delete(user)
-        db.session.commit()
-        return jsonify({"message": "Usuario eliminado exitosamente"}), 200
-    except:
-        db.session.rollback()
-        return jsonify({"message": "Error al eliminar el usuario"}), 500

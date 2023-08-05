@@ -57,7 +57,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 
 					const token = responseData.access_token;
-					sessionStorage.setItem('token', token);
+					const userID = responseData.user_id;
+					localStorage.setItem('token', token);
+					localStorage.setItem('userID', userID);
 
 					const { checkAuthentication } = getActions();
 					await checkAuthentication();
@@ -71,7 +73,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			checkAuthentication: async () => {
 				try {
-					const token = sessionStorage.getItem('token');
+					const token = localStorage.getItem('token');
 					if (token) {
 						setStore({ isLoggedIn: true });
 					} else {
@@ -85,20 +87,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			logout: () => {
 				localStorage.removeItem('token');
-				localStorage.removeItem('isLoggedIn');
-				setStore({
-					user: {
-						isLoggedIn: false,
-					}
-				});
+				setStore({ isLoggedIn: false });
 			},
 
 			getUserById: async (userId) => {
-				const token = localStorage.getItem('token')
-				const backendUrl = process.env.BACKEND_URL + "api/users/profile/";
-
 				try {
-					const response = await fetch(`${backendUrl}${userId}`, {
+					const token = localStorage.getItem('token');
+					console.log(token)
+
+					const backendUrl = process.env.BACKEND_URL + `api/users/profile/${userId}`;
+					const response = await fetch(backendUrl, {
 						method: 'GET',
 						headers: {
 							Authorization: `Bearer ${token}`
@@ -131,7 +129,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							'Content-Type': 'application/json',
 							Authorization: `Bearer ${token}`,
 						},
-						body: JSON.stringify(userData), // Convierte el objeto userData a JSON
+						body: JSON.stringify(userData),
 					});
 
 					if (!response.ok) {
@@ -140,10 +138,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 
 					const responseData = await response.json();
-					return responseData.message; // Devuelve el mensaje del servidor
+					return responseData.message; 
 
 				} catch (error) {
-					// Si hay un error en la solicitud o en el procesamiento de la respuesta, lanza un error con un mensaje genérico
 					throw new Error("Error al editar el usuario. Por favor, inténtelo de nuevo más tarde.");
 				}
 			},
