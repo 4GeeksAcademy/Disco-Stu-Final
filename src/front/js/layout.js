@@ -14,6 +14,8 @@ import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
 import Explorer from './pages/Explorer.jsx'
+import Article from "./pages/Article.jsx";
+import ArticleDetails from "./pages/ArticleDetails.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -22,6 +24,7 @@ import ScrollToTop from "./component/scrollToTop";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { GalleryTemplate } from "./pages/gallery_template";
+
 
 //create your first component
 const Layout = () => {
@@ -40,6 +43,9 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
+                        <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
+                        <Route element={<Article />} path="/articles/add" />
+                        <Route element={<ArticleDetails />} path="/article/:id" />
                         <Route element={<Explorer />} path='/explorer' />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
