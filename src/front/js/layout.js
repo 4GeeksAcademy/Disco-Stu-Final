@@ -9,13 +9,19 @@ import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import { RegisterForm } from "./pages/RegisterForm.jsx";
 import { Login } from "./pages/Login.jsx";
+import { UserProfile } from "./pages/UserProfile.jsx";
+import { AdminPanel } from "./pages/AdminPanel.jsx";
+import { Contact } from "./pages/Contact.jsx"
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
+
 import Explorer from './pages/Explorer.jsx'
 import Article from "./pages/Article.jsx";
 import ArticleDetails from "./pages/ArticleDetails.jsx";
+import Offers from './pages/Offers.jsx'
+import { AdminUsers } from "./pages/AdminUsers.jsx"
 
 //Components
 import { Artist } from "./pages/artist";
@@ -41,6 +47,7 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
+                        <Route element={<Contact />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
                         <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
@@ -51,10 +58,14 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<RegisterForm />} path="/register" />
                         <Route element={<Login />} path="/login" />
+                        <Route element={<AdminUsers />} path="/admin-users" />
+                        <Route element={<UserProfile />} path="/user-profile" />
+                        <Route element={<AdminPanel />} path="/admin-panel" />
                         <Route element={<UserInbox />} path="/messages" />
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />
                         <Route element={<UserComposeMessage />} path="/messages/compose" />
+                        <Route element={<Offers />} path="/offers" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

@@ -59,7 +59,7 @@ const Home = () => {
                 </div>
                 <div>
                     <Collapse in={showInfo}>
-                        <div style={{ backgroundColor: 'black', padding: '10px', marginTop: '10px'}}>
+                        <div style={{ backgroundColor: 'black', padding: '10px', marginTop: '10px' }}>
                             <div style={{ width: '80%', height: '400px', margin: 'auto' }}>
                                 <img style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={selectedImage} alt="" />
                             </div>

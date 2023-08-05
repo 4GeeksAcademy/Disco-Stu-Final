@@ -85,6 +85,7 @@
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
 		"react-select": "^3.1.0",
+    "sweetalert2": "^11.7.20",
 		"yup": "^1.2.0"
 	}
 }

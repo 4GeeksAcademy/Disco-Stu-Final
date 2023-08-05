@@ -1,0 +1,58 @@
+.upperContent {
+    width: 100%;
+    padding: 20px 70px 0px 70px;
+    display: flex;
+    margin: 0px;
+    border: 0
+}
+
+.properties {
+    display: flex;
+    font-size: 0.9rem;
+}
+
+p{
+    margin: 0;
+    padding: 0;
+}
+
+.upperBtn {
+    padding: 5px 0px 5px 0px;
+    width: 200px;
+    color: white;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+.upperBtn:hover{
+    color: white;
+}
+.btnDiv {
+    margin-left: auto;
+    margin-top: auto;
+}
+
+.table{
+    font-size: 0.9rem;
+    width: 80%;
+    margin: 80px 100px 20px 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tableHead {
+    background-color: #eeeeee;
+    height: 30px;
+    padding: 10px;
+}
+
+.articleConditions {
+    margin-right: 10px;
+    color: #8a8a8a;
+}
+
+.cartBtn {
+    padding: 5px 0px 5px 0px;
+    width: 145px;
+    font-size: 0.9rem;
+}

@@ -4,16 +4,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
+
 			explorer_articles: [],
 			filtered_explorer_articles: [],
-			on_filtered_or_explorer: true
+			on_filtered_or_explorer: true,
+      user: {
+				isAdmin: false,
+				isLoggedIn: false,
+				UserID: null
+			},
 		},
 		actions: {
 
 			// Add contact function
 			createUser: async (newUser) => {
 				try {
-					const response = await fetch("https://ferrami-ubiquitous-space-robot-74vw4w4xqjr2w65g-3001.preview.app.github.dev/api/users/register", {
+					const backendUrl = process.env.BACKEND_URL + "api/users/register";
+					const response = await fetch(backendUrl, {
 						method: "POST",
 						body: JSON.stringify(newUser),
 						headers: {
@@ -34,7 +41,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			login: async ({ username_or_mail, password }) => {
 				try {
-					const response = await fetch("https://ferrami-ubiquitous-space-robot-74vw4w4xqjr2w65g-3001.preview.app.github.dev/api/users/login", {
+					const backendUrl = process.env.BACKEND_URL + "api/users/login";
+					const response = await fetch(backendUrl, {
 						method: 'POST',
 						body: JSON.stringify({ username_or_mail, password }),
 						headers: {
@@ -43,21 +51,104 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 
 					if (!response.ok) {
-						const responseData = await response.json();
-						throw new Error(responseData.message || "Invalid username or password");
+						const response_data = await response.json();
+						throw new Error(response_data.error || "Usuario o contraseña incorrecta");
 					}
 
 					const data = await response.json();
-					const token = data.token;
 
-					sessionStorage.setItem('token', token);
+					console.log('Data from login:', data); // Agrega este log para verificar el contenido de la respuesta
 
-					setStore({ authToken: token, isAuthenticated: true });
+					const token = data.access_token;
+
+					localStorage.setItem('token', token);
+
+					const isAdmin = data.is_admin === 'true';
+					const userID = data.user_id;
+					setStore({
+						user: {
+							isLoggedIn: false,
+							isAdmin: isAdmin,
+							userId: userID
+						},
+					});
+
+					await getActions().checkAuthentication(); // Espera a que checkAuthentication termine antes de continuar
+
+					return data;
+
 
 				} catch (error) {
-					console.error('Error in login:', error.message);
+					throw new Error("Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo");
 				}
 			},
+
+			checkAuthentication: async () => {
+				const token = localStorage.getItem('token');
+				if (token) {
+					// Establecer isLoggedIn en true directamente, ya que no hay una llamada asíncrona aquí
+					setStore({ user: { isLoggedIn: true } });
+				} else {
+					// Si no hay token, establecer isLoggedIn en false
+					setStore({ user: { isLoggedIn: false } });
+				}
+
+				return token;
+			},
+
+
+			logout: () => {
+				localStorage.removeItem('token');
+				setStore({
+					user: {
+						isLoggedIn: false,
+						isAdmin: false,
+					}
+				});
+			},
+
+			getAllUsersInfo: async () => {
+				const backendUrl = process.env.BACKEND_URL + "api/users/all_users";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				try {
+					if (!response.ok) {
+						throw new Error("Error al obtener la lista de usuarios");
+					}
+
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					console.error("Error en getAllUsersInfo:", error.message);
+					throw error;
+				}
+			},
+
+			deleteUser: async (userId) => {
+				const backendUrl = process.env.BACKEND_URL + "api/users/delete_user/";
+
+				try {
+					const response = await fetch(`${backendUrl}${userId}`, {
+						method: 'DELETE',
+					});
+
+					if (!response.ok) {
+						throw new Error('Error al eliminar el usuario');
+					}
+
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					console.error('Error en deleteUser:', error.message);
+					throw error;
+				}
+			},
+
 
 			getAllMessages: async () => {
 				try {
@@ -202,6 +293,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					...store, 
 					explorer_articles: data, 
 					on_filtered_or_explorer: true })
+
 
 				if (response.status == 400) {
 					throw new Error(data.message);
