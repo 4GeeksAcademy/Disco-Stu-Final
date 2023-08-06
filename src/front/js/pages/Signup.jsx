@@ -1,14 +1,18 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-
-export const RegisterForm = () => {
+export const Signup = () => {
     const { actions } = useContext(Context);
+    const [emailValid, setEmailValid] = useState(true);
     const [passwordValid, setPasswordValid] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setErrorMessage] = useState();
 
     const [isRegistered, setIsRegistered] = useState(false);
+
+    const navigate = useNavigate();
 
     const [userData, setUserData] = useState({
         username: "",
@@ -20,30 +24,58 @@ export const RegisterForm = () => {
     const handleTogglePassword = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
     };
+    // email validation function
+    const validateEmail = (email) => {
+        const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        const isValid = regex.test(email);
+        setEmailValid(isValid);
+        return isValid;
+    };
 
     // Password validation function
     const validatePassword = (password) => {
-
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[.!?@])[A-Za-z\d.!?@]{8,}$/;
-
         const isValid = regex.test(password);
-
         setPasswordValid(isValid);
         return isValid;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const username = event.target.username.value;
-        const mail = event.target.mail.value;
+        const email = event.target.email.value;
         const password = event.target.password.value;
+
+        const isValidatedEmail = validateEmail(email);
 
         const isValidPassword = validatePassword(password);
 
-        if (isValidPassword) {
-            actions.createUser({ username: username, mail, password });
-            setIsRegistered(true); // Set the registration status to true
-            setUserData({ username: "", mail: "", password: "" }); // Reset the input fields
+        if (isValidPassword && isValidatedEmail) {
+            try {
+                const registrationStatus = await actions.registerNewUser({
+                    username: username,
+                    email: email,
+                    password: password,
+                });
+
+
+                setIsRegistered(registrationStatus);
+                setErrorMessage("");
+
+                if (registrationStatus) {
+                    setUserData({ username: "", email: "", password: "" });
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error("Error during registration:", error.message);
+                setErrorMessage(error.message);
+            }
+        } else {
+            if (!isValidatedEmail) {
+                setErrorMessage("Por favor, ingrese una dirección de correo electrónico válida.");
+            } else {
+                setErrorMessage("La contraseña debe cumplir con los criterios mencionados.");
+            }
         }
     };
 
@@ -72,16 +104,16 @@ export const RegisterForm = () => {
                                 />
                             </div>
                             <div className="form-group mb-3">
-                                <label htmlFor="mail">Email</label>
+                                <label htmlFor="email">Email</label>
                                 <input
                                     aria-invalid="false"
                                     className="form-control mt-2"
-                                    id="mail"
-                                    name="mail"
+                                    id="email"
+                                    name="email"
                                     required
                                     type="text"
-                                    value={userData.mail}
-                                    onChange={(e) => setUserData({ ...userData, mail: e.target.value })}
+                                    value={userData.email}
+                                    onChange={(e) => setUserData({ ...userData, email: e.target.value })}
                                 />
 
                             </div>
@@ -144,10 +176,17 @@ export const RegisterForm = () => {
                                 <Link to="/login" className="ms-2">Inicia sesión</Link>
                             </p>
                         </form>
-                        {isRegistered && (
+                        {isRegistered ? (
                             <div className="alert alert-success mt-3">
                                 ¡Registro exitoso! Ahora puedes iniciar sesión.
                             </div>
+                        ) : (
+                            // Display the error message if there's an error
+                            error && (
+                                <div className="alert alert-danger mt-3">
+                                    {error}
+                                </div>
+                            )
                         )}
                     </div>
                 </div>

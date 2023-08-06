@@ -14,53 +14,28 @@ user_api = Blueprint('user_api', __name__)
 jwt_manager = JWTManager()
 
 
-@user_api.route('/hello_user/<string:user_name>', methods=['GET'])
-def crear_usuario(user_name):
-    return {"message": "hello " + user_name}, 200
-
-
 @user_api.route('/signup', methods=['POST'])
 def signup():
 
-    # Datos quemados para nombre y is_admin
-    nombre_usuario = "En espera a editar"
     admin_default = False
-
     username = request.json.get("username")
-    mail = request.json.get("mail")
+    email = request.json.get("email")
     password = request.json.get("password")
 
-    # Si el campo "name" está presente en la solicitud y no está vacío, usar ese valor como nombre real
-    nombre_real_manual = request.json.get("name")
-    if nombre_real_manual and nombre_real_manual.strip():
-        nombre_real = nombre_real_manual
-    else:
-        # Si no se proporciona un nombre, generar un En espera a editar no repetido
-        last_quemado = User.query.filter(User.nombre_real.like(
-            f"{nombre_usuario} %")).order_by(User.id.desc()).first()
-        if last_quemado:
-            last_number = int(last_quemado.nombre_real.split()[-1])
-            new_number = last_number + 1
-        else:
-            new_number = 1
-        nombre_real = f"{nombre_usuario} {new_number}"
-
-    is_admin = request.json.get("is_admin", admin_default)
-
-    if not mail or not password:
+    if not email or not password:
         return jsonify({"error": "Correo y contraseña son requeridos"}), 400
 
-    existing_user = User.query.filter_by(mail=mail).first()
+    existing_user = User.query.filter_by(correo=email).first()
     if existing_user:
         return jsonify({"error": "El correo ya existe"}), 400
 
     password_hash = generate_password_hash(password)
-    new_user = User(username=username, nombre_real=nombre_real,
-                    mail=mail, password=password_hash, is_admin=is_admin)
+    new_user = User(usuario=username,
+                    correo=email, contrasenha=password_hash, is_admin=admin_default)
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message": "User created successfully."}), 201
+    return jsonify({"mensaje": "Usuario creado exitosamente."}), 201
 
 
 @user_api.route('/login', methods=['POST'])
@@ -68,24 +43,21 @@ def create_token():
     try:
         data = request.get_json()
 
-        username_or_mail = data.get('username_or_mail')
+        username_or_email = data.get('username_or_email')
         password = data.get('password')
 
-        if not username_or_mail or not password:
+        if not username_or_email or not password:
             return jsonify({"error": "Nombre de usuario o correo electrónico y contraseña son requeridos"}), 400
 
         user = User.query.filter(
-            (User.username == username_or_mail) | (
-                User.mail == username_or_mail)
+            (User.usuario == username_or_email) | (
+                User.correo == username_or_email)
         ).first()
 
-        if not user:
+        if not user or not check_password_hash(user.contrasenha, password):
             return jsonify({"error": "Usuario o contraseña incorrecta"}), 404
 
-        if not check_password_hash(user.password, password):
-            return jsonify({"error": "Contraseña incorrecta"}), 401
-
-        access_token = create_access_token(identity=user.mail)
+        access_token = create_access_token(identity=user.id)
 
         return jsonify({
             'access_token': access_token,
@@ -126,45 +98,34 @@ def logout():
     return response
 
 
-@user_api.route('/profile/<int:user_id>')
+@user_api.route('/profile/<int:user_id>', methods=['GET'])
 @jwt_required()
 @regular_user_required
 def user_profile(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-
-    response_body = {
-        "id": user.id,
-        "name": user.nombre_real,
-        "email": user.mail,
-        'is_admin': user.is_admin
-    }
-    return jsonify(response_body), 200
-
-
-@user_api.route('/all_users', methods=['GET'])
-def get_users():
     try:
-        users = User.query.all()
-        if not users:
-            return jsonify({"message": "Usuarios no encontrados."}), 404
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
 
-        user_list = []
-        for user in users:
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'nombre_real': user.nombre_real,
-                'mail': user.mail,
-                'is_admin': user.is_admin
-            }
-            user_list.append(user_data)
-
-        return jsonify(user_list), 200
+        response_body = {
+            "id": user.id,
+            "nombre": user.nombre,
+            "usuario": user.usuario,
+            "correo": user.correo,
+            "is_admin": user.is_admin,
+            "direccion_comprador": user.direccion_comprador,
+            "ciudad_comprador": user.ciudad_comprador,
+            "estado_comprador":  user.estado_comprador,
+            "codigo_postal_comprador": user.codigo_postal_comprador,
+            "pais_comprador": user.pais_comprador,
+            "telefono_comprador": user.telefono_comprador,
+            "valoracion": user.valoracion,
+            "cantidad_de_valoraciones": user.cantidad_de_valoraciones
+        }
+        return jsonify(response_body), 200
 
     except Exception as e:
-        return jsonify({"error": "A ocurrido un error al intentar obtener usuarios: " + str(e)}), 500
+        return jsonify({"error": "Error al obtener información del usuario"}), 500
 
 
 @user_api.route('/delete_user/<int:user_id>', methods=['DELETE'])
@@ -183,6 +144,8 @@ def delete_user(user_id):
 
 
 @user_api.route('/edit_user/<int:user_id>', methods=['PUT'])
+@jwt_required()
+@regular_user_required
 def edit_user(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -190,12 +153,56 @@ def edit_user(user_id):
 
     try:
         data = request.get_json()
-        user.username = data.get('username', user.username)
-        user.nombre_real = data.get('nombre_real', user.nombre_real)
-        user.mail = data.get('mail', user.mail)
-        user.is_admin = data.get('is_admin', user.is_admin)
+        user.nombre = data.get('name', user.nombre)
+        user.correo = data.get('email', user.correo)
+        # user.contrasenha = data.get('password', user.contrasenha)
+        user.direccion_comprador = data.get(
+            'address', user.direccion_comprador)
+        user.ciudad_comprador = data.get('city', user.direccion_comprador)
+        user.estado_comprador = data.get('state', user.direccion_comprador)
+        user.codigo_postal_comprador = data.get(
+            'postal_code', user.direccion_comprador)
+        user.pais_comprador = data.get('country', user.direccion_comprador)
+        user.telefono_comprador = data.get(
+            'telephone', user.direccion_comprador)
+        # user.valoracion = data.get('country', user.valoracion)
+        # user. cantidad_de_valoraciones = data.get(
+        #     'telephone', user.cantidad_de_valoraciones)
+
         db.session.commit()
         return jsonify({"message": "Usuario editado exitosamente"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error al editar el usuario", "error": str(e)}), 500
+
+
+@user_api.route('/all_users', methods=['GET'])
+def get_users():
+    try:
+        users = User.query.all()
+        if not users:
+            return jsonify({"message": "Usuarios no encontrados."}), 404
+
+        user_list = []
+        for user in users:
+            user_data = {
+                'id': user.id,
+                'username': user.usuario,
+                'name': user.nombre,
+                'email': user.correo,
+                'is_admin': user.is_admin
+            }
+            user_list.append(user_data)
+
+        return jsonify(user_list), 200
+
+    except Exception as e:
+        return jsonify({"error": "A ocurrido un error al intentar obtener usuarios: " + str(e)}), 500
+
+
+@user_api.route('/delete_all', methods=['GET'])
+def delete_all():
+    User.query.delete()
+    db.session.commit()
+
+    return jsonify({"message": "Todos los usuarios han sido eliminados"})

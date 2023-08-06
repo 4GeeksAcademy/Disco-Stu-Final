@@ -1,4 +1,3 @@
-
 from functools import wraps
 from flask_jwt_extended import get_jwt_identity
 from api.models import User
@@ -8,10 +7,11 @@ from flask import jsonify
 def admin_required(fn):
     @wraps(fn)
     def decorated_function(*args, **kwargs):
-        current_user_email = get_jwt_identity()
-        current_user = User.query.filter_by(mail=current_user_email).first()
+        correo_usuario_actual = get_jwt_identity()
+        usuario_actual = User.query.filter_by(
+            correo=correo_usuario_actual).first()
 
-        if not current_user or not current_user.is_admin:
+        if not usuario_actual or not usuario_actual.is_admin:
             return jsonify({"error": "Acceso no autorizado para esta ruta"}), 403
 
         return fn(*args, **kwargs)
@@ -22,8 +22,8 @@ def admin_required(fn):
 def regular_user_required(fn):
     @wraps(fn)
     def decorated_function(*args, **kwargs):
-        current_user_email = get_jwt_identity()
-        current_user = User.query.filter_by(mail=current_user_email).first()
+        user_id = get_jwt_identity()
+        current_user = User.query.get(user_id)
 
         if not current_user:
             return jsonify({"error": "Acceso no autorizado para esta ruta"}), 403

@@ -7,12 +7,17 @@
 */
 
 
-footer {
-    background-color: black;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    color: white;
-    left: auto;
-    right: 0px;
+/* En el archivo de estilos global (por ejemplo, styles.css) */
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .content {
+    flex-grow: 1;
+  }
+  
+  .footer {
+    flex-shrink: 0;
   }

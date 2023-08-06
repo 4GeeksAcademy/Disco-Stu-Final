@@ -7,11 +7,12 @@ import injectContext from "./store/appContext";
 import Home from "./pages/Home.jsx";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
-import { RegisterForm } from "./pages/RegisterForm.jsx";
+import { Signup } from "./pages/Signup.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
+import { UserProfileEdit } from "./pages/UserProfileEdit.jsx"
 import { AdminPanel } from "./pages/AdminPanel.jsx";
-import { Contact } from "./pages/Contact.jsx"
+import { ContactForm } from "./pages/Contact.jsx"
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
@@ -47,7 +48,7 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<Contact />} path="/contact" />
+                        <Route element={<ContactForm />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
                         <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
@@ -56,10 +57,11 @@ const Layout = () => {
                         <Route element={<Explorer />} path='/explorer' />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<RegisterForm />} path="/register" />
+                        <Route element={<Signup />} path="/signup" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<AdminUsers />} path="/admin-users" />
                         <Route element={<UserProfile />} path="/user-profile" />
+                        <Route element={<UserProfileEdit />} path="/edit_user" />
                         <Route element={<AdminPanel />} path="/admin-panel" />
                         <Route element={<UserInbox />} path="/messages" />
                         <Route element={<UserSentMessages />} path="/messages/sent" />

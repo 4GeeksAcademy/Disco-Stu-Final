@@ -1,6 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			isLoggedIn: false,
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
@@ -8,18 +9,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			explorer_articles: [],
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
-      user: {
-				isAdmin: false,
-				isLoggedIn: false,
-				UserID: null
-			},
+
 		},
 		actions: {
-
-			// Add contact function
-			createUser: async (newUser) => {
+			registerNewUser: async (newUser) => {
 				try {
-					const backendUrl = process.env.BACKEND_URL + "api/users/register";
+					const backendUrl = process.env.BACKEND_URL + "api/users/signup";
 					const response = await fetch(backendUrl, {
 						method: "POST",
 						body: JSON.stringify(newUser),
@@ -31,52 +26,45 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						console.log("User has been created:", data);
+						return true;
 					} else {
-						console.error("Error creating user. Status:", response.status);
+
+						const errorResponse = await response.json();
+						throw new Error(errorResponse.message); // Throw an error with the server's error message
 					}
+
 				} catch (error) {
 					console.error("Error adding contact:", error);
+					throw error;
 				}
 			},
 
-			login: async ({ username_or_mail, password }) => {
+			login: async ({ username_or_email, password }) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/users/login";
 					const response = await fetch(backendUrl, {
 						method: 'POST',
-						body: JSON.stringify({ username_or_mail, password }),
+						body: JSON.stringify({ username_or_email, password }),
 						headers: {
 							"Content-Type": "application/json"
 						}
 					});
 
+					const responseData = await response.json(); // Leer el cuerpo de la respuesta solo una vez
+
 					if (!response.ok) {
-						const response_data = await response.json();
-						throw new Error(response_data.error || "Usuario o contraseña incorrecta");
+						throw new Error(responseData.error || "Usuario o contraseña incorrecta");
 					}
 
-					const data = await response.json();
-
-					console.log('Data from login:', data); // Agrega este log para verificar el contenido de la respuesta
-
-					const token = data.access_token;
-
+					const token = responseData.access_token;
+					const userID = responseData.user_id;
 					localStorage.setItem('token', token);
+					localStorage.setItem('userID', userID);
 
-					const isAdmin = data.is_admin === 'true';
-					const userID = data.user_id;
-					setStore({
-						user: {
-							isLoggedIn: false,
-							isAdmin: isAdmin,
-							userId: userID
-						},
-					});
+					const { checkAuthentication } = getActions();
+					await checkAuthentication();
 
-					await getActions().checkAuthentication(); // Espera a que checkAuthentication termine antes de continuar
-
-					return data;
-
+					return responseData;
 
 				} catch (error) {
 					throw new Error("Error al iniciar sesión. Por favor revise sus credenciales e intente de nuevo");
@@ -84,28 +72,80 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			checkAuthentication: async () => {
-				const token = localStorage.getItem('token');
-				if (token) {
-					// Establecer isLoggedIn en true directamente, ya que no hay una llamada asíncrona aquí
-					setStore({ user: { isLoggedIn: true } });
-				} else {
-					// Si no hay token, establecer isLoggedIn en false
-					setStore({ user: { isLoggedIn: false } });
+				try {
+					const token = localStorage.getItem('token');
+					if (token) {
+						setStore({ isLoggedIn: true });
+					} else {
+						setStore({ isLoggedIn: false });
+					}
+					return token;
+				} catch (error) {
+					throw new Error("Error al verificar la autenticación");
 				}
-
-				return token;
 			},
-
 
 			logout: () => {
 				localStorage.removeItem('token');
-				setStore({
-					user: {
-						isLoggedIn: false,
-						isAdmin: false,
-					}
-				});
+				setStore({ isLoggedIn: false });
 			},
+
+			getUserById: async (userId) => {
+				try {
+					const token = localStorage.getItem('token');
+					console.log(token)
+
+					const backendUrl = process.env.BACKEND_URL + `api/users/profile/${userId}`;
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+						headers: {
+							Authorization: `Bearer ${token}`
+						}
+					});
+
+					if (!response.ok) {
+						const responseData = await response.json();
+						throw new Error(responseData.error || "Error al obtener información del usuario");
+					}
+
+					const userData = await response.json();
+
+					return userData;
+
+				} catch (error) {
+					// Si hay un error en la solicitud o en el procesamiento de la respuesta, lanza un error con un mensaje genérico
+					throw new Error("Error al obtener información del usuario. Por favor, inténtelo de nuevo más tarde.");
+				}
+			},
+
+			editUser: async (userId, userData) => {
+				const token = localStorage.getItem('token');
+				const backendUrl = process.env.BACKEND_URL + "api/users/edit_user/";
+
+				try {
+					const response = await fetch(`${backendUrl}${userId}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`,
+						},
+						body: JSON.stringify(userData),
+					});
+
+					if (!response.ok) {
+						const responseData = await response.json();
+						throw new Error(responseData.error || "Error al editar el usuario");
+					}
+
+					const responseData = await response.json();
+					return responseData.message; 
+
+				} catch (error) {
+					throw new Error("Error al editar el usuario. Por favor, inténtelo de nuevo más tarde.");
+				}
+			},
+
+
 
 			getAllUsersInfo: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/users/all_users";
@@ -289,10 +329,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				console.log(data)
 
 				const store = getStore()
-				setStore({ 
-					...store, 
-					explorer_articles: data, 
-					on_filtered_or_explorer: true })
+				setStore({
+					...store,
+					explorer_articles: data,
+					on_filtered_or_explorer: true
+				})
 
 
 				if (response.status == 400) {

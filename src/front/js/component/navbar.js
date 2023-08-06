@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import SearchBar from "./SearchBar.jsx";
@@ -9,18 +9,14 @@ import { Context } from "../store/appContext";
 
 export const Navbar = () => {
 	const navigate = useNavigate()
-  const { store, actions } = useContext(Context);
-	const { isLoggedIn, isAdmin, userId } = store.user;
-
-	console.log("Is Logged In:", isLoggedIn);
-	console.log("Is Admin:", isAdmin);
-	console.log("UserID:", userId);
+	const { store, actions } = useContext(Context);
+	const { isLoggedIn } = store;
 
 	const handlerNavigateToExplorer = () => {
 		navigate('/explorer')
 	}
 
-	const handleLoginClick = () => {
+	const handleLoginClick = (e) => {
 		sessionStorage.setItem("lastVisitedPage", window.location.href);
 		navigate("/login");
 	};
@@ -50,7 +46,7 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse" id="navbarScroll">
 					<ul className="navbar-nav me-auto my-2 my-lg-0">
 						<SearchBar />
-						<p
+						<li
 							onClick={() => handlerNavigateToExplorer()}
 							style={{
 								padding: '9px 0px 0px 18px',
@@ -58,7 +54,7 @@ export const Navbar = () => {
 								cursor: 'pointer'
 							}}>
 							Explorar
-						</p>
+						</li>
 					</ul>
 					<form className="d-flex">
 						{isLoggedIn ? (
@@ -67,13 +63,13 @@ export const Navbar = () => {
 									<li className="nav-item dropdown mx-3">
 										<div className="d-flex align-items-center">
 											<li className="nav-item me-3 me-lg-0">
-												<Link to="" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
+												<Link to="/user-profile" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
 											</li>
 											<li className="nav-item me-3 me-lg-0">
 												<Link to="" className="nav-link text-white"><i className="fas fa-shopping-cart"></i></Link>
 											</li>
 											<li className="nav-item me-3 me-lg-0">
-												<Link to="" className="nav-link text-white"><i class="fa-solid fa-message"></i></Link>
+												<Link to="/messages" className="nav-link text-white"><i className="fa-solid fa-message"></i></Link>
 											</li>
 											<div
 												className="nav-link dropdown-toggle text-white"
@@ -86,9 +82,9 @@ export const Navbar = () => {
 											</div>
 											<ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black" aria-labelledby="navbarScrollingDropdown">
 												<li><hr className="dropdown-divider" /></li>
-												<li><Link className="dropdown-item" to="/admin-panel"><i class="fa-solid fa-face-smile-wink"></i> Perfil</Link></li>
-												<li><Link className="dropdown-item" to="/admin-panel"> <i class="fa-solid fa-circle-question"></i> Ayuda</Link></li>
-												<li><Link className="dropdown-item" to="/admin-panel"> <i class="fa-solid fa-gear"></i> Configuración</Link></li>
+												<li><Link className="dropdown-item" to="/user-profile"><i className="fa-solid fa-face-smile-wink"></i> Perfil</Link></li>
+												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-circle-question"></i> Ayuda</Link></li>
+												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-gear"></i> Configuración</Link></li>
 												<li>
 													<button
 														onClick={handleLogoutClick}
@@ -114,7 +110,7 @@ export const Navbar = () => {
 								>
 									Iniciar sesión
 								</button>
-								<Link to="/register">
+								<Link to="/signup">
 									<button className="btn btn-success" type="submit">
 										Registrarse
 									</button>
