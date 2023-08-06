@@ -12,7 +12,7 @@ import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
 import { UserProfileEdit } from "./pages/UserProfileEdit.jsx"
 import { AdminPanel } from "./pages/AdminPanel.jsx";
-import { ContactForm } from "./pages/Contact.jsx"
+import { Contact } from "./pages/Contact.jsx"
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
@@ -48,7 +48,7 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<ContactForm />} path="/contact" />
+                        <Route element={<Contact />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
                         <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
