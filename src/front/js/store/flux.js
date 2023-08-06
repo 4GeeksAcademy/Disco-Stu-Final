@@ -362,6 +362,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+			addArticle: async (article) => {
+				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					body: JSON.stringify(article),
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+			},
 			getAllArtists: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/artists/";
 				const response = await fetch(backendUrl, {
@@ -382,7 +392,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+			getAllArtistsLikeName: async (inputValue) => {
+				const backendUrl = process.env.BACKEND_URL + "api/artists/" + inputValue;
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
 
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artistas");
+
+				const data = await response.json();
+
+				if (response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			},
 			expandedSearch: async (searchContent) => {
 				try {
 					console.log(searchContent)
@@ -404,6 +433,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log('Error in searching', error)
 				}
+			},
+			getGenres: async () => {
+				const backendUrl = process.env.BACKEND_URL + "api/articles/genres/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Generos");
+
+				const data = await response.json();
+
+				if (response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
 			}
 		}
 	};

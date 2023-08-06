@@ -20,12 +20,18 @@ def get_all():
 
     return jsonify(response), 200
 
-@artist_api.route('/delete_all', methods=['GET'])
-def delete_all():
-    Artista.query.delete()
-    db.session.commit()
+@artist_api.route('/<string:name>', methods=['GET'])
+def get_all_like_name(name):
+    artists = db.session.query(Artista).filter(Artista.nombre.ilike(f"%{name}%")).all()
+    response = [artist.to_dict() for artist in artists]
 
-    return jsonify({"message": "All items deleted"}), 200
+    return jsonify(response), 200
+
+@artist_api.route('/<string:id>', methods=['GET'])
+def get_artist(id):
+    artista = db.session.query(Artista).get(id)
+
+    return jsonify(artista.to_dict()), 200
 
 @artist_api.route('/create', methods=['POST'])
 def create_artist():
@@ -48,4 +54,9 @@ def create_artist():
     else:
         return jsonify({'message': 'Petición JSON inválida'}), 400
 
+@artist_api.route('/delete_all', methods=['GET'])
+def delete_all():
+    Artista.query.delete()
+    db.session.commit()
 
+    return jsonify({"message": "All items deleted"}), 200
