@@ -73,6 +73,7 @@
 		]
 	},
 	"dependencies": {
+		"@emailjs/browser": "^3.11.0",
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
 		"bootstrap": "^5.3.1",
@@ -86,10 +87,8 @@
 		"react-paginate": "^8.2.0",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
-
 		"react-select": "^3.1.0",
-    "sweetalert2": "^11.7.20",
-
+		"sweetalert2": "^11.7.20",
 		"yup": "^1.2.0"
 	}
 }

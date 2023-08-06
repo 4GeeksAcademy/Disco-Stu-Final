@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => (
 	<div className="layout">
-		<div className="content"></div>
+		<div className="content" style={{ height: '10vh' }}></div>
 		<div className="footer">
 			<footer className="container-fluid bg-black text-white">
 				<div className="d-flex p-3">
@@ -14,14 +14,14 @@ export const Footer = () => (
 
 					<ul className="nav col-md-4 d-flex align-items-center justify-content-end mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
 						<li className="nav-item">
-							<a href="#" className="nav-link px-2 text-muted">
+							<Link to="" className="nav-link px-2 text-muted">
 								Inicio
-							</a>
+							</Link>
 						</li>
 						<li className="nav-item">
-							<a href="#" className="nav-link px-2 text-muted">
+							<Link to="/about" className="nav-link px-2 text-muted">
 								Acerca
-							</a>
+							</Link>
 						</li>
 						<li className="nav-item">
 							<Link to="/contact" className="nav-link px-2 text-muted">
@@ -29,9 +29,9 @@ export const Footer = () => (
 							</Link>
 						</li>
 						<li className="nav-item">
-							<a href="#" className="nav-link px-2 text-muted">
+							<Link to="/explorer" className="nav-link px-2 text-muted">
 								Explorar
-							</a>
+							</Link>
 						</li>
 					</ul>
 				</div>
