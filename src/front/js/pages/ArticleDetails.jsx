@@ -14,7 +14,7 @@ const ArticleDetails = () => {
         <div className="container mt-3">
             <div className="row">
                 <div className="col-md-3">
-                    <img src={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen} alt="{element.title}"
+                    <img src={element.url_imagen} alt="{element.title}"
                         className="img-fluid" />
                 </div>
                 <div className="col-md-7">

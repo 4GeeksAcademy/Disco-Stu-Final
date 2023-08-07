@@ -56,13 +56,13 @@ const Explorer = () => {
                                     <li key={index}>
                                         <Link
                                             to={`/article/${element.id}`}
-                                            state={{element: element}}
+                                            state={{ element: element }}
                                         >
                                             <ArticleCard
                                                 key={index}
                                                 title={title}
                                                 artist={artist}
-                                                url_imagen={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen}
+                                                url_imagen={element.url_imagen}
                                             />
                                         </Link>
                                     </li>
