@@ -3,7 +3,7 @@ import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
 
-export const UserDeletedMessages = () => {
+export const AdminDeletedMessages = () => {
 
     const navigate = useNavigate();
     const { store, actions } = useContext(Context);
@@ -75,8 +75,8 @@ export const UserDeletedMessages = () => {
                         <div style={{ marginTop: '10px' }}>
                             <div>
                                 <button onClick={() => handleNavigateInbox()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Bandeja de entrada</button>
-                                <button onClick={() => handleNavigateSent()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Enviados</strong></button>
-                                <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Papelera</button>
+                                <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Enviados</strong></button>
+                                <button onClick={() => handleNavigateTrash()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Papelera</button>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ export const UserDeletedMessages = () => {
                                         })
                                     ) : (
                                         <tr>
-                                            <td className="col">No hay mensajes en la bandeja de enviados.</td>
+                                            <td colSpan="4"></td>
                                         </tr>
                                     )}
                                 </tbody>

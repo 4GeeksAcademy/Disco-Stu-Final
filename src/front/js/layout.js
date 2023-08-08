@@ -3,6 +3,8 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "./store/appContext";
 
+import { PrivateRoutes } from "./store/PrivateRoutes.jsx";
+
 // Pages
 import Home from "./pages/Home.jsx";
 import { Demo } from "./pages/demo";
@@ -11,12 +13,13 @@ import { Signup } from "./pages/Signup.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
 import { UserProfileEdit } from "./pages/UserProfileEdit.jsx"
+import { ChangePassword } from "./pages/passChange.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { Contact } from "./pages/Contact.jsx"
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
-import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
-import UserComposeMessage from "./pages/UserComposeMessage.jsx";
+import { UserDeletedMessages } from "./pages/UserDeletedMessages.jsx";
+import { UserComposeMessage } from "./pages/UserComposeMessage.jsx";
 
 import Explorer from './pages/Explorer.jsx'
 import Article from "./pages/Article.jsx";
@@ -48,6 +51,19 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
+                        <Route element={<Signup />} path="/signup" />
+                        <Route element={<Login />} path="/login" />
+                        <Route element={<PrivateRoutes />}>
+                            <Route element={<AdminPanel />} path="/admin-panel" />
+                            <Route element={<AdminUsers />} path="/admin-users" />
+                            <Route element={<UserProfile />} path="/user-profile" />
+                            <Route element={<UserProfileEdit />} path="/edit-user" />
+                            <Route element={<ChangePassword />} path="/update-password" />
+                            <Route element={<UserInbox />} path="/messages" />
+                            <Route element={<UserSentMessages />} path="/messages/sent" />
+                            <Route element={<UserDeletedMessages />} path="/messages/trash" />
+                            <Route element={<UserComposeMessage />} path="/messages/compose" />
+                        </Route>
                         <Route element={<Contact />} path="/contact" />
                         <Route element={<Artist />} path="/artists" />
                         <Route element={<GalleryTemplate />} path="/gallery_template" />
@@ -57,16 +73,6 @@ const Layout = () => {
                         <Route element={<Explorer />} path='/explorer' />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<Signup />} path="/signup" />
-                        <Route element={<Login />} path="/login" />
-                        <Route element={<AdminUsers />} path="/admin-users" />
-                        <Route element={<UserProfile />} path="/user-profile" />
-                        <Route element={<UserProfileEdit />} path="/edit_user" />
-                        <Route element={<AdminPanel />} path="/admin-panel" />
-                        <Route element={<UserInbox />} path="/messages" />
-                        <Route element={<UserSentMessages />} path="/messages/sent" />
-                        <Route element={<UserDeletedMessages />} path="/messages/trash" />
-                        <Route element={<UserComposeMessage />} path="/messages/compose" />
                         <Route element={<Offers />} path="/offers" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
