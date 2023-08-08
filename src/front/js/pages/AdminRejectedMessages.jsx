@@ -3,7 +3,7 @@ import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
 
-const User_sent_messages = () => {
+export const AdminRejectedMessages = () => {
 
     const navigate = useNavigate()
     const { store, actions } = useContext(Context)
@@ -26,10 +26,6 @@ const User_sent_messages = () => {
 
     const handleNavigateInbox = () => {
         navigate('/messages')
-    }
-
-    const handleNavigateSent = () => {
-        navigate('/messages/sent')
     }
 
     const handleNavigateTrash = () => {
@@ -69,7 +65,7 @@ const User_sent_messages = () => {
                         <div>
                             <button onClick={() => handleNavigateWriteMessage()} type="button" className="btn btn-dark mb-3 w-100">Escribir</button>
                         </div>
-                        <div className="mt-3">
+                        <div style={{ marginTop: '10px' }}>
                             <div>
                                 <button onClick={() => handleNavigateInbox()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Bandeja de entrada</button>
                                 <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Enviados</strong></button>
@@ -110,7 +106,7 @@ const User_sent_messages = () => {
                                     })
                                 ) : (
                                     <tr>
-                                        <td className="col">No hay mensajes en la bandeja de enviados.</td>
+                                        <td colSpan="4"></td>
                                     </tr>
                                 )}
                             </tbody>
@@ -121,5 +117,3 @@ const User_sent_messages = () => {
         </div>
     )
 }
-
-export default User_sent_messages

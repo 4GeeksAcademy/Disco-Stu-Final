@@ -1,6 +1,7 @@
 """
 This module takes care of starting the API Server for users, Loading the DB and Adding the endpoints
 """
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity, unset_access_cookies
 from flask import Flask, request, jsonify, url_for, Blueprint
 from datetime import timedelta, datetime, timezone
@@ -38,7 +39,7 @@ def signup():
     return jsonify({"mensaje": "Usuario creado exitosamente."}), 201
 
 
-@user_api.route('/login', methods=['POST'])
+@user_api.route('/login', methods=['GET', 'POST'])
 def create_token():
     try:
         data = request.get_json()
@@ -69,6 +70,34 @@ def create_token():
         return jsonify({"Error": "Ocurrió un error durante el proceso de inicio de sesión. Por favor, verifica tus credenciales e inténtalo de nuevo."}), 500
 
 
+@user_api.route('/update-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    try:
+        data = request.get_json()
+
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+
+        if not old_password or not new_password:
+            return jsonify({"error": "Contraseña actual y nueva contraseña son requeridas"}), 400
+
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+
+        if not user or not check_password_hash(user.contrasenha, old_password):
+            return jsonify({"error": "Contraseña actual incorrecta"}), 401
+
+        new_password_hash = generate_password_hash(new_password)
+        user.contrasenha = new_password_hash
+        db.session.commit()
+
+        return jsonify({"mensaje": "Contraseña cambiada exitosamente."}), 200
+
+    except Exception:
+        return jsonify({"Error": "Ocurrió un error durante el proceso de cambio de contraseña. Por favor, inténtalo de nuevo."}), 500
+
+
 @user_api.after_request
 def refresh_expiring_jwts(response):
     try:
@@ -92,6 +121,7 @@ def refresh_token():
 
 
 @user_api.route('/logout', methods=["POST"])
+@jwt_required()
 def logout():
     response = jsonify({"msg": "Sesión cerrada con exito"})
     unset_access_cookies(response)
@@ -155,6 +185,7 @@ def edit_user(user_id):
         data = request.get_json()
         user.nombre = data.get('name', user.nombre)
         user.correo = data.get('email', user.correo)
+        user.is_admin = data.get('is_admin', user.is_admin)
         # user.contrasenha = data.get('password', user.contrasenha)
         user.direccion_comprador = data.get(
             'address', user.direccion_comprador)

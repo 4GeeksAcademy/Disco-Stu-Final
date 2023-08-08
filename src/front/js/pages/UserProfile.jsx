@@ -7,7 +7,14 @@ export const UserProfile = () => {
     const [userData] = useState(null);
     const { actions } = useContext(Context);
 
-    const randomIMG = "https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png";
+    function generateRandomNumber() {
+        var randomNumber = Math.floor(Math.random() * 90) + 1;
+        return randomNumber;
+    }
+
+    var number = generateRandomNumber().toString();
+
+    const randomIMG = `https://randomuser.me/api/portraits/men/${number}.jpg`
 
     useEffect(() => {
 
@@ -15,7 +22,7 @@ export const UserProfile = () => {
             try {
                 const userId = localStorage.getItem('userID');
                 const userData = await actions.getUserById(userId);
-                console.log("Data de usuario",userData);
+                console.log("Data de usuario", userData);
             } catch (error) {
                 console.error("Error al obtener la información del usuario:", error);
             }

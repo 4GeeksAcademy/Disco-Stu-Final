@@ -9,15 +9,15 @@ import { Context } from "../store/appContext";
 
 export const Navbar = () => {
 	const navigate = useNavigate()
+	const logged = localStorage.getItem('token');
 	const { store, actions } = useContext(Context);
-	const { isLoggedIn } = store;
 
 	const handlerNavigateToExplorer = () => {
 		navigate('/explorer')
 	}
 
 	const handleLoginClick = (e) => {
-		sessionStorage.setItem("lastVisitedPage", window.location.href);
+		localStorage.setItem("lastVisitedPage", window.location.href);
 		navigate("/login");
 	};
 
@@ -57,20 +57,20 @@ export const Navbar = () => {
 						</li>
 					</ul>
 					<form className="d-flex">
-						{isLoggedIn ? (
+						{logged ? (
 							<>
 								<ul className="navbar-nav me-auto my-2 my-lg-0">
 									<li className="nav-item dropdown mx-3">
 										<div className="d-flex align-items-center">
-											<li className="nav-item me-3 me-lg-0">
+											<div className="nav-item me-3 me-lg-0">
 												<Link to="/user-profile" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
-											</li>
-											<li className="nav-item me-3 me-lg-0">
+											</div>
+											<div className="nav-item me-3 me-lg-0">
 												<Link to="" className="nav-link text-white"><i className="fas fa-shopping-cart"></i></Link>
-											</li>
-											<li className="nav-item me-3 me-lg-0">
+											</div>
+											<div className="nav-item me-3 me-lg-0">
 												<Link to="/messages" className="nav-link text-white"><i className="fa-solid fa-message"></i></Link>
-											</li>
+											</div>
 											<div
 												className="nav-link dropdown-toggle text-white"
 												href="#"
@@ -81,11 +81,11 @@ export const Navbar = () => {
 												<i className="far fa-user"></i>
 											</div>
 											<ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black" aria-labelledby="navbarScrollingDropdown">
-												<li><hr className="dropdown-divider" /></li>
-												<li><Link className="dropdown-item" to="/user-profile"><i className="fa-solid fa-face-smile-wink"></i> Perfil</Link></li>
-												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-circle-question"></i> Ayuda</Link></li>
-												<li><Link className="dropdown-item" to="/"> <i className="fa-solid fa-gear"></i> Configuración</Link></li>
-												<li>
+												<div><hr className="dropdown-divider" /></div>
+												<div><Link className="dropdown-item" to="/user-profile"><i className="fa-solid fa-face-smile-wink"></i> Perfil</Link></div>
+												<div><Link className="dropdown-item" to="/"> <i className="fa-solid fa-circle-question"></i> Ayuda</Link></div>
+												<div><Link className="dropdown-item" to="/update-password"> <i className="fa-solid fa-gear"></i> Configuración</Link></div>
+												<div>
 													<button
 														onClick={handleLogoutClick}
 														className="dropdown-item"
@@ -93,7 +93,7 @@ export const Navbar = () => {
 													>
 														<i className="fa-solid fa-power-off"></i> Cerrar sesión
 													</button>
-												</li>
+												</div>
 											</ul>
 										</div>
 

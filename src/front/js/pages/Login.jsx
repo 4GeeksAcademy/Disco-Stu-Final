@@ -36,12 +36,19 @@ export const Login = () => {
                 password: password,
             });
 
-            console.log("El usuario es Admin? :", userData.is_admin);
+            console.log("El usuario es Admin? :", userData);
 
             if (userData.is_admin) {
                 navigate("/admin-panel");
             } else {
-                navigate("/");
+                const lastVisitedPage = localStorage.getItem("lastVisitedPage");
+                const urlParts = lastVisitedPage.split("/");
+                const pageName = urlParts[urlParts.length - 1];
+                if (pageName) {
+                    navigate("/" + pageName);
+                } else {
+                    navigate("/");
+                }
             }
 
         } catch (err) {
