@@ -11,6 +11,7 @@ from datetime import timedelta
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes import api
+from api.endpoints.approvals_api import approvals_api
 from api.endpoints.article_api import article_api
 from api.endpoints.artist_api import artist_api
 from api.endpoints.cart_api import cart_api
@@ -67,6 +68,7 @@ setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(approvals_api, url_prefix='/api/approvals')
 app.register_blueprint(article_api, url_prefix='/api/articles')
 app.register_blueprint(artist_api, url_prefix='/api/artists')
 app.register_blueprint(cart_api, url_prefix='/api/carts')
