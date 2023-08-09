@@ -410,6 +410,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return response;
 			},
+
+			getArticleForApproval: async () => {
+				const backendUrl = process.env.BACKEND_URL + "api/approvals/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artículos");
+
+				const data = await response.json();
+
+				if (response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			},
 			/*addArticle: async (article, file) => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
 
@@ -511,16 +532,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			adminMessages: async (user_id) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + `/api/inbox_admin/messages/${user_id}`;
-					const store = getStore()
+
 					const response = await fetch(backendUrl)
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
 					const data = await response.json()
 					console.log('Messages obtained succesfully: ', data)
-					setStore({ ...store, inbox: data.inbox })
-					setStore({ ...store, sent_messages: data.sent_messages })
-					setStore({ ...store, deleted_messages: data.deleted_messages })
+
 				} catch (error) {
 					console.log('Error charging messages: ', error)
 				}
@@ -529,18 +548,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 			adminMessagesArchived: async (user_id) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + `/messages/archive/${user_id}`;
-					const store = getStore()
 					const response = await fetch(backendUrl)
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
 					const data = await response.json()
 					console.log('Messages obtained succesfully: ', data)
-					setStore({ ...store, inbox: data.inbox })
-					setStore({ ...store, sent_messages: data.sent_messages })
-					setStore({ ...store, deleted_messages: data.deleted_messages })
+
 				} catch (error) {
-					console.log('Error charging messages: ', error)
+					console.log('Error getting archived messages: ', error)
 				}
 			},
 			postOffer: async (offer) => {
@@ -581,7 +597,74 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log('Error getting offers:', error)
 				}
-			}
+			},
+
+			addFavorites: async ({ user_id, articulo_id }) => {
+				try {
+					const response = await fetch(`/api/favorites/${user_id}`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ articulo_id }),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to add favorite');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error adding favorite:', error);
+					throw error;
+				}
+			},
+
+			getFavoritesByUserId: async (user_id) => {
+				try {
+					const response = await fetch(`/api/favorites/${user_id}`, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to fetch favorites');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error fetching favorites:', error);
+					throw error;
+				}
+			},
+
+			deleteFavorite: async (user_id, articulo_id) => {
+				try {
+					const response = await fetch(`/api/favorites/${user_id}/${articulo_id}`, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to delete favorite');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error deleting favorite:', error);
+					throw error;
+				}
+			},
 		}
 	};
 };

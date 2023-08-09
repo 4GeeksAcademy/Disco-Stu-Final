@@ -1,51 +1,28 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../store/appContext";
-import { Link, useNavigate } from "react-router-dom";
 
 import "../../styles/home.css";
 
 
-export const AdminApprovals = () => {
-    const [approvalData, setApprovalData] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [articleUsers, setArticleUsers] = useState({});
+export const UserFavorites = () => {
+
+    const [favoriteData, setFavoriteData] = useState([]);
     const { actions } = useContext(Context);
-    const navigate = useNavigate();
+
+    const user_id = localStorage.getItem('userId')
 
     const fetchData = async () => {
         try {
-            const response = await actions.getArticleForApproval();
+            const response = await actions.getFavoritesByUserId(user_id);
+            console.log(response)
             setApprovalData(response);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-    const fetchUsers = async () => {
-        try {
-            const usersData = await actions.getAllUsersInfo();
-            setUsers(usersData);
-        } catch (error) {
-            console.error("Error fetching users:", error.message);
-        }
-    };
-
     useEffect(() => {
-        fetchData();
-        fetchUsers();
-    }, [actions]);
-
-    useEffect(() => {
-        const articleUsersMap = {};
-        approvalData.forEach((item) => {
-            const user = users.find((user) => user.id === item.user_id);
-            if (user) {
-                articleUsersMap[item.id] = user;
-            }
-        });
-        setArticleUsers(articleUsersMap);
-    }, [approvalData, users]);
-
+        fetchData(); // Fetch data when component mounts
+    }, []);
 
     return (
         <div>
@@ -80,9 +57,11 @@ export const AdminApprovals = () => {
                         <div className="row" style={{ margin: '30px 100px' }}>
                             <div id="messages_center" className="">
                                 <h1 className="mb-3">Solicitudes de articulo nuevo</h1>
-                                <div className="d-flex justify-content-between mb-3">
-                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Aprobar</button>
-                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Rechazar</button>
+                                <div className="mb-3">
+                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Aprobar </button>
+                                </div>
+                                <div className="mb-3">
+                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Rechazar </button>
                                 </div>
 
                                 <div className="table-responsive">
@@ -91,25 +70,26 @@ export const AdminApprovals = () => {
                                             <th>
                                                 <input type="checkbox" />
                                             </th>
-                                            <th>Titulo:</th>
-                                            <th>Usuario: </th>
-                                            <th>Genero:</th>
-                                            <th>Pais:</th>
+                                            <th>something</th>
+                                            <th>something</th>
+                                            <th>something</th>
+                                            <th></th>
                                         </tr>
                                         <tbody>
-                                            {approvalData.map((item, index) => (
-                                                <tr key={index}>
-                                                    <td style={{ width: "30px", padding: "0.5rem" }}>
-                                                        <input type="checkbox" />
-                                                    </td>
-                                                    <td>
-                                                        <Link to={`/detalle/${item.id}`}>{item.titulo}</Link>
-                                                    </td>
-                                                    <td>{articleUsers[item.id]?.username}</td>
-                                                    <td>{item.Genero}</td>
-                                                    <td>{item.Pais}</td>
-                                                </tr>
-                                            ))}
+
+                                            <tr >
+                                                <td style={{ width: '30px', padding: '0.5rem' }}>
+                                                    <input
+                                                        type="checkbox"
+
+                                                    />
+                                                </td>
+                                                <td style={{ width: '25%' }}></td>
+                                                <td style={{ width: '54%' }}></td>
+                                                <td style={{ width: '18%' }}></td>
+                                                <td style={{ width: '18%' }}></td>
+                                            </tr>
+
                                         </tbody>
                                     </table>
 
