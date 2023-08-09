@@ -2,7 +2,7 @@
 This module takes carte of starting the API Server for users, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Aprobaciones, Artista
+from api.models import db, Aprobaciones, Artista, Articulo
 from api.endpoints.utils import save_to_cloudinary
 from api.utils import generate_sitemap, APIException
 import json
@@ -41,3 +41,18 @@ def add():
                 db.session.rollback()
                 print("Error al guardar el articulo para aprobación: " + str(e))
                 return jsonify({'mensaje:': "Error al guardar el articulo para aprobación"}), 405
+        elif data['tipo'] == "edit":
+            try:
+                session.begin()
+                if data.get('id') and data.get('id') > 0:
+                    aprobacion = Aprobaciones(**data)
+                    artist = Artista.query.get(aprobacion.artista_id)
+                    aprobacion.titulo = artist.nombre + " - " + aprobacion.titulo
+                    aprobacion.url_imagen = save_to_cloudinary(file, file_name)
+                    db.session.add(aprobacion)
+                    db.session.commit()
+
+                    print("Articulo agregado para aprobación")
+                    return jsonify({'mensaje:': "Articulo agregado para aprobación"}), 200
+            except Exception as e:
+                db.session.rollback()

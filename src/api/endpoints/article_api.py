@@ -32,6 +32,25 @@ def get_by_genre(genre_name):
     return jsonify(response), 200
 
 
+@article_api.route('/get_all_grouped_by_genre', methods=['GET'])
+def get_all_grouped_by_genre():
+    response = {}
+    genres = db.session.query(Articulo.genero).distinct().all()
+
+    for genre_tuple in genres:
+        genre = genre_tuple[0]
+        print(genre)
+        group = db.session.query(Articulo).filter(
+            Articulo.genero == genre).all()
+
+        article_list = [article.to_dict() for article in group]
+
+        response[genre] = article_list
+
+
+    return jsonify(response), 200
+
+
 @article_api.route('/genres', methods=['GET'])
 def get_genres():
     genres = db.session.query(Articulo.genero).distinct().all()
@@ -40,6 +59,7 @@ def get_genres():
     response_body = [{'name': genre[0]} for genre in genres]
 
     return jsonify(response_body)
+
 
 @article_api.route('/add', methods=['POST'])
 def add():

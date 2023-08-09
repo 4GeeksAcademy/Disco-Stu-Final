@@ -520,12 +520,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 					setStore({ ...store, deleted_messages: data.deleted_messages })
 				} catch (error) {
 					console.log('Error charging messages: ', error)
-				},
+				}
+			},
 			setArticleToEdit: (article) => {
 				const store = getStore();
 				setStore({ ...store, articleToEdit: article })
 			}
-			},
 		}
 	};
 };
