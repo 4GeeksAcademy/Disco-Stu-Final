@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 const ArticleDetails = () => {
     const { store } = useContext(Context);
     const navigate = useNavigate();
-    const article = store.articleToEdit;
-    const [artist, title] = store.articleToEdit.titulo.split(' - ')
+    const article = JSON.parse(localStorage.getItem('currentArticle'));
+    const [artist, title] = article.titulo.split(' - ')
 
     if (!article) {
         return <div>Loading...</div>;
@@ -96,8 +96,8 @@ const ArticleDetails = () => {
                             Editar artículo
                         </div>
                         <button className="btn btn-success mb-2">Agregar a deseados</button>
-                        <button className="btn btn-secondary mb-2">Comprar Vinilo</button>
-                        <button className="btn btn-secondary mb-2">Vender Vinilo</button>
+                        <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
+                        <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
                     </div>
                 </div>
             </div>
