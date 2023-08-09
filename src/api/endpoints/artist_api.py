@@ -4,7 +4,7 @@ This module takes care of starting the API Server for users, Loading the DB and 
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Artista
 from api.utils import generate_sitemap, APIException
-from api.endpoints.utils import saveImages
+# from api.endpoints.utils import saveImages
 
 artist_api = Blueprint('artist_api', __name__)
 

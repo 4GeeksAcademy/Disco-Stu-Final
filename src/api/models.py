@@ -18,6 +18,7 @@ db = SQLAlchemy()
 #             # do not serialize the password, its a security breach
 #         }
 
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,8 +50,10 @@ class Articulo(db.Model):
     genero = db.Column(db.String(250), nullable=False)
     estilos = db.Column(db.String(250))
 
-    artista = db.relationship('Artista', uselist=False, back_populates='articulo', cascade='all, delete-orphan', single_parent=True)
-    tracks = db.relationship('Tracks', back_populates='articulo', cascade='all, delete-orphan')
+    artista = db.relationship('Artista', uselist=False, back_populates='articulo',
+                              cascade='all, delete-orphan', single_parent=True)
+    tracks = db.relationship(
+        'Tracks', back_populates='articulo', cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
@@ -66,6 +69,7 @@ class Articulo(db.Model):
             'estilos': self.estilos
         }
 
+
 class Tracks(db.Model):
     __tablename__ = 'tracks'
     id = db.Column(db.Integer, primary_key=True)
@@ -73,7 +77,7 @@ class Tracks(db.Model):
     nombre = db.Column(db.String(250))
     posicion = db.Column(db.String(250))
 
-    #articulo = db.relationship('Articulo', backref='tracks', overlaps="tracks_relacion")
+    # articulo = db.relationship('Articulo', backref='tracks', overlaps="tracks_relacion")
     articulo = db.relationship('Articulo', back_populates='tracks')
 
     def to_dict(self):
@@ -84,11 +88,13 @@ class Tracks(db.Model):
             'posicion': self.posicion
         }
 
+
 class Favoritos(db.Model):
     __tablename__ = 'favoritos'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+
 
 class Coleccion(db.Model):
     __tablename__ = 'coleccion'
@@ -96,11 +102,13 @@ class Coleccion(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
 
+
 class Carrito(db.Model):
     __tablename__ = 'carrito'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+
 
 class Bandeja_de_entrada(db.Model):
     _tablename__ = 'bandeja_de_entrada'
@@ -111,6 +119,7 @@ class Bandeja_de_entrada(db.Model):
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
 
+
 class Bandeja_de_entrada_admin(db.Model):
     _tablename__ = 'bandeja_de_entrada_admin'
     id = db.Column(db.Integer, primary_key=True)
@@ -119,13 +128,15 @@ class Bandeja_de_entrada_admin(db.Model):
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
 
+
 class Archivo_mensajes_admin(db.Model):
-    __tablename__= 'archivo_mensajes_admin'
+    __tablename__ = 'archivo_mensajes_admin'
     id = db.Column(db.Integer, primary_key=True)
     emisor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     asunto = db.Column(db.String(250))
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
+
 
 class Mensajes_enviados(db.Model):
     _tablename__ = 'mensajes_enviados'
@@ -136,6 +147,7 @@ class Mensajes_enviados(db.Model):
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
 
+
 class Mensajes_eliminados(db.Model):
     _tablename__ = 'mensajes_eliminados'
     id = db.Column(db.Integer, primary_key=True)
@@ -144,6 +156,7 @@ class Mensajes_eliminados(db.Model):
     asunto = db.Column(db.String(250))
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
+
 
 class Ofertas(db.Model):
     __tablename__ = 'ofertas'
@@ -155,6 +168,7 @@ class Ofertas(db.Model):
     precio = db.Column(db.Integer)
     comentario = db.Column(db.String(250))
 
+
 class Pedido(db.Model):
     __tablename__ = 'pedido'
     id = db.Column(db.Integer, primary_key=True)
@@ -162,11 +176,13 @@ class Pedido(db.Model):
     precio_total = db.Column(db.Integer)
     impuesto = db.Column(db.Integer)
 
+
 class Pedido_articulos(db.Model):
     __tablename__ = 'pedido_articulos'
     id = db.Column(db.Integer, primary_key=True)
     pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'))
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+
 
 class Artista(db.Model):
     __tablename__ = 'artista'
@@ -176,8 +192,9 @@ class Artista(db.Model):
     nombre_real = db.Column(db.String(250))
     perfil = db.Column(db.Text)
 
-    #articulo = db.relationship('Articulo', uselist=False, backref='artista', overlaps="articulo_relacion")
-    articulo = db.relationship('Articulo', uselist=False, back_populates='artista', cascade='all, delete-orphan', single_parent=True)
+    # articulo = db.relationship('Articulo', uselist=False, backref='artista', overlaps="articulo_relacion")
+    articulo = db.relationship('Articulo', uselist=False, back_populates='artista',
+                               cascade='all, delete-orphan', single_parent=True)
 
     def to_dict(self):
         return {
@@ -187,6 +204,3 @@ class Artista(db.Model):
             'nombre_real': self.nombre_real,
             'perfil': self.perfil
         }
-
-
-

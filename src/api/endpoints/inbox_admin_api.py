@@ -8,11 +8,18 @@ from api.utils import generate_sitemap, APIException
 inbox_admin_api = Blueprint('inbox_admin_api', __name__)
 
 
-@inbox_admin_api.route('/messages/', methods=['GET'])
-def get_all_messages():
+@inbox_admin_api.route('/messages/<int:user_id>', methods=['GET'])
+def get_all_messages(user_id):
 
-    messages = Bandeja_de_entrada_admin.query.all()
-    archived_messages = Archivo_mensajes_admin.query.all()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify('Admin not found'), 400
+
+    if user.is_admin != True:
+        return jsonify('No autorizado'), 403
+
+    messages = Bandeja_de_entrada_admin.query.filter_by(id=user_id).all()
+    archived_messages = Archivo_mensajes_admin.query.filter_by(id=user_id).all()
 
     inbox = []
     for element in messages:
@@ -39,7 +46,7 @@ def get_all_messages():
     return jsonify({'inbox': inbox, 'archived': archived}), 200
 
 
-@inbox_admin_api.route('/messages/archive', methods=['POST'])
+@inbox_admin_api.route('/messages/archive/', methods=['POST'])
 def archive_inbox_message():
 
     try:
@@ -48,34 +55,39 @@ def archive_inbox_message():
         message = Bandeja_de_entrada_admin.query.filter_by(
             id=message_id).first()
 
-        message_to_archive = Archivo_mensajes_admin(
-            id=message.id,
-            emisor_id=message.emisor_id,
-            asunto=message.asunto,
-            mensaje=message.mensaje,
-            fecha=message.fecha
-        )
-        db.session.delete(message)
-        db.session.add(message_to_archive)
-        db.session.commit()
+        if message:
+            message_to_archive = Archivo_mensajes_admin(
+                id=message.id,
+                emisor_id=message.emisor_id,
+                asunto=message.asunto,
+                mensaje=message.mensaje,
+                fecha=message.fecha
+            )
+            db.session.delete(message)
+            db.session.add(message_to_archive)
+            db.session.commit()
 
-        response = {
-            'emimsor_id': message.emisor_id,
-            'asunto': message.asunto,
-            'mensaje': message.mensaje,
-            'fecha': message.fecha
-        }
+            response = {
+                'emimsor_id': message.emisor_id,
+                'asunto': message.asunto,
+                'mensaje': message.mensaje,
+                'fecha': message.fecha
+            }
 
-        return jsonify({'Message added to archive succesfully': response})
+            return jsonify({'Message added to trash successfully': response})
+        else:
+            return jsonify({'error': f'Message with id {message_id} not found'}), 404
 
     except Exception as e:
         return jsonify({'error': 'Error archiving message: ' + str(e)}), 500
 
 
-@inbox_admin_api.route('/messages', methods=['DELETE'])
-def delete_message_permanently():
+@inbox_admin_api.route('/messages/delete/<int:message_id>', methods=['DELETE'])
+def delete_message_permanently(user_id):
 
     try:
+
+        receptor_id = user_id
         message_id = request.json.get('message_id')
 
         message = Bandeja_de_entrada_admin.query.filter_by(
@@ -85,6 +97,7 @@ def delete_message_permanently():
         db.session.commit()
 
         response = {
+            'receptor_id': receptor_id,
             'emisor_id': message.emisor_id,
             'message_id': message.id
         }

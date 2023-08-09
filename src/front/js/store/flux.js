@@ -58,8 +58,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					const token = responseData.access_token;
 					const userID = responseData.user_id;
+					const auth = responseData.is_admin;
+					console.log(auth)
 					localStorage.setItem('token', token);
 					localStorage.setItem('userID', userID);
+					localStorage.setItem('Auth', auth);
 
 					const { checkAuthentication } = getActions();
 					await checkAuthentication();
@@ -87,7 +90,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			changePassword: async ({ currentPassword, newPassword, confirmPassword }) => {
 				try {
-					const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+					const token = localStorage.getItem('token');
 					const backendUrl = process.env.BACKEND_URL + "api/users/update-password";
 					const response = await fetch(backendUrl, {
 						method: 'POST',
@@ -114,6 +117,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			logout: () => {
 				localStorage.removeItem('token');
 				localStorage.removeItem('userID');
+				localStorage.removeItem('auth');
 				setStore({ isLoggedIn: false }); // Actualizar el estado de autenticación
 			},
 
@@ -483,11 +487,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 			},
 
-			adminMessages: async () => {
+			adminMessages: async (user_id) => {
 				try {
-					const backendUrl = process.env.BACKEND_URL + "/api/inbox_admin/messages/1";
+					const backendUrl = process.env.BACKEND_URL + `/api/inbox_admin/messages/${user_id}`;
 					const store = getStore()
-					const response = await fetch('backendUrl')
+					const response = await fetch(backendUrl)
+					if (!response.ok) {
+						throw new Error('Response error')
+					}
+					const data = await response.json()
+					console.log('Messages obtained succesfully: ', data)
+					setStore({ ...store, inbox: data.inbox })
+					setStore({ ...store, sent_messages: data.sent_messages })
+					setStore({ ...store, deleted_messages: data.deleted_messages })
+				} catch (error) {
+					console.log('Error charging messages: ', error)
+				}
+			},
+
+			adminMessagesArchived: async (user_id) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/messages/archive/${user_id}`;
+					const store = getStore()
+					const response = await fetch(backendUrl)
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
