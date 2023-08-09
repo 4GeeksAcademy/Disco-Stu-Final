@@ -9,8 +9,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			explorer_articles: [],
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
-
-			articleToEdit: {}
+			currentOffers: [],
 		},
 		actions: {
 			registerNewUser: async (newUser) => {
@@ -542,12 +541,47 @@ const getState = ({ getStore, getActions, setStore }) => {
 					setStore({ ...store, deleted_messages: data.deleted_messages })
 				} catch (error) {
 					console.log('Error charging messages: ', error)
-				},
-			setArticleToEdit: (article) => {
-				const store = getStore();
-				setStore({ ...store, articleToEdit: article })
-			}
+				}
 			},
+			postOffer: async (offer) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "/api/offers/post";
+					const response = await fetch(backendUrl, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(offer)
+					});
+					if (!response.ok) {
+						throw new Error('Error on adding offer response')
+					}
+
+					const data = response.json()
+					console.log('Offer added:', data)
+
+				} catch (error) {
+					console.log('Error posting offer:', error)
+				}
+			},
+
+			getOffers: async () => {
+				try {
+					const article = JSON.parse(localStorage.getItem('currentArticle'));
+					const backendUrl = process.env.BACKEND_URL + `/api/offers/${article.id}`;
+					const response = await fetch(backendUrl)
+					if (!response.ok) {
+						throw new Error('Error on getting offers response')
+					}
+					const data = await response.json()
+					console.log('Offers obtained')
+					const store = getStore()
+					setStore({ ...store, currentOffers: data })
+					console.log("Ofertas obtenidas", store.currentOffers)
+				} catch (error) {
+					console.log('Error getting offers:', error)
+				}
+			}
 		}
 	};
 };

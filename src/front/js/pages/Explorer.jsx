@@ -51,7 +51,7 @@ const Explorer = () => {
                                 const [artist, title] = element.titulo.split(' - ')
                                 return (
                                     <li key={index}>
-                                        <div onClick={() => {navigate(`/article/${element.id}`); actions.setArticleToEdit(element)}} style={{ cursor: 'pointer' }}>
+                                        <div onClick={() => {navigate(`/article/${element.id}`); localStorage.setItem('currentArticle', JSON.stringify(element));}} style={{ cursor: 'pointer' }}>
                                             <ArticleCard
                                                 key={index}
                                                 title={title}
