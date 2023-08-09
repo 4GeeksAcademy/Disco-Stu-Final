@@ -4,18 +4,10 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import '../../styles/SellArticle.css';
 
 const SellArticle = () => {
-    const article_example = {
-        'titulo': 'Younger Than Me - 90s Wax One',
-        'sello': '90s Wax One',
-        'formato': 'Vinyl, Limited Edition, Numbered, Yellow',
-        'pais': 'UK',
-        'publicado': '6 Oct 2000',
-        'genero': 'Electronica',
-        'estilos': 'House, Acid House, New Beat',
-        'url_imagen': 'https://i.discogs.com/BLXOkeKHYuLrZATYJ1a61EP4m308Sv6PlEskMqGhywc/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTExMDU4/ODk3LTE1MTY2NTEx/NDctOTQ3OS5qcGVn.jpeg'
-    };
 
-    const { store, actions } = useContext(Context)
+    const { actions } = useContext(Context)
+
+    const article = JSON.parse(localStorage.getItem('currentArticle'));
 
     const [ soporte, setSoporte ] = useState({})
     const [ funda, setFunda ] = useState('')
@@ -39,20 +31,18 @@ const SellArticle = () => {
         setPrecio(event.target.value)
     }
 
-    // Falta traernos el id del articulo
-
     const postOffer = () => {
-        const user_id = localStorage.getItem('userId');
-        offer = {
+        const user_id = localStorage.getItem('userID');
+        const offer = {
             'vendedor_id': user_id,
-            'articulo_id': '12',
+            'articulo_id': article.id,
             'condicion_soporte': soporte,
             'condicion_funda': funda,
             'comentario': comentario,
             'cantidad': cantidad,
             'precio': precio,
         }
-        actions.post_offer(offer)
+        actions.postOffer(offer)
     }
 
     return (
@@ -63,33 +53,33 @@ const SellArticle = () => {
             </div>
             <div id="article_info" className="row d-flex">
                 <div id="image" className='col-md-2'>
-                    <img className="img-fluid" src={article_example.url_imagen} alt="" />
+                    <img className="img-fluid" src={article.url_imagen} alt="" />
                 </div>
                 <div className="col-md-9">
-                    <p className="h5 font-weight-bold">{article_example.titulo}</p>
+                    <h5><strong>{article.titulo}</strong></h5>
                     <div className="d-flex">
-                        <p>Sello:</p>
-                        <p>{article_example.sello}</p>
+                        <p style={{width: '40px'}}>Sello:</p>
+                        <p>{article.sello}</p>
                     </div>
                     <div className="d-flex">
-                        <p>Formato:</p>
-                        <p>{article_example.formato}</p>
+                        <p style={{width: '40px'}}>Formato:</p>
+                        <p>{article.formato}</p>
                     </div>
                     <div className="d-flex">
-                        <p>Pais:</p>
-                        <p>{article_example.pais}</p>
+                        <p style={{width: '40px'}}>Pais:</p>
+                        <p>{article.pais}</p>
                     </div>
                     <div className="d-flex">
-                        <p>Publicado:</p>
-                        <p>{article_example.publicado}</p>
+                        <p style={{width: '40px'}}>Publicado:</p>
+                        <p>{article.publicado}</p>
                     </div>
                     <div className="d-flex">
-                        <p>Genero:</p>
-                        <p>{article_example.genero}</p>
+                        <p style={{width: '40px'}}>Genero:</p>
+                        <p>{article.genero}</p>
                     </div>
                     <div className="d-flex">
-                        <p>Estilos:</p>
-                        <p>{article_example.estilos}</p>
+                        <p style={{width: '40px'}}>Estilos:</p>
+                        <p>{article.estilos}</p>
                     </div>
                 </div>
             </div>
@@ -103,25 +93,25 @@ const SellArticle = () => {
                 <div style={{ marginTop: '20px' }}>
                     <label htmlFor="condicionSoporte">Condición del soporte</label>
                     <select onChange={(e) => handleSoporte(e)} value={soporte} className="form-select form-select-sm" id='condicionSoporte' aria-label="Small select example">
-                        <option selected>Seleccionar condicion</option>
-                        <option value="1">Nuevo (N)</option>
-                        <option value="2">Casi Nuevo (CN)</option>
-                        <option value="3">Buen Estado (BE)</option>
-                        <option value="4">Gastado (G)</option>
-                        <option value="5">Deteriorado (D)</option>
+                        <option value="">Seleccionar condicion</option>
+                        <option value="Nuevo (N)">Nuevo (N)</option>
+                        <option value="Casi Nuevo (CN)">Casi Nuevo (CN)</option>
+                        <option value="Buen Estado (BE)">Buen Estado (BE)</option>
+                        <option value="Gastado (G)">Gastado (G)</option>
+                        <option value="Deteriorado (D)">Deteriorado (D)</option>
                     </select>
                 </div>
                 <div style={{ marginTop: '20px' }}>
                     <label htmlFor="condicionFunda">Condición de la funda</label>
                     <select onChange={(e) => handleFunda(e)} value={funda} className="form-select form-select-sm" id='condicionFunda' aria-label="Small select example">
-                        <option selected>Seleccionar condicion</option>
-                        <option value="1">Genérico</option>
-                        <option value="2">Sin Funda</option>
-                        <option value="3">Nuevo (N)</option>
-                        <option value="4">Casi Nuevo (CN)</option>
-                        <option value="5">Buen Estado (BE)</option>
-                        <option value="6">Gastado (G)</option>
-                        <option value="7">Deteriorado (D)</option>
+                        <option value="">Seleccionar condicion</option>
+                        <option value="Genérico">Genérico</option>
+                        <option value="Sin Funda">Sin Funda</option>
+                        <option value="Nuevo (N)">Nuevo (N)</option>
+                        <option value="Casi Nuevo (CN)">Casi Nuevo (CN)</option>
+                        <option value="Buen Estado (BE)">Buen Estado (BE)</option>
+                        <option value="Gastado (G)">Gastado (G)</option>
+                        <option value="Deteriorado (D)">Deteriorado (D)</option>
                     </select>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -131,7 +121,7 @@ const SellArticle = () => {
                 <div style={{ marginTop: '20px' }}>
                     <label htmlFor="cantidad">Cantidad</label>
                     <select onChange={(e) => handleCantidad(e)} value={cantidad} style={{ width: '80px' }} className="form-select form-select-sm" id='cantidad' aria-label="Small select example">
-                        <option selected></option>
+                        <option value=""></option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
