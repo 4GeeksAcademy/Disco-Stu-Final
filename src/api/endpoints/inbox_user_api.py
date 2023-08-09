@@ -16,7 +16,8 @@ def get_all_messages(user_id):
 
     messages = Bandeja_de_entrada.query.filter_by(receptor_id=user_id).all()
     sent_messages = Mensajes_enviados.query.filter_by(emisor_id=user_id).all()
-    deleted_messages = Mensajes_eliminados.query.filter_by(receptor_id=user_id).all()
+    deleted_messages = Mensajes_eliminados.query.filter_by(
+        receptor_id=user_id).all()
 
     inbox = []
     for element in messages:
@@ -96,7 +97,7 @@ def send_message(user_id):
         return jsonify({'error': 'Error sending message: ' + str(e)}), 500
 
 
-@inbox_user_api.route('/messages/trash', methods=['POST'])
+@inbox_user_api.route('/messages/trash/', methods=['POST'])
 def delete_inbox_message():
 
     try:
@@ -104,33 +105,36 @@ def delete_inbox_message():
 
         message = Bandeja_de_entrada.query.filter_by(id=message_id).first()
 
-        deleted_message = Mensajes_eliminados(
-            id = message.id,
-            emisor_id=message.emisor_id,
-            receptor_id=message.receptor_id,
-            asunto=message.asunto,
-            mensaje=message.mensaje,
-            fecha=message.fecha
-        )
-        db.session.delete(message)
-        db.session.add(deleted_message)
-        db.session.commit()
+        if message:
+            deleted_message = Mensajes_eliminados(
+                id=message.id,
+                emisor_id=message.emisor_id,
+                receptor_id=message.receptor_id,
+                asunto=message.asunto,
+                mensaje=message.mensaje,
+                fecha=message.fecha
+            )
+            db.session.delete(message)
+            db.session.add(deleted_message)
+            db.session.commit()
 
-        response = {
-            'emimsor_id': message.emisor_id,
-            'receptor_id':  message.receptor_id,
-            'asunto': message.asunto,
-            'mensaje': message.mensaje,
-            'fecha': message.fecha
-        }
+            response = {
+                'emisor_id': message.emisor_id,
+                'receptor_id': message.receptor_id,
+                'asunto': message.asunto,
+                'mensaje': message.mensaje,
+                'fecha': message.fecha
+            }
 
-        return jsonify({'Message added to trash succesfully': response})
+            return jsonify({'Message added to trash successfully': response})
+        else:
+            return jsonify({'error': f'Message with id {message_id} not found'}), 404
 
     except Exception as e:
         return jsonify({'error': 'Error deleting message: ' + str(e)}), 500
 
 
-@inbox_user_api.route('/messages/trash/<int:user_id>', methods=['DELETE'])
+@inbox_user_api.route('/messages/trash/<int:message_id>', methods=['DELETE'])
 def delete_message_permanently(user_id):
 
     try:
@@ -161,7 +165,8 @@ def recover_deleted_message():
     try:
         message_id = request.json.get('message_id')
 
-        deleted_message = Mensajes_eliminados.query.filter_by(id=message_id).first()
+        deleted_message = Mensajes_eliminados.query.filter_by(
+            id=message_id).first()
 
         recover_message = Bandeja_de_entrada(
             id=deleted_message.id,

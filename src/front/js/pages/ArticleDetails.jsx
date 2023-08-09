@@ -1,12 +1,14 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Context } from "../store/appContext";
+import { useNavigate } from "react-router-dom";
 
 const ArticleDetails = () => {
-    const location = useLocation();
-    const { element } = location.state;
-    const [artist, title] = element.titulo.split(' - ')
+    const { store } = useContext(Context);
+    const navigate = useNavigate();
+    const article = store.articleToEdit;
+    const [artist, title] = store.articleToEdit.titulo.split(' - ')
 
-    if (!element) {
+    if (!article) {
         return <div>Loading...</div>;
     }
 
@@ -14,7 +16,7 @@ const ArticleDetails = () => {
         <div className="container mt-3">
             <div className="row">
                 <div className="col-md-3">
-                    <img src={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen} alt="{element.title}"
+                    <img src={article.url_imagen} alt="{article.title}"
                         className="img-fluid" />
                 </div>
                 <div className="col-md-7">
@@ -28,7 +30,7 @@ const ArticleDetails = () => {
                             <strong>ID:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.id}
+                            {article.id}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -44,7 +46,7 @@ const ArticleDetails = () => {
                             <strong>Sello:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.sello}
+                            {article.sello}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -52,7 +54,7 @@ const ArticleDetails = () => {
                             <strong>Formato:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.formato}
+                            {article.formato}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -60,7 +62,7 @@ const ArticleDetails = () => {
                             <strong>País:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.pais}
+                            {article.pais}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -68,7 +70,7 @@ const ArticleDetails = () => {
                             <strong>Publicado:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.publicado}
+                            {article.publicado}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -76,7 +78,7 @@ const ArticleDetails = () => {
                             <strong>Género:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.genero}
+                            {article.genero}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -84,26 +86,22 @@ const ArticleDetails = () => {
                             <strong>Estilos:</strong>
                         </div>
                         <div className="col-md-3">
-                            {element.estilos}
+                            {article.estilos}
                         </div>
                     </div>
                 </div>
                 <div className="col-md-2">
                     <div className="btn-group-vertical btn-block" role="group">
-                        <Link
-                            to={`/articles/edit/${element.id}`}
-                            state={{ element: element }}
-                            className="mb-2"
-                        >
+                        <div onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }}>
                             Editar artículo
-                        </Link>
+                        </div>
                         <button className="btn btn-success mb-2">Agregar a deseados</button>
                         <button className="btn btn-secondary mb-2">Comprar Vinilo</button>
                         <button className="btn btn-secondary mb-2">Vender Vinilo</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

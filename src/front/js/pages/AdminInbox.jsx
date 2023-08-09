@@ -3,7 +3,7 @@ import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
 
-const User_inbox = () => {
+export const AdminInbox = () => {
 
     const navigate = useNavigate()
     const { actions } = useContext(Context)
@@ -11,13 +11,13 @@ const User_inbox = () => {
     const userId = localStorage.getItem('userID');
     const [data, setData] = useState({ inbox: [] });
 
-    const handleNavigateInbox = () => {
-        navigate('/messages/');
-    };
-
     const handleNavigateSent = () => {
         navigate('/messages/sent')
     }
+
+    const handleNavigateInbox = () => {
+        navigate('/messages/');
+    };
 
     const handleNavigateTrash = () => {
         navigate('/messages/trash')
@@ -71,8 +71,8 @@ const User_inbox = () => {
                         </div>
                         <div className="mt-3">
                             <div>
-                                <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Bandeja de entrada</button>
-                                <button onClick={() => handleNavigateSent()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Enviados</strong></button>
+                                <button onClick={() => handleNavigateInbox()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Bandeja de entrada</button>
+                                <button style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Enviados</strong></button>
                                 <button onClick={() => handleNavigateTrash()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Papelera</button>
                             </div>
                         </div>
@@ -106,7 +106,7 @@ const User_inbox = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td className="col">No hay mensajes en la bandeja de enviados.</td>
+                                            <td colSpan="4">No hay mensajes en la bandeja de entrada.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -118,5 +118,3 @@ const User_inbox = () => {
         </div>
     )
 }
-
-export default User_inbox

@@ -8,7 +8,7 @@ from api.utils import generate_sitemap, APIException
 inbox_admin_api = Blueprint('inbox_admin_api', __name__)
 
 
-@inbox_admin_api.route('/messages', methods=['GET'])
+@inbox_admin_api.route('/messages/', methods=['GET'])
 def get_all_messages():
 
     messages = Bandeja_de_entrada_admin.query.all()
@@ -45,10 +45,11 @@ def archive_inbox_message():
     try:
         message_id = request.json.get('message_id')
 
-        message = Bandeja_de_entrada_admin.query.filter_by(id=message_id).first()
+        message = Bandeja_de_entrada_admin.query.filter_by(
+            id=message_id).first()
 
         message_to_archive = Archivo_mensajes_admin(
-            id = message.id,
+            id=message.id,
             emisor_id=message.emisor_id,
             asunto=message.asunto,
             mensaje=message.mensaje,
@@ -77,7 +78,8 @@ def delete_message_permanently():
     try:
         message_id = request.json.get('message_id')
 
-        message = Bandeja_de_entrada_admin.query.filter_by(id=message_id).first()
+        message = Bandeja_de_entrada_admin.query.filter_by(
+            id=message_id).first()
 
         db.session.delete(message)
         db.session.commit()

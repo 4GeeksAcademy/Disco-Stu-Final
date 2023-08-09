@@ -4,19 +4,16 @@ import styles from "../../styles/Explorer.module.css";
 import ArticleCard from '../component/ArticleCardExplorer.jsx';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 
 const Explorer = () => {
-
     const { store, actions } = useContext(Context)
+    const navigate = useNavigate();
 
     useEffect(() => {
         actions.getAllArticles()
     }, [])
-
-
 
     return (
         <div id='general_div' className={styles.generalDiv}>
@@ -54,17 +51,14 @@ const Explorer = () => {
                                 const [artist, title] = element.titulo.split(' - ')
                                 return (
                                     <li key={index}>
-                                        <Link
-                                            to={`/article/${element.id}`}
-                                            state={{element: element}}
-                                        >
+                                        <div onClick={() => {navigate(`/article/${element.id}`); actions.setArticleToEdit(element)}} style={{ cursor: 'pointer' }}>
                                             <ArticleCard
                                                 key={index}
                                                 title={title}
                                                 artist={artist}
-                                                url_imagen={process.env.BACKEND_URL + "api/utils/images/" + element.url_imagen}
+                                                url_imagen={element.url_imagen}
                                             />
-                                        </Link>
+                                        </div>
                                     </li>
                                 )
                             })

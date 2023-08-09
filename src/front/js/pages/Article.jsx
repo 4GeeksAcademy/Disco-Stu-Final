@@ -5,16 +5,15 @@ import { Context } from "../store/appContext";
 import * as Yup from 'yup';
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-import { useLocation } from "react-router-dom";
 
 const Article = ({ mode }) => {
-    const { actions } = useContext(Context);
+    const { actions, store } = useContext(Context);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [genres, setGenres] = useState([]);
-    const location = useLocation();
-    const element = mode ? location?.state?.element : null;
+    const article = mode ? store.articleToEdit : null;
     const [successNoti, setSuccessNoti] = useState(false);
     const [errorNoti, setErrorNoti] = useState(false);
+    let imageFile = null;
 
     useEffect(() => {
         const fetchGenres = async () => {
@@ -42,21 +41,22 @@ const Article = ({ mode }) => {
     };
 
     if (mode && mode === "edit") {
-        initialValues.titulo = element.titulo;
-        initialValues.sello = element.sello;
-        initialValues.formato = element.formato;
-        initialValues.pais = element.pais;
-        initialValues.publicado = element.publicado;
+        initialValues.titulo = article.titulo;
+        initialValues.sello = article.sello;
+        initialValues.formato = article.formato;
+        initialValues.pais = article.pais;
+        initialValues.publicado = article.publicado;
         initialValues.genero = {
-            label: element.genero,
-            value: element.genero
+            label: article.genero,
+            value: article.genero
         }
-        initialValues.estilos = element.estilos;
+        initialValues.estilos = article.estilos;
+        initialValues.url_imagen = article.url_imagen;
 
-        const [artist, title] = element.titulo.split(' - ')
+        const [artist, title] = article.titulo.split(' - ')
         initialValues.artista_id = {
             label: artist,
-            value: element.artista_id
+            value: article.artista_id
         }
     }
 
@@ -88,20 +88,30 @@ const Article = ({ mode }) => {
         }
     }
 
-    const handleSubmit = (values, { resetForm }) => {
+    const handleImageUpload = (event) => {
+        console.log("handleImageUpload triggered");
+        console.log(event.target.files[0]);
+        imageFile = event.target.files[0];
+    }
+
+    const handleSubmit = async (values, { resetForm }) => {
         setIsSubmitting(true);
 
-        if (mode && mode === "edit")
-            values.id = element.id;
+        if (mode && mode === "edit") {
+            values.id = article.id;
+            values.tipo = "edit";
+        } else {
+            values.tipo = "add";
+        }            
 
         values.genero = values.genero.value;
         values.artista_id = values.artista_id.value;
-
+        values.user_id = localStorage.getItem('userID');
         console.log("values: " + JSON.stringify(values));
 
         setTimeout(async () => {
             try {
-                const response_data = await actions.addArticle(values);
+                const response_data = await actions.addArticleForApproval(values, imageFile);
                 console.log("values: " + JSON.stringify(values));
 
                 console.log("Success");
@@ -205,6 +215,18 @@ const Article = ({ mode }) => {
                                     />
                                     <ErrorMessage name="artista_id" component="div" className="text-danger" />
                                 </div>
+                                <div>
+                                    <label htmlFor="url_imagen">Foto</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        id="url_imagen"
+                                        name="url_imagen"
+                                        onChange={(e) => handleImageUpload(e)}
+                                    />
+                                    <ErrorMessage name="url_imagen" component="div" className="text-danger" />
+                                </div>
+
                                 <button className="form-control btn btn-success mt-3" type="submit">
                                     {isSubmitting ? 'Procesando...' : "Enviar"}
                                 </button>
