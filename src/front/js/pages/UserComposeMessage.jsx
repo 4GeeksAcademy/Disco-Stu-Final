@@ -53,7 +53,7 @@ export const UserComposeMessage = () => {
             const dia = fechaActual.getDate().toString().padStart(2, '0');
             const mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
             const fecha = `${dia}/${mes}/${fechaActual.getFullYear()}`;
-            const senderID = localStorage.getItem('userID'); // Obtener el user_id de localStorage
+            const senderID = localStorage.getItem('userID'); 
 
             let message_data = {};
 
