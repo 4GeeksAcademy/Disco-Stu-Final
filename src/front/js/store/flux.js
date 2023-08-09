@@ -86,9 +86,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			changePassword: async ({ currentPassword, newPassword, confirmPassword }) => {
+				try {
+					const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+					const backendUrl = process.env.BACKEND_URL + "api/users/update-password";
+					const response = await fetch(backendUrl, {
+						method: 'POST',
+						body: JSON.stringify({ old_password: currentPassword, new_password: newPassword }),
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}` // Agregar el token de autenticación en el encabezado
+						}
+					});
+
+					const responseData = await response.json(); // Leer el cuerpo de la respuesta solo una vez
+
+					if (!response.ok) {
+						throw new Error(responseData.error || "Error al cambiar la contraseña");
+					}
+
+					return responseData;
+
+				} catch (error) {
+					throw new Error("Error al cambiar la contraseña. Por favor inténtalo de nuevo");
+				}
+			},
+
 			logout: () => {
 				localStorage.removeItem('token');
-				setStore({ isLoggedIn: false });
+				localStorage.removeItem('userID');
+				setStore({ isLoggedIn: false }); // Actualizar el estado de autenticación
 			},
 
 			getUserById: async (userId) => {
@@ -140,13 +167,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					const responseData = await response.json();
 					return responseData.message;
+					return responseData.message;
 
 				} catch (error) {
 					throw new Error("Error al editar el usuario. Por favor, inténtelo de nuevo más tarde.");
 				}
 			},
-
-
 
 			getAllUsersInfo: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/users/all_users";
@@ -171,9 +197,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			deleteUser: async (userId) => {
-				const backendUrl = process.env.BACKEND_URL + "api/users/delete_user/";
-
 				try {
+					const backendUrl = process.env.BACKEND_URL + "api/users/delete_user/";
 					const response = await fetch(`${backendUrl}${userId}`, {
 						method: 'DELETE',
 					});
@@ -190,29 +215,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-
-			getAllMessages: async () => {
+			getAllMessages: async (userId) => {
 				try {
-					const store = getStore()
-					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/1')
+					const backendUrl = process.env.BACKEND_URL + "/api/inbox_user/messages/" + userId;
+					const response = await fetch(backendUrl)
+
 					if (!response.ok) {
 						throw new Error('Response error')
 					}
 					const data = await response.json()
-					console.log('Messages obtained succesfully: ', data)
-					setStore({ ...store, inbox: data.inbox })
-					setStore({ ...store, sent_messages: data.sent_messages })
-					setStore({ ...store, deleted_messages: data.deleted_messages })
+					console.log("Data obtenida de mensajes por id de usuario", data);
+					return data;
 				} catch (error) {
 					console.log('Error charging messages: ', error)
+					return [];
 				}
 			},
 
-			sendMessage: async (message_data) => {
+			sendMessage: async (senderID, message_data) => {
 				try {
-					console.log(message_data)
-					// const store = getStore()
-					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/sent/1', {
+					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/sent/" + senderID;
+					const response = await fetch(backendUrl, {
 						method: 'POST',
 						body: JSON.stringify(message_data),
 						headers: {
@@ -224,31 +247,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json()
 					console.log('Message sent succesfully', data)
-					const { getAllMessages } = getActions()
-					getAllMessages()
+					return data;
 				} catch (error) {
 					console.log('Error sending message: ', error)
 				}
 			},
 
-			deleteMessage: async (message_data) => {
+			deleteMessage: async (message_id) => {
 				try {
-					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/trash', {
-						method: 'POST',
-						body: JSON.stringify(message_data),
-						headers: {
-							"Content-Type": "application/json"
+					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/trash";
+					await Promise.all(selectedItems.map(async (messageId) => {
+						const response = await fetch(backendUrl, {
+							method: 'POST',
+							body: JSON.stringify({ message_id: messageId }),
+							headers: {
+								"Content-Type": "application/json"
+							}
+						});
+
+						if (!response.ok) {
+							console.log('Response error:', response.status);
 						}
-					})
-					if (!response.ok) {
-						console.log('Response error: ', response.status)
-					}
-					const data = await response.json()
-					console.log('Message deleted succesfully', data)
-					const { getAllMessages } = getActions()
-					getAllMessages()
+
+						const data = await response.json();
+						console.log('Message deleted successfully', data);
+					}));
+
+					setSelectedItems([]);
+					actions.getAllMessages(userId);
 				} catch (error) {
-					console.log('Error deleting message: ', error)
+					console.log('Error deleting messages:', error);
 				}
 			},
 
@@ -293,6 +321,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log('Error deleting sent message: ', error)
 				}
 			},
+
 			createArtist: async (artist) => {
 				const backendUrl = process.env.BACKEND_URL + "api/artists/create";
 				const response = await fetch(backendUrl, {
@@ -475,10 +504,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+
+			adminMessages: async () => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "/api/inbox_admin/messages/1";
+					const store = getStore()
+					const response = await fetch('backendUrl')
+					if (!response.ok) {
+						throw new Error('Response error')
+					}
+					const data = await response.json()
+					console.log('Messages obtained succesfully: ', data)
+					setStore({ ...store, inbox: data.inbox })
+					setStore({ ...store, sent_messages: data.sent_messages })
+					setStore({ ...store, deleted_messages: data.deleted_messages })
+				} catch (error) {
+					console.log('Error charging messages: ', error)
+				},
 			setArticleToEdit: (article) => {
 				const store = getStore();
 				setStore({ ...store, articleToEdit: article })
 			}
+			},
 		}
 	};
 };

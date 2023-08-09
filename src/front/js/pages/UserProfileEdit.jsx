@@ -23,7 +23,7 @@ export const UserProfileEdit = () => {
 
     const [userData, setUserData] = useState({
         nombre: "John Doe",
-        correo: "john@example.com",
+        // correo: "john@example.com",
         direccion_comprador: "123 Main St",
         ciudad_comprador: "New York",
         estado_comprador: "NY",
@@ -49,7 +49,7 @@ export const UserProfileEdit = () => {
         try {
             // Llama a la función editUser para enviar los datos al backend
             const userId = localStorage.getItem('userID')
-            const responseMessage = await editUser(userId, userData);
+            const responseMessage = await actions.editUser(userId, userData);
 
             // Aquí puedes manejar la respuesta de la API, si es necesario
             console.log(responseMessage);
@@ -100,7 +100,7 @@ export const UserProfileEdit = () => {
                                     onChange={handleInputChange}
                                 />
                             </div>
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label htmlFor="correo">Correo:</label>
                                 <input
                                     type="email"
@@ -110,7 +110,7 @@ export const UserProfileEdit = () => {
                                     value={userData.correo}
                                     onChange={handleInputChange}
                                 />
-                            </div>
+                            </div> */}
                             <div className="form-group">
                                 <label htmlFor="direccion_comprador">Dirección del Comprador:</label>
                                 <input
@@ -167,7 +167,7 @@ export const UserProfileEdit = () => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="telefono_comprador">Teléfono del Comprador:</label>
+                                <label htmlFor="telefono_comprador">Teléfono:</label>
                                 <input
                                     type="tel"
                                     className="form-control"
