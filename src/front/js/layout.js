@@ -17,10 +17,11 @@ import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
 import UserDeletedMessages from "./pages/UserDeletedMessages.jsx";
 import UserComposeMessage from "./pages/UserComposeMessage.jsx";
-
+import Cart from './pages/Cart.jsx'
 import Explorer from './pages/Explorer.jsx'
 import Article from "./pages/Article.jsx";
 import ArticleDetails from "./pages/ArticleDetails.jsx";
+import SellArticle from './pages/SellArticle.jsx'
 import Offers from './pages/Offers.jsx'
 import { AdminUsers } from "./pages/AdminUsers.jsx"
 
@@ -67,7 +68,9 @@ const Layout = () => {
                         <Route element={<UserSentMessages />} path="/messages/sent" />
                         <Route element={<UserDeletedMessages />} path="/messages/trash" />
                         <Route element={<UserComposeMessage />} path="/messages/compose" />
-                        <Route element={<Offers />} path="/offers" />
+                        <Route element={<SellArticle />} path="/sell" />
+                        <Route element={<Offers />} path="/sell/releases" />
+                        <Route element={<Cart />} path="/cart" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

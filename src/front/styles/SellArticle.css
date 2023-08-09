@@ -1,0 +1,66 @@
+#article_info img {
+    width: 150px;
+}
+
+#image{
+    padding: 0;
+}
+
+#advertencia{
+    border: solid 1px #eeeeee;
+    margin: 30px 40px 0px 40px;
+    padding: 5px;
+}
+
+#article_info p {
+    font-size: 0.9rem;
+    margin-right: 100px;
+}
+
+#article_info{
+    border: solid 1px #eeeeee;
+    margin: 0px 40px 0px 40px;
+    padding: 10px;
+}
+
+#title{
+    margin: 30px 0px 20px 40px;
+}
+
+#properties{
+    border: solid 1px #eeeeee;
+    margin: 30px 40px 0px 40px;
+}
+
+#properties h5{
+    margin: 0;
+    background-color: #eeeeee;
+    padding: 5px 10px;
+}
+
+#properties label{
+    font-size: 0.9rem;
+    padding-left: 10px;
+    padding-bottom: 5px;
+}
+
+#properties select{
+    width: 200px;
+    margin-left: 10px;
+    font-size: 0.9rem;
+    padding-left: 10px;
+}
+
+#properties textarea{
+    width: 98.5%;
+    margin: 0px 10px 10px 10px;
+}
+
+#precio{
+    margin: 0;
+    background-color: #eeeeee;
+}
+
+#properties button{
+    margin: 20px 10px;
+}
