@@ -10,14 +10,15 @@ import { Context } from "../store/appContext";
 export const Navbar = () => {
 	const navigate = useNavigate()
 	const logged = localStorage.getItem('token');
-	const { store, actions } = useContext(Context);
+	const Auth = localStorage.getItem('Auth');
+	const { actions } = useContext(Context);
 
 	const handlerNavigateToExplorer = () => {
 		navigate('/explorer')
 	}
 
 	const handleLoginClick = (e) => {
-		localStorage.setItem("lastVisitedPage", window.location.href);
+		sessionStorage.setItem("lastVisitedPage", window.location.href);
 		navigate("/login");
 	};
 
@@ -56,50 +57,67 @@ export const Navbar = () => {
 							Explorar
 						</li>
 					</ul>
+
 					<form className="d-flex">
 						{logged ? (
-							<>
-								<ul className="navbar-nav me-auto my-2 my-lg-0">
-									<li className="nav-item dropdown mx-3">
-										<div className="d-flex align-items-center">
+							<ul className="navbar-nav me-auto my-2 my-lg-0">
+								<li className="nav-item dropdown mx-3">
+									<div className="d-flex align-items-center">
+										<div className="nav-item me-3 me-lg-0">
+											<Link to="/user-profile" className="nav-link text-white">
+												<i className="fa-solid fa-face-smile-wink"></i>
+											</Link>
+										</div>
+										<div className="nav-item me-3 me-lg-0">
+											<Link to="" className="nav-link text-white">
+												<i className="fas fa-shopping-cart"></i>
+											</Link>
+										</div>
+										{logged && Auth ? (
 											<div className="nav-item me-3 me-lg-0">
-												<Link to="/user-profile" className="nav-link text-white"><i className="fa-solid fa-face-smile-wink"></i></Link>
+												<Link to="/approvals" className="nav-link text-white">
+													<i className="fa-solid fa-clipboard"></i>
+												</Link>
 											</div>
-											<div className="nav-item me-3 me-lg-0">
-												<Link to="" className="nav-link text-white"><i className="fas fa-shopping-cart"></i></Link>
-											</div>
-											<div className="nav-item me-3 me-lg-0">
-												<Link to="/messages" className="nav-link text-white"><i className="fa-solid fa-message"></i></Link>
-											</div>
-											<div
-												className="nav-link dropdown-toggle text-white"
-												href="#"
-												role="button"
-												data-bs-toggle="dropdown"
-												aria-expanded="false"
-											>
-												<i className="far fa-user"></i>
-											</div>
-											<ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black" aria-labelledby="navbarScrollingDropdown">
-												<div><hr className="dropdown-divider" /></div>
-												<div><Link className="dropdown-item" to="/user-profile"><i className="fa-solid fa-face-smile-wink"></i> Perfil</Link></div>
-												<div><Link className="dropdown-item" to="/"> <i className="fa-solid fa-circle-question"></i> Ayuda</Link></div>
-												<div><Link className="dropdown-item" to="/update-password"> <i className="fa-solid fa-gear"></i> Configuración</Link></div>
-												<div>
-													<button
-														onClick={handleLogoutClick}
-														className="dropdown-item"
-														type="submit"
-													>
-														<i className="fa-solid fa-power-off"></i> Cerrar sesión
-													</button>
-												</div>
-											</ul>
+										) : null}
+										<div className="nav-item me-3 me-lg-0">
+											<Link to="/messages" className="nav-link text-white">
+												<i className="fa-solid fa-message"></i>
+											</Link>
 										</div>
 
-									</li>
-								</ul>
-							</>
+										<div
+											className="nav-link dropdown-toggle text-white"
+											href="#"
+											role="button"
+											data-bs-toggle="dropdown"
+											aria-expanded="false"
+										>
+											<i className="far fa-user"></i>
+										</div>
+										<ul
+											className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black"
+											aria-labelledby="navbarScrollingDropdown"
+										>
+											<hr className="dropdown-divider" />
+											<Link className="dropdown-item" to="/user-profile">
+												<i className="fa-solid fa-face-smile-wink"></i> Perfil
+											</Link>
+
+											<Link className="dropdown-item" to="/update-password">
+												<i className="fa-solid fa-gear"></i> Configuración
+											</Link>
+											<button
+												onClick={handleLogoutClick}
+												className="dropdown-item"
+
+											>
+												<i className="fa-solid fa-power-off"></i> Cerrar sesión
+											</button>
+										</ul>
+									</div>
+								</li>
+							</ul>
 						) : (
 							<>
 								<button
@@ -107,6 +125,7 @@ export const Navbar = () => {
 									className="nav-link text-white btn btn-link"
 									tabIndex="-1"
 									aria-disabled="true"
+									type="button"
 								>
 									Iniciar sesión
 								</button>
@@ -118,6 +137,8 @@ export const Navbar = () => {
 							</>
 						)}
 					</form>
+
+
 				</div>
 			</div>
 		</nav >

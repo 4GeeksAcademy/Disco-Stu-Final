@@ -9,6 +9,7 @@ from api.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from api.endpoints.decorators import admin_required, regular_user_required
+from sqlalchemy.exc import SQLAlchemyError
 
 user_api = Blueprint('user_api', __name__)
 
@@ -63,7 +64,8 @@ def create_token():
         return jsonify({
             'access_token': access_token,
             'user_id': user.id,
-            'is_admin': user.is_admin
+            'is_admin': user.is_admin,
+            'email': user.correo
         }), 200
 
     except Exception:
@@ -231,9 +233,9 @@ def get_users():
         return jsonify({"error": "A ocurrido un error al intentar obtener usuarios: " + str(e)}), 500
 
 
-@user_api.route('/delete_all', methods=['GET'])
-def delete_all():
-    User.query.delete()
-    db.session.commit()
+# @user_api.route('/delete_all', methods=['GET'])
+# def delete_all():
+#     User.query.delete()
+#     db.session.commit()
 
-    return jsonify({"message": "Todos los usuarios han sido eliminados"})
+#     return jsonify({"message": "Todos los usuarios han sido eliminados"})

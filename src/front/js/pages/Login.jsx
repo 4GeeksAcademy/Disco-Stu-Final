@@ -41,7 +41,7 @@ export const Login = () => {
             if (userData.is_admin) {
                 navigate("/admin-panel");
             } else {
-                const lastVisitedPage = localStorage.getItem("lastVisitedPage");
+                const lastVisitedPage = sessionStorage.getItem("lastVisitedPage");
                 const urlParts = lastVisitedPage.split("/");
                 const pageName = urlParts[urlParts.length - 1];
                 if (pageName) {
