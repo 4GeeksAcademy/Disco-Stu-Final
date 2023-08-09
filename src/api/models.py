@@ -133,7 +133,8 @@ class Carrito(db.Model):
     __tablename__ = 'carrito'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+    vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    oferta_id = db.Column(db.Integer, db.ForeignKey('oferta.id'))
 
 class Bandeja_de_entrada(db.Model):
     _tablename__ = 'bandeja_de_entrada'
