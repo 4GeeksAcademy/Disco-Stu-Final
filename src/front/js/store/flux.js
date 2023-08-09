@@ -10,6 +10,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
 
+			articleToEdit: {}
 		},
 		actions: {
 			registerNewUser: async (newUser) => {
@@ -169,6 +170,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 
 					const responseData = await response.json();
+					return responseData.message;
 					return responseData.message;
 
 				} catch (error) {
@@ -394,16 +396,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
-			addArticle: async (article) => {
-				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+			addArticleForApproval: async (article, file) => {
+				const backendUrl = process.env.BACKEND_URL + "api/approvals/add";
+
+				const formData = new FormData();
+				formData.append("article", JSON.stringify(article));
+				formData.append("file", file);
+
 				const response = await fetch(backendUrl, {
 					method: "POST",
-					body: JSON.stringify(article),
-					headers: {
-						"Content-Type": "application/json"
-					}
+					body: formData,
+					mode: "no-cors"
 				});
+
+				return response;
 			},
+			/*addArticle: async (article, file) => {
+				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+
+				const formData = new FormData();
+				formData.append("article", JSON.stringify(article));
+				formData.append("file", file);
+
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					body: formData,
+					mode: "no-cors"
+				});
+
+				return response;
+			},*/
 			getAllArtists: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/artists/";
 				const response = await fetch(backendUrl, {
@@ -520,7 +542,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 					setStore({ ...store, deleted_messages: data.deleted_messages })
 				} catch (error) {
 					console.log('Error charging messages: ', error)
-				}
+				},
+			setArticleToEdit: (article) => {
+				const store = getStore();
+				setStore({ ...store, articleToEdit: article })
+			}
 			},
 		}
 	};

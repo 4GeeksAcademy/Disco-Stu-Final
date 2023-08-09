@@ -36,6 +36,8 @@ class User(db.Model):
     cantidad_de_valoraciones = db.Column(db.Integer)
     is_admin = db.Column(db.Boolean(), unique=False, nullable=False)
 
+    aprobaciones = db.relationship('Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
+
 
 class Articulo(db.Model):
     __tablename__ = 'articulo'
@@ -69,6 +71,37 @@ class Articulo(db.Model):
             'estilos': self.estilos
         }
 
+
+class Aprobaciones(db.Model):
+    __tablename__ = 'aprobaciones'
+    id = db.Column(db.Integer, primary_key=True)
+    url_imagen = db.Column(db.String(250))
+    artista_id = db.Column(db.Integer, nullable=False)
+    titulo = db.Column(db.String(250), nullable=False)
+    sello = db.Column(db.String(250), unique=False)
+    formato = db.Column(db.String(250))
+    pais = db.Column(db.String(250), nullable=False)
+    publicado = db.Column(db.String(250), nullable=False)
+    genero = db.Column(db.String(250), nullable=False)
+    estilos = db.Column(db.String(250))
+    tipo = db.Column(db.String(15), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'url_imagen': self.url_imagen,
+            'artista_id': self.artista_id,
+            'titulo': self.titulo,
+            'sello': self.sello,
+            'formato': self.formato,
+            'pais': self.pais,
+            'publicado': self.publicado,
+            'genero': self.genero,
+            'estilos': self.estilos,
+            'tipo': self.tipo,
+            "user_id": self.user_id
+        }
 
 class Tracks(db.Model):
     __tablename__ = 'tracks'
@@ -107,7 +140,8 @@ class Carrito(db.Model):
     __tablename__ = 'carrito'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+    vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    oferta_id = db.Column(db.Integer, db.ForeignKey('oferta.id'))
 
 
 class Bandeja_de_entrada(db.Model):

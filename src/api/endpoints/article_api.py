@@ -2,8 +2,10 @@
 This module takes care of starting the API Server for users, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Articulo, Artista
+from api.models import db, Articulo, Artista, Aprobaciones
 from sqlalchemy import func
+from api.endpoints.utils import save_to_cloudinary
+import json
 
 article_api = Blueprint('article_api', __name__)
 
@@ -39,14 +41,19 @@ def get_genres():
 
     return jsonify(response_body)
 
-
 @article_api.route('/add', methods=['POST'])
 def add():
-    data = request.get_json()
+    data = json.loads(request.form.get('article'))
+    file = request.files['file']
+    file_name = file.filename
 
     try:
+        data['url_imagen'] = save_to_cloudinary(file, file_name)
+
         if data.get('id') and data.get('id') > 0:
             article = db.session.query(Articulo).get(data['id'])
+            artist = Artista.query.get(article.artista_id)
+            article.titulo = artist.nombre + " - " + article.titulo
             if article:
                 for key, value in data.items():
                     setattr(article, key, value)
@@ -54,7 +61,6 @@ def add():
                 db.session.commit()
         else:
             article = Articulo(**data)
-            print("artible received: " + str(data))
             artist = Artista.query.get(article.artista_id)
             article.titulo = artist.nombre + " - " + article.titulo
             db.session.add(article)

@@ -20,12 +20,13 @@ import { Contact } from "./pages/Contact.jsx"
 import { About } from "./pages/About.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
+import Cart from './pages/Cart.jsx'
 import { UserDeletedMessages } from "./pages/UserDeletedMessages.jsx";
 import { UserComposeMessage } from "./pages/UserComposeMessage.jsx";
-
 import Explorer from './pages/Explorer.jsx'
 import Article from "./pages/Article.jsx";
 import ArticleDetails from "./pages/ArticleDetails.jsx";
+import SellArticle from './pages/SellArticle.jsx'
 import Offers from './pages/Offers.jsx'
 
 //Components
@@ -78,7 +79,9 @@ const Layout = () => {
                         <Route element={<Explorer />} path='/explorer' />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<Offers />} path="/offers" />
+                        <Route element={<SellArticle />} path="/sell" />
+                        <Route element={<Offers />} path="/sell/releases" />
+                        <Route element={<Cart />} path="/cart" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
