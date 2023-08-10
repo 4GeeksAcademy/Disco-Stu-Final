@@ -141,7 +141,7 @@ class Carrito(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    oferta_id = db.Column(db.Integer, db.ForeignKey('oferta.id'))
+    oferta_id = db.Column(db.Integer, db.ForeignKey('ofertas.id'))
 
 
 class Bandeja_de_entrada(db.Model):

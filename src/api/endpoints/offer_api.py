@@ -10,12 +10,17 @@ offer_api = Blueprint('offer_api', __name__)
 @offer_api.route('/<int:article_id>', methods=['GET'])
 def get_offers(article_id):
 
-    articles = Articulo.query.filter_by(articulo_id=article_id).all()
+    articles = Ofertas.query.filter_by(articulo_id=article_id).all()
 
     articles_response = []
 
     for article in articles:
+        vendedor_id = article.vendedor_id
+        vendedor = User.query.filter_by(id=vendedor_id).first()
         article_dict = {
+            'id': article.id,
+            'vendedor_nombre': vendedor.nombre,
+            'pais_vendedor': vendedor.pais_comprador,
             'vendedor_id': article.vendedor_id,
             'articulo_id': article.articulo_id,
             'condicion_funda': article.condicion_funda,
@@ -25,21 +30,23 @@ def get_offers(article_id):
         }
         articles_response.append(article_dict)
 
-    return jsonify({'Offers': articles_response}), 200
+    return jsonify(articles_response), 200
 
 @offer_api.route('/post', methods=['POST'])
 def post_offer():
 
-    vendedor_id = request.query.get('vendedor_id')
-    articulo_id = request.query.get('articulo_id')
-    condicion_soporte = request.query.get('condicion_soporte')
-    condicion_funda = request.query.get('condicion_funda')
-    precio = request.query.get('precio')
-    comentario = request.query.get('comentario')
-    cantidad = int.request.query.get('cantidad')
+    data = request.json
+
+    vendedor_id = data.get('vendedor_id')
+    articulo_id = data.get('articulo_id')
+    condicion_soporte = data.get('condicion_soporte')
+    condicion_funda = data.get('condicion_funda')
+    precio = data.get('precio')
+    comentario = data.get('comentario')
+    cantidad = int(data.get('cantidad'))
 
     for _ in range(cantidad):
-        article = Articulo(
+        article = Ofertas(
             vendedor_id=vendedor_id,
             articulo_id=articulo_id,
             condicion_soporte=condicion_soporte,
@@ -50,7 +57,16 @@ def post_offer():
         db.session.add(article)
         db.session.commit()
 
-    return jsonify('Offer added'), 200
+    response_object = {
+        'vendedor_id': vendedor_id,
+        'articulo_id': articulo_id,
+        'condicion_funda': condicion_funda,
+        'condicion_soporte': condicion_soporte,
+        'precio': precio,
+        'comentario': comentario
+    }
+
+    return jsonify('Offer added', response_object), 200
 
 @offer_api.route('/post/<int:offer_id>', methods=['PUT'])
 def edit_offer(offer_id):

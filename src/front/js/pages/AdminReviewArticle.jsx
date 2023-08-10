@@ -2,11 +2,12 @@ import React, { useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
-const ArticleDetails = () => {
+export const articuleReview = () => {
     const { store } = useContext(Context);
     const navigate = useNavigate();
     const article = JSON.parse(localStorage.getItem('currentArticle'));
     const [artist, title] = article.titulo.split(' - ')
+
 
     if (!article) {
         return <div>Loading...</div>;
@@ -105,4 +106,3 @@ const ArticleDetails = () => {
     )
 }
 
-export default ArticleDetails;
