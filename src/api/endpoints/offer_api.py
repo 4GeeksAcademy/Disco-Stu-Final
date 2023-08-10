@@ -18,6 +18,7 @@ def get_offers(article_id):
         vendedor_id = article.vendedor_id
         vendedor = User.query.filter_by(id=vendedor_id).first()
         article_dict = {
+            'id': article.id,
             'vendedor_nombre': vendedor.nombre,
             'pais_vendedor': vendedor.pais_comprador,
             'vendedor_id': article.vendedor_id,
@@ -36,11 +37,11 @@ def post_offer():
 
     data = request.json
 
-    vendedor_id = int(data.get('vendedor_id'))
-    articulo_id = int(data.get('articulo_id'))
+    vendedor_id = data.get('vendedor_id')
+    articulo_id = data.get('articulo_id')
     condicion_soporte = data.get('condicion_soporte')
     condicion_funda = data.get('condicion_funda')
-    precio = int(data.get('precio'))
+    precio = data.get('precio')
     comentario = data.get('comentario')
     cantidad = int(data.get('cantidad'))
 

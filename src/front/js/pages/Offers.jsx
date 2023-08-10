@@ -15,30 +15,16 @@ const Offers = () => {
         actions.getOffers(article.id)
     }, [])
 
-    // const article = {
-    //     'titulo': 'Younger Than Me - 90s Wax One',
-    //     'sello': '90s Wax One',
-    //     'formato': 'Vinyl, Limited Edition, Numbered, Yellow',
-    //     'pais': 'UK',
-    //     'publicado': '6 Oct 2000',
-    //     'genero': 'Electronica',
-    //     'estilos': 'House, Acid House, New Beat',
-    //     'url_imagen': 'https://i.discogs.com/BLXOkeKHYuLrZATYJ1a61EP4m308Sv6PlEskMqGhywc/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTExMDU4/ODk3LTE1MTY2NTEx/NDctOTQ3OS5qcGVn.jpeg'
-    // }
-
-    // const offer = {
-    //     'vendedor': 'Fer Ferchito',
-    //     'articulo': 'Younger Than Me - 90s Wax One',
-    //     'funda': 'Near Mint (NM)',
-    //     'soporte': 'Very Good Plus (VG+)',
-    //     'pais_vendeor': 'United Kingdom',
-    //     'valoracion': '98%, 145 valoraciones',
-    //     'precio': '€19.00',
-    //     'comentario': 'Funda con esquina torcida. Pegatina en la galleta del disco'
-    // }
-
-
-
+    const addItemToCart = (offer) => {
+        const user_id = localStorage.getItem('userID');
+        const cart_element = {
+            'user_id': user_id,
+            'vendedor_id': offer.vendedor_id,
+            'oferta_id': offer.id
+        }
+        actions.newCartElement(cart_element)
+        navigate('/cart')
+    }
 
     return (
         <div>
@@ -126,7 +112,7 @@ const Offers = () => {
                                             </div>
                                         </td>
                                         <td style={{ width: '16%', padding: '0px 20px 0px 10px' }}>
-                                            <button type="button" class={`btn btn-success ${styles.cartBtn}`}>Añadir al carrito</button>
+                                            <button onClick={() => addItemToCart(offer)} type="button" className={`btn btn-success ${styles.cartBtn}`}>Añadir al carrito</button>
                                         </td>
                                     </tr>
                                 );

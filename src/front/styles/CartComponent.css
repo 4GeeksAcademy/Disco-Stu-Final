@@ -1,0 +1,28 @@
+#articles p{
+    font-size: 0.9rem;
+    padding-left: 10px;
+    padding-rigth: 10px;
+}
+
+#costs p{
+    font-size: 0.9rem;
+    margin-left: 10px;
+    margin-rigth: 10px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+#btn{
+    width: 98%;
+    margin-left: auto;
+    margin-top: 20px;
+}
+
+#seller_info{
+    background-color: #eeeeee;
+    height: 30px;
+    font-weight: bold;
+    padding: 15px;
+}

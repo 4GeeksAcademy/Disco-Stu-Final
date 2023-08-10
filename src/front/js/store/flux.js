@@ -10,6 +10,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			filtered_explorer_articles: [],
 			on_filtered_or_explorer: true,
 			currentOffers: [],
+			cart: []
 		},
 		actions: {
 			registerNewUser: async (newUser) => {
@@ -557,7 +558,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error on adding offer response')
 					}
 
-					const data = response.json()
+					const data = await response.json()
 					console.log('Offer added:', data)
 
 				} catch (error) {
@@ -580,6 +581,110 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log("Ofertas obtenidas", store.currentOffers)
 				} catch (error) {
 					console.log('Error getting offers:', error)
+				}
+			},
+
+			newCartElement: async (new_element) => {
+				try{
+					console.log(new_element)
+					const backendUrl = process.env.BACKEND_URL + "/api/cart/add";
+					const response = await fetch(backendUrl, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(new_element)
+					});
+					if (!response.ok) {
+						throw new Error('Error on response')
+					}
+					const data = await response.json()
+					
+					if (data === 'Already exist') {
+						alert('El artículo ya existe en el carrito');
+					} else {
+						console.log('Offer added:', data);
+					}
+
+
+				}catch(error){
+					console.log('Error on adding cart element', error)
+				}
+			},
+
+			getCart: async () => {
+				try {
+					const user_id = localStorage.getItem('userID');
+					const backendUrl = process.env.BACKEND_URL + `/api/cart/${user_id}`;
+					const response = await fetch(backendUrl, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					if (!response.ok) {
+						throw new Error('Error on getting offers response')
+					}
+					const data = await response.json()
+					const store = getStore()
+					setStore({ ...store, cart: data })
+					console.log("Carrito obtenido", store.cart)
+				} catch (error) {
+					console.log('Error getting cart:', error)
+				}
+			},
+
+			deleteCartItem: async (cart_element) => {
+				try {
+					const store = getStore()
+					const updatedCart = store.cart.map(cartItem => {
+						if (cartItem.seller.id === cart_element.vendedor_id) {
+							const updatedOffers = cartItem.offers.filter(offer => offer.oferta_id !== cart_element.oferta_id);
+							return { ...cartItem, offers: updatedOffers };
+						}
+						return cartItem;
+					});
+					setStore({...store, cart: updatedCart})
+					const backendUrl = process.env.BACKEND_URL + '/api/cart/delete_item';
+					const response = await fetch(backendUrl, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(cart_element)
+					});
+					if (!response.ok) {
+						throw new Error('Error on deleting cart element response')
+					}
+					const data = await response.json()
+					
+					console.log('Cart article deleted', data)
+				} catch (error) {
+					console.log('Error deleting cart article:', error)
+				}
+			},
+
+			deleteCartItemsBySeller: async (cart_element) => {
+				try {
+					const store = getStore()
+					const updatedCart = store.cart.filter(cartItem => cartItem.seller.id !== cart_element.vendedor_id);
+					setStore({...store, cart: updatedCart})
+					const backendUrl = process.env.BACKEND_URL + '/api/cart/delete_by_seller';
+					const response = await fetch(backendUrl, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(cart_element)
+					});
+					if (!response.ok) {
+						throw new Error('Error on deleting cart by seller response')
+					}
+					const data = await response.json()
+					
+					console.log('Cart article deleted', data)
+				} catch (error) {
+					console.log('Error deleting cart articles by seller:', error)
 				}
 			}
 		}
