@@ -41,7 +41,7 @@ def get_all_grouped_by_genre():
         genre = genre_tuple[0]
         print(genre)
         group = db.session.query(Articulo).filter(
-            Articulo.genero == genre).all()
+            Articulo.genero == genre).limit(10).all()
 
         article_list = [article.to_dict() for article in group]
 

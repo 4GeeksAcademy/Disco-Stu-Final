@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ArticleCard from '../component/ArticleCard.jsx';
 import fondo from '../../img/LOGO2.png';
 import { Context } from "../store/appContext";
@@ -7,9 +7,20 @@ import { object } from "prop-types";
 import { Collapse } from "react-bootstrap";
 
 const Home = () => {
-
     const [showInfo, setShowInfo] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const { actions } = useContext(Context);
+    const [articles, setArticles] = useState({});
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const articles_response = await actions.getAllArticlesGroupedByGenre();
+            setArticles(articles_response);
+            console.log("articles: " + JSON.stringify(articles_response));
+        };
+
+        fetchData();
+    }, []);
 
     const objeto = {
         'titulo': 'Las esperanzas mas esperanzadas',

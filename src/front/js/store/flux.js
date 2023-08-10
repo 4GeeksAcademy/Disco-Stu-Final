@@ -376,6 +376,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+			getAllArticlesGroupedByGenre: async () => {
+				const backendUrl = process.env.BACKEND_URL + "api/articles/get_all_grouped_by_genre/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artículos");
+
+				const data = await response.json();
+
+				if (response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			},
 			getAllArticlesByGenre: async (genre) => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/genre/" + genre;
 				const response = await fetch(backendUrl, {
