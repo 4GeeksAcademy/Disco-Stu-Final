@@ -16,6 +16,7 @@ export const AdminApprovals = () => {
         try {
             const response = await actions.getArticleForApproval();
             setApprovalData(response);
+            console.log(response)
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -25,6 +26,7 @@ export const AdminApprovals = () => {
         try {
             const usersData = await actions.getAllUsersInfo();
             setUsers(usersData);
+            console.log(usersData.id)
         } catch (error) {
             console.error("Error fetching users:", error.message);
         }
@@ -79,7 +81,7 @@ export const AdminApprovals = () => {
                     <div className="container-fluid" style={{ margin: '30px' }}>
                         <div className="row" style={{ margin: '30px 100px' }}>
                             <div id="messages_center" className="">
-                                <h1 className="mb-3">Solicitudes de articulo nuevo</h1>
+                                <h1 className="mb-3">Articulos pendientes de aprobación</h1>
                                 <div className="d-flex justify-content-between mb-3">
                                     <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Aprobar</button>
                                     <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Rechazar</button>
@@ -103,11 +105,11 @@ export const AdminApprovals = () => {
                                                         <input type="checkbox" />
                                                     </td>
                                                     <td>
-                                                        <Link to={`/detalle/${item.id}`}>{item.titulo}</Link>
+                                                        <Link to={`/article-review/${item.id}`}>{item.titulo}</Link>
                                                     </td>
                                                     <td>{articleUsers[item.id]?.username}</td>
-                                                    <td>{item.Genero}</td>
-                                                    <td>{item.Pais}</td>
+                                                    <td>{item.genero}</td>
+                                                    <td>{item.pais}</td>
                                                 </tr>
                                             ))}
                                         </tbody>

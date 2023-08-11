@@ -3,10 +3,22 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 const ArticleDetails = () => {
-    const { store } = useContext(Context);
-    const navigate = useNavigate();
+    const { store, actions } = useContext(Context);
+     
     const article = JSON.parse(localStorage.getItem('currentArticle'));
     const [artist, title] = article.titulo.split(' - ')
+    const user_id = localStorage.getItem('userID');
+
+    const handleAddFavorites = async (user_id, article_id) => {
+        try {
+            const response = await actions.addFavorites( user_id, article_id );
+            console.log('Favorite added successfully:', response);
+
+        } catch (error) {
+            console.error('Error adding favorite:', error);
+
+        }
+    };
 
     if (!article) {
         return <div>Loading...</div>;
@@ -95,7 +107,7 @@ const ArticleDetails = () => {
                         <div onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }}>
                             Editar artículo
                         </div>
-                        <button className="btn btn-success mb-2">Agregar a deseados</button>
+                        <button className="btn btn-success mb-2" onClick={() => handleAddFavorites(user_id, article.id)}>Agregar a deseados</button>
                         <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
                         <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
                     </div>

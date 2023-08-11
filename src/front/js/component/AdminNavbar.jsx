@@ -33,6 +33,20 @@ export const AdminNavbar = () => {
                 <Link className="nav-link" to="/">
                     <img style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
                 </Link>
+                <div className="collapse navbar-collapse" id="navbarScroll">
+                    <ul className="navbar-nav me-auto my-lg-0">
+                        <SearchBar />
+                        <li
+                            onClick={() => handlerNavigateToExplorer()}
+                            style={{
+                                padding: '9px 0px 0px 18px',
+                                margin: 0,
+                                cursor: 'pointer'
+                            }}>
+                            Explorar
+                        </li>
+                    </ul>
+                </div>
                 <form className="d-flex">
                     {logged ? (
                         <ul className="navbar-nav me-auto my-2 my-lg-0">
@@ -40,7 +54,7 @@ export const AdminNavbar = () => {
                                 <div className="d-flex align-items-center">
                                     <div className="nav-item me-3 me-lg-0">
                                         <Link to="/admin-panel" className="nav-link text-white">
-                                            <i className="fa-solid fa-face-smile-wink"></i>
+                                            <i class="fa-solid fa-users"></i>
                                         </Link>
                                     </div>
                                     <div className="nav-item me-3 me-lg-0">
@@ -49,7 +63,7 @@ export const AdminNavbar = () => {
                                         </Link>
                                     </div>
                                     <div className="nav-item me-3 me-lg-0">
-                                        <Link to="/messages" className="nav-link text-white">
+                                        <Link to="/admin-inbox" className="nav-link text-white">
                                             <i className="fa-solid fa-message"></i>
                                         </Link>
                                     </div>
@@ -73,7 +87,7 @@ export const AdminNavbar = () => {
                                         </Link>
 
                                         <Link className="dropdown-item" to="/update-password">
-                                            <i className="fa-solid fa-gear"></i> Configuración
+                                            <i className="fa-solid fa-gear"></i> Contraseña
                                         </Link>
                                         <button
                                             onClick={handleLogoutClick}

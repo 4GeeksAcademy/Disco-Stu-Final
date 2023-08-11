@@ -3,6 +3,7 @@ import { Form, Button } from 'react-bootstrap';
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
     currentPassword: Yup.string().required('Este campo es requerido'),
@@ -30,12 +31,32 @@ export const ChangePassword = () => {
     };
 
     return (
-        <div className="container mt-3">
+
+        <div className="container-fluid px-0 mx-0">
+            <div className="card border-0 rounded-0">
+                <div
+                    className="text-white d-flex flex-row"
+                    style={{ backgroundColor: "#000", height: "100px" }}
+                >
+                    <div
+                        className="ms-4 mt-5 d-flex flex-column"
+                        style={{ width: "150px" }}
+                    ></div>
+                    <div className="ms-3" style={{ marginTop: "130px" }}></div>
+                </div>
+                <div
+                    className="p-4 text-black"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                >
+                    <h3 className="text-center">Administrar contraseña</h3>
+                    <div className="d-flex justify-content-end text-center py-1">
+                    </div>
+                </div>
+            </div>
             <main>
-                <div className="row">
+                <div className="row mt-4">
                     <div className="col-lg-3 col-md-3 col-sm-2 col-xs-3"></div>
                     <div className="col-lg-6 col-md-6 col-sm-8 col-xs-6">
-                        <h1 className="text-center mb-4">Cambiar Contraseña</h1>
                         <Formik
                             initialValues={{
                                 currentPassword: '',
@@ -87,11 +108,14 @@ export const ChangePassword = () => {
                                         <div className="d-grid gap-2 mt-4">
                                             <button
                                                 type="submit"
-                                                className="btn btn-success btn-block"
+                                                className="btn btn-outline-success btn-block"
                                                 disabled={isSubmitting}
                                             >
                                                 Cambiar Contraseña
                                             </button>
+                                            <Link to="/user-profile" className="btn btn-outline-secondary" data-mdb-ripple-color="dark">
+                                                Cancelar
+                                            </Link>
                                         </div>
                                     </div>
                                 </Form>
