@@ -16,41 +16,52 @@ favorite_api = Blueprint('favorite_api', __name__)
 @favorite_api.route('/', methods=['GET'])
 def get_all():
     favorites = Favoritos.query.all()
-    response = [favorites.to_dict() for approval in approvals]
+    response = [favorite.to_dict() for favorite in favorites]
 
     return jsonify(response), 200
 
 
-@favorite_api.route('/favorites/<int:user_id>', methods=['GET'])
+@favorite_api.route('/<int:user_id>', methods=['GET'])
 def favorites_by_user_id(user_id):
-    user_favorites = Favoritos.query.filter_by(user_id=user_id).all()
+    try:
+        user_favorites = Favoritos.query.filter_by(user_id=user_id).all()
 
-    if not user_favorites:
-        return jsonify({'message': 'User not found or no favorites'}), 404
+        if not user_favorites:
+            return jsonify({'message': 'User not found or no favorites'}), 404
 
-    favorites_list = [{'articulo_id': fav.articulo_id}
-                      for fav in user_favorites]
-    return jsonify({'user_id': user_id, 'favorites': favorites_list}), 200
+        favorites_data = []
+        for favorite in user_favorites:
+            favorites_data.append({
+                'id': favorite.id,
+                'user_id': favorite.user_id,
+                'articulo_id': favorite.articulo_id
+            })
+
+        return jsonify({'favorites': favorites_data})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
-@favorite_api.route('/favorites/<int:user_id>', methods=['POST'])
+@favorite_api.route('/<int:user_id>', methods=['POST'])
 def add_favorite(user_id):
+
     data = request.get_json()
 
-    if 'articulo_id' not in data:
-        return jsonify({'message': 'Missing articulo_id'}), 400
+    if 'article_id' not in data:
+        return jsonify({'message': 'Missing article_id'}), 400
 
-    new_favorite = Favoritos(user_id=user_id, articulo_id=data['articulo_id'])
+    new_favorite = Favoritos(user_id=user_id, articulo_id=data['article_id'])
     db.session.add(new_favorite)
     db.session.commit()
 
     return jsonify({'message': 'Favorite added successfully'}), 201
 
 
-@favorite_api.route('/favorites/<int:user_id>/<int:articulo_id>', methods=['DELETE'])
-def delete_favorite(user_id, articulo_id):
+@favorite_api.route('/<int:user_id>/favorites/<int:article_id>', methods=['DELETE'])
+def delete_favorite(user_id, article_id):
     favorite = Favoritos.query.filter_by(
-        user_id=user_id, articulo_id=articulo_id).first()
+        user_id=user_id, articulo_id=article_id).first()
 
     if not favorite:
         return jsonify({'message': 'Favorite not found'}), 404

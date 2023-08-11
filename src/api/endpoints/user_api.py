@@ -15,7 +15,6 @@ user_api = Blueprint('user_api', __name__)
 
 jwt_manager = JWTManager()
 
-
 @user_api.route('/signup', methods=['POST'])
 def signup():
 
@@ -72,7 +71,7 @@ def create_token():
         return jsonify({"Error": "Ocurrió un error durante el proceso de inicio de sesión. Por favor, verifica tus credenciales e inténtalo de nuevo."}), 500
 
 
-@user_api.route('/update-password', methods=['POST'])
+@user_api.route('/update-password', methods=['GET', 'POST'])
 @jwt_required()
 def change_password():
     try:
@@ -132,7 +131,6 @@ def logout():
 
 @user_api.route('/profile/<int:user_id>', methods=['GET'])
 @jwt_required()
-@regular_user_required
 def user_profile(user_id):
     try:
         user = User.query.get(user_id)

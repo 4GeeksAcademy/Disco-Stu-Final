@@ -110,35 +110,34 @@ def get_genres():
 
     return jsonify(response_body)
 
+# @article_api.route('/add', methods=['POST'])
+# def add():
+#     data = json.loads(request.form.get('article'))
+#     file = request.files['file']
+#     file_name = file.filename
 
-@article_api.route('/add', methods=['POST'])
-def add():
-    data = json.loads(request.form.get('article'))
-    file = request.files['file']
-    file_name = file.filename
+#     try:
+#         data['url_imagen'] = save_to_cloudinary(file, file_name)
 
-    try:
-        data['url_imagen'] = save_to_cloudinary(file, file_name)
+#         if data.get('id') and data.get('id') > 0:
+#             article = db.session.query(Articulo).get(data['id'])
+#             artist = Artista.query.get(article.artista_id)
+#             article.titulo = artist.nombre + " - " + article.titulo
+#             if article:
+#                 for key, value in data.items():
+#                     setattr(article, key, value)
+#                 db.session.add(article)
+#                 db.session.commit()
+#         else:
+#             article = Articulo(**data)
+#             artist = Artista.query.get(article.artista_id)
+#             article.titulo = artist.nombre + " - " + article.titulo
+#             db.session.add(article)
+#             db.session.commit()
+#     except Exception as e:
+#         return jsonify(e), 500
 
-        if data.get('id') and data.get('id') > 0:
-            article = db.session.query(Articulo).get(data['id'])
-            artist = Artista.query.get(article.artista_id)
-            article.titulo = artist.nombre + " - " + article.titulo
-            if article:
-                for key, value in data.items():
-                    setattr(article, key, value)
-                db.session.add(article)
-                db.session.commit()
-        else:
-            article = Articulo(**data)
-            artist = Artista.query.get(article.artista_id)
-            article.titulo = artist.nombre + " - " + article.titulo
-            db.session.add(article)
-            db.session.commit()
-    except Exception as e:
-        return jsonify(e), 500
-
-    return jsonify(article.to_dict()), 200
+#     return jsonify(article.to_dict()), 200
 
 
 """
@@ -152,3 +151,32 @@ def delete_all():
     db.session.commit()
 
     return jsonify({"message": "All items deleted"}), 200
+
+
+@article_api.route('/add', methods=['POST'])
+def add_article():
+    try:
+        data = request.json
+
+        artista_id = int(data['artista_id'])
+
+        nuevo_articulo = Articulo(
+            artista_id=artista_id,
+            titulo=data['titulo'],
+            sello=data['sello'],
+            formato=data['formato'],
+            pais=data['pais'],
+            publicado=data['publicado'],
+            genero=data['genero'],
+            estilos=data['estilos'],
+            url_imagen=data['url_imagen']
+        )
+
+        db.session.add(nuevo_articulo)
+        db.session.commit()
+
+        return jsonify({'message': 'Articulo agregado exitosamente', 'article_id': nuevo_articulo.id}), 201
+
+    except Exception as e:
+        db.session.rollback() 
+        return jsonify({'error': str(e)}), 500

@@ -9,6 +9,7 @@ import json
 
 approvals_api = Blueprint('approvals_api', __name__)
 
+
 @approvals_api.route('/', methods=['GET'])
 def get_all():
     approvals = Aprobaciones.query.all()
@@ -16,12 +17,13 @@ def get_all():
 
     return jsonify(response), 200
 
+
 @approvals_api.route('/add', methods=['POST'])
 def add():
     data = json.loads(request.form.get('article'))
     file = request.files['file']
     file_name = file.filename
-    
+
     session = db.session()
 
     if data and file:
@@ -56,3 +58,16 @@ def add():
                     return jsonify({'mensaje:': "Articulo agregado para aprobación"}), 200
             except Exception as e:
                 db.session.rollback()
+
+
+@approvals_api.route('/<int:approval_id>', methods=['DELETE'])
+def delete_aprobacion(approval_id):
+    approval_rejected = Aprobaciones.query.filter_by(id=approval_id).first()
+
+    if not approval_rejected:
+        return jsonify({'message': 'Pending Approval not found'}), 404
+
+    db.session.delete(approval_rejected)
+    db.session.commit()
+
+    return jsonify({'message': 'Pending approval deleted succesfully'}), 200

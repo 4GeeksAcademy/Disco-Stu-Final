@@ -89,7 +89,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			changePassword: async ({ currentPassword, newPassword, confirmPassword }) => {
+			changePassword: async ({ currentPassword, newPassword }) => {
 				try {
 					const token = localStorage.getItem('token');
 					const backendUrl = process.env.BACKEND_URL + "api/users/update-password";
@@ -98,16 +98,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 						body: JSON.stringify({ old_password: currentPassword, new_password: newPassword }),
 						headers: {
 							"Content-Type": "application/json",
-							"Authorization": `Bearer ${token}` // Agregar el token de autenticación en el encabezado
+							"Authorization": `Bearer ${token}`
 						}
 					});
 
-					const responseData = await response.json(); // Leer el cuerpo de la respuesta solo una vez
-
-					if (!response.ok) {
-						throw new Error(responseData.error || "Error al cambiar la contraseña");
-					}
-
+					const responseData = await response.json();
 					return responseData;
 
 				} catch (error) {
@@ -119,7 +114,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				localStorage.removeItem('token');
 				localStorage.removeItem('userID');
 				localStorage.removeItem('auth');
-				setStore({ isLoggedIn: false }); // Actualizar el estado de autenticación
+				setStore({ isLoggedIn: false });
 			},
 
 			getUserById: async (userId) => {
@@ -135,17 +130,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					});
 
-					if (!response.ok) {
-						const responseData = await response.json();
-						throw new Error(responseData.error || "Error al obtener información del usuario");
-					}
-
 					const userData = await response.json();
 
 					return userData;
 
 				} catch (error) {
-					// Si hay un error en la solicitud o en el procesamiento de la respuesta, lanza un error con un mensaje genérico
 					throw new Error("Error al obtener información del usuario. Por favor, inténtelo de nuevo más tarde.");
 				}
 			},
@@ -257,10 +246,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			deleteMessage: async (message_id) => {
+			deleteMessage: async (selectedMessageId) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/trash";
-					await Promise.all(selectedItems.map(async (messageId) => {
+					await Promise.all(selectedMessageIds.map(async (messageId) => {
 						const response = await fetch(backendUrl, {
 							method: 'POST',
 							body: JSON.stringify({ message_id: messageId }),
@@ -347,6 +336,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+
 			getAllArticles: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/";
 				const response = await fetch(backendUrl, {
@@ -369,26 +359,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					on_filtered_or_explorer: true
 				})
 
-
-				if (response.status == 400) {
-					throw new Error(data.message);
-				}
-
-				return data;
-			},
-			getAllArticlesGroupedByGenre: async () => {
-				const backendUrl = process.env.BACKEND_URL + "api/articles/get_all_grouped_by_genre/";
-				const response = await fetch(backendUrl, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json"
-					}
-				});
-
-				if (!response.ok)
-					throw new Error("Error al intentar obtener Artículos");
-
-				const data = await response.json();
 
 				if (response.status == 400) {
 					throw new Error(data.message);
@@ -452,21 +422,59 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
-			/*addArticle: async (article, file) => {
-				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+			addApprovedArticle: async (newArticle) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+					const response = await fetch(backendUrl, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(newArticle)
+					});
 
-				const formData = new FormData();
-				formData.append("article", JSON.stringify(article));
-				formData.append("file", file);
+					if (!response.ok) {
+						throw new Error('Error on adding Article response');
+					}
 
-				const response = await fetch(backendUrl, {
-					method: "POST",
-					body: formData,
-					mode: "no-cors"
-				});
+					const data = await response.json();
 
-				return response;
-			},*/
+					console.log('Article added:', data);
+					return data;
+
+				} catch (error) {
+					console.error('Error posting Article:', error);
+					throw error;
+				}
+			},
+
+			deleteApprovedArticle: async (newArticle) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "api/approvals/";
+					const response = await fetch(backendUrl, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(newArticle)
+					});
+
+					if (!response.ok) {
+						throw new Error('Error on adding Article response');
+					}
+
+					const data = await response.json();
+
+					console.log('Article added:', data);
+					return data;
+
+				} catch (error) {
+					console.error('Error posting Article:', error);
+					throw error;
+				}
+			},
+
+
 			getAllArtists: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/artists/";
 				const response = await fetch(backendUrl, {
@@ -726,12 +734,16 @@ const getState = ({ getStore, getActions, setStore }) => {
         
 			addFavorites: async ({ user_id, articulo_id }) => {
 				try {
-					const response = await fetch(`/api/favorites/${user_id}`, {
+					const article = {
+						article_id: article_id
+					};
+					const backendUrl = process.env.BACKEND_URL + `/api/favorites/${user_id}`;
+					const response = await fetch(backendUrl, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify({ articulo_id }),
+						body: JSON.stringify(article),
 					});
 
 					if (!response.ok) {
@@ -749,7 +761,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			getFavoritesByUserId: async (user_id) => {
 				try {
-					const response = await fetch(`/api/favorites/${user_id}`, {
+					const backendUrl = process.env.BACKEND_URL + `/api/favorites/${user_id}`;
+					const response = await fetch(backendUrl, {
 						method: 'GET',
 						headers: {
 							'Content-Type': 'application/json',
@@ -769,9 +782,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			deleteFavorite: async (user_id, articulo_id) => {
+			deleteFavorite: async (user_id, article_id) => {
 				try {
-					const response = await fetch(`/api/favorites/${user_id}/${articulo_id}`, {
+					const backendUrl = process.env.BACKEND_URL + `/api/favorites/${user_id}/favorites/${article_id}`;
+					const response = await fetch(backendUrl, {
 						method: 'DELETE',
 						headers: {
 							'Content-Type': 'application/json',
@@ -790,7 +804,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
-      
 		}
 	};
 };
