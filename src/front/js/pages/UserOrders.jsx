@@ -3,13 +3,12 @@ import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 
 
-const User_inbox = () => {
-
+export const UserOrders = () => {
     const navigate = useNavigate()
     const { actions } = useContext(Context)
     const [selectedItems, setSelectedItems] = useState([]);
     const userId = localStorage.getItem('userID');
-    const [data, setData] = useState({ inbox: [] });
+    const [data, setData] = useState([]);
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -30,39 +29,17 @@ const User_inbox = () => {
         navigate('/messages/compose')
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fetchedData = await actions.getAllMessages(userId);
-                setData(fetchedData);
-            } catch (error) {
-                console.log('Error fetching messages: ', error);
-            }
-        };
-        fetchData();
-    }, []);
-
-    const toggleSelectMessage = (index) => {
-        // Verificar si el índice ya está seleccionado para añadirlo o removerlo de la lista
-        setSelectedItems((prevSelectedItems) => {
-            if (prevSelectedItems.includes(index)) {
-                return prevSelectedItems.filter((selected) => selected !== index);
-            } else {
-                return [...prevSelectedItems, index];
-            }
-        });
-    };
-
-    const handleDeleteMessage = () => {
-        const selectedItemsCopy = [...selectedItems]
-        setSelectedItems([])
-        selectedItemsCopy.map(element => {
-            const message_data = {
-                'message_id': element
-            }
-            actions.deleteMessage(message_data)
-        })
-    }
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const fetchedData = await actions.getAllMessages(userId);
+    //             setData(fetchedData);
+    //         } catch (error) {
+    //             console.log('Error fetching messages: ', error);
+    //         }
+    //     };
+    //     fetchData();
+    // }, []);
 
     return (
         <div>
@@ -95,15 +72,15 @@ const User_inbox = () => {
                             </div>
                             <div style={{ marginTop: '10px' }}>
                                 <div>
-                                    <button onClick={() => handleNavigateOrders()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Pedidos</button>
-                                    <button onClick={() => handleNavigateInbox()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Bandeja de entrada</strong></button>
+                                    <button onClick={() => handleNavigateOrders()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Pedidos</strong></button>
+                                    <button onClick={() => handleNavigateInbox()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Bandeja de entrada</button>
                                     <button onClick={() => handleNavigateSent()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Enviados</button>
                                     <button onClick={() => handleNavigateTrash()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline">Papelera</button>
                                 </div>
                             </div>
                         </div>
                         <div id="messages_center" className="col-md-9">
-                            <div className="mb-3 d-flex justify-content-end">
+                            <div className="mb-3 me-3 d-flex justify-content-end">
                                 <button onClick={() => handleDeleteMessage()} className="btn btn-outline-dark">Eliminar</button>
                             </div>
                             <div className="table-responsive">
@@ -111,13 +88,13 @@ const User_inbox = () => {
                                     <thead className="bg-light">
                                         <tr>
                                             <th className="col"><input type="checkbox" /></th>
-                                            <th className="col">De</th>
-                                            <th className="col">Asunto</th>
-                                            <th className="col">Enviado</th>
+                                            <th className="col">Pedido</th>
+                                            <th className="col">Fecha</th>
+                                            <th className="col">Vendedor</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.inbox.length > 0 ? (
+                                        {/* {data.inbox.length > 0 ? (
                                             data.inbox.map((element, index) => (
                                                 <tr key={element.id}>
                                                     <td style={{ width: '30px', padding: '0.5rem' }}>
@@ -132,7 +109,7 @@ const User_inbox = () => {
                                             <tr>
                                                 <td className="col">No hay mensajes en la bandeja de enviados.</td>
                                             </tr>
-                                        )}
+                                        )} */}
                                     </tbody>
                                 </table>
                             </div>
@@ -144,4 +121,3 @@ const User_inbox = () => {
     )
 }
 
-export default User_inbox

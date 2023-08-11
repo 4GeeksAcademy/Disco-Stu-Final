@@ -47,19 +47,13 @@ export const UserProfileEdit = () => {
         event.preventDefault();
 
         try {
-            // Llama a la función editUser para enviar los datos al backend
             const userId = localStorage.getItem('userID')
             const responseMessage = await actions.editUser(userId, userData);
 
-            // Aquí puedes manejar la respuesta de la API, si es necesario
             console.log(responseMessage);
-
-            // O puedes redirigir al usuario a otra página, si se guardaron los datos con éxito
-            // navigate('/user-profile'); // Asegúrate de importar `useNavigate` desde 'react-router-dom'
 
         } catch (error) {
             console.error(error.message);
-            // Aquí puedes mostrar algún mensaje de error al usuario
         }
     };
 
