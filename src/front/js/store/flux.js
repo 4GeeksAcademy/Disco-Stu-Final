@@ -366,6 +366,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return data;
 			},
+			getAllArticlesGroupedByGenre: async () => {
+				const backendUrl = process.env.BACKEND_URL + "api/articles/get_all_grouped_by_genre/";
+				const response = await fetch(backendUrl, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				if (!response.ok)
+					throw new Error("Error al intentar obtener Artículos");
+
+				const data = await response.json();
+
+				if (response.status == 400) {
+					throw new Error(data.message);
+				}
+
+				return data;
+			},
 
 			getAllArticlesByGenre: async (genre) => {
 				const backendUrl = process.env.BACKEND_URL + "api/articles/genre/" + genre;
@@ -630,7 +650,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			newCartElement: async (new_element) => {
-				try{
+				try {
 					console.log(new_element)
 					const backendUrl = process.env.BACKEND_URL + "/api/cart/add";
 					const response = await fetch(backendUrl, {
@@ -644,7 +664,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error on response')
 					}
 					const data = await response.json()
-					
+
 					if (data === 'Already exist') {
 						alert('El artículo ya existe en el carrito');
 					} else {
@@ -652,7 +672,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 
 
-				}catch(error){
+				} catch (error) {
 					console.log('Error on adding cart element', error)
 				}
 			},
@@ -689,7 +709,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 						return cartItem;
 					});
-					setStore({...store, cart: updatedCart})
+					setStore({ ...store, cart: updatedCart })
 					const backendUrl = process.env.BACKEND_URL + '/api/cart/delete_item';
 					const response = await fetch(backendUrl, {
 						method: "DELETE",
@@ -702,7 +722,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error on deleting cart element response')
 					}
 					const data = await response.json()
-					
+
 					console.log('Cart article deleted', data)
 				} catch (error) {
 					console.log('Error deleting cart article:', error)
@@ -713,7 +733,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					const store = getStore()
 					const updatedCart = store.cart.filter(cartItem => cartItem.seller.id !== cart_element.vendedor_id);
-					setStore({...store, cart: updatedCart})
+					setStore({ ...store, cart: updatedCart })
 					const backendUrl = process.env.BACKEND_URL + '/api/cart/delete_by_seller';
 					const response = await fetch(backendUrl, {
 						method: "DELETE",
@@ -726,13 +746,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error on deleting cart by seller response')
 					}
 					const data = await response.json()
-					
+
 					console.log('Cart article deleted', data)
 				} catch (error) {
 					console.log('Error deleting cart articles by seller:', error)
 				}
 			},
-        
+
 			addFavorites: async ({ user_id, articulo_id }) => {
 				try {
 					const article = {

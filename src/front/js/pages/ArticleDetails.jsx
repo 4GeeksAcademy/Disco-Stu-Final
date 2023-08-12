@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 const ArticleDetails = () => {
     const { store, actions } = useContext(Context);
-     
     const article = JSON.parse(localStorage.getItem('currentArticle'));
     const [artist, title] = article.titulo.split(' - ')
     const user_id = localStorage.getItem('userID');
+    const navigate = useNavigate();
 
     const handleAddFavorites = async (user_id, article_id) => {
         try {
-            const response = await actions.addFavorites( user_id, article_id );
+            const response = await actions.addFavorites(user_id, article_id);
             console.log('Favorite added successfully:', response);
 
         } catch (error) {

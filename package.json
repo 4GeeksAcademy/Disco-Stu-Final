@@ -81,6 +81,7 @@
 		"formik": "^2.4.3",
 		"prop-types": "^15.6.1",
 		"react": "^16.14.0",
+		"react-animated-slider": "^1.1.4",
 		"react-bootstrap": "^2.8.0",
 		"react-dom": "^16.14.0",
 		"react-lazy-load-image-component": "^1.6.0",
