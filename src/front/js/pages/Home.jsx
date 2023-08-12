@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../../styles/home.css";
-import Carousel from "better-react-carousel";
+import { Carousel } from 'react-bootstrap';
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 
@@ -144,6 +144,40 @@ const Home = () => {
         });
     }, []);
 
+    const createSlides = (albums) => {
+        const itemsPerSlide = 5;
+        const slides = [];
+        for (let i = 0; i < albums.length; i += itemsPerSlide) {
+            const slideAlbums = albums.slice(i, i + itemsPerSlide);
+            const slide = (
+                <Carousel.Item key={i}>
+                    <div className="d-flex album-container">
+                        {slideAlbums.map((album, albumIndex) => (
+                            <div
+                                key={i + albumIndex}
+                                className="mr-3 album-item"
+                                onClick={() => {
+                                    // Handle your navigation logic here
+                                    // navigate(`/article/${album.id}`);
+                                    // localStorage.setItem('currentArticle', JSON.stringify(album));
+                                }}
+                            >
+                                <div className="image-container">
+                                    <div
+                                        className="img-wrapper"
+                                        style={{ backgroundImage: `url(${album.url_imagen})` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Carousel.Item>
+            );
+            slides.push(slide);
+        }
+        return slides;
+    };
+
     return (
         <div className="container">
             <div className="cd-slider" style={{ background: "black", height: "400px", marginTop: "20px", marginBottom: "0px" }}>
@@ -226,19 +260,10 @@ const Home = () => {
                 </ul>
             </div>
             <div>
-                {articles && Object.entries(articles).map(([genre, albums], index) => (
+                {Object.entries(articles).map(([genre, albums], index) => (
                     <div key={index}>
                         <h2>{genre}</h2>
-                        <Carousel cols={5} rows={1} gap={10} loop>
-                            {albums.map((album, albumIndex) => (
-
-                                <Carousel.Item key={albumIndex}>
-                                    <div key={albumIndex + 1} onClick={() => { navigate(`/article/${album.id}`); localStorage.setItem('currentArticle', JSON.stringify(album)); }} style={{ cursor: 'pointer' }}>
-                                        <img width="100%" src={album.url_imagen} />
-                                    </div>
-                                </Carousel.Item>
-                            ))}
-                        </Carousel>
+                        <Carousel interval={null}>{createSlides(albums)}</Carousel>
                     </div>
                 ))}
             </div>
