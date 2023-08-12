@@ -5,6 +5,8 @@ import injectContext from "./store/appContext";
 
 import { PrivateRoutes } from "./store/PrivateRoutes.jsx";
 
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+
 // Pages
 import Home from "./pages/Home.jsx";
 import { Demo } from "./pages/demo";
@@ -13,6 +15,7 @@ import { Signup } from "./pages/Signup.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
 import { UserProfileEdit } from "./pages/UserProfileEdit.jsx"
+import { UserSellerDataEdit } from "./pages/UserSellerDataEdit.jsx"
 import { ChangePassword } from "./pages/passChange.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { AdminInbox } from "./pages/AdminInbox.jsx"
@@ -48,42 +51,51 @@ const Layout = () => {
 
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
+    const initialOptions = {
+        clientId: "Ab0beSy6I3l9gE7kjOs7F2C8AQ13ht_Co5Xdy2sUlcs78Cz3pvMIFk3yJO1J_MKIkllEtJeVMsfGjFwg",
+        currency: "USD",
+        intent: "capture",
+    };
+
     return (
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <Navbar />
-                    <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Signup />} path="/signup" />
-                        <Route element={<Login />} path="/login" />
-                        <Route element={<PrivateRoutes />}>
-                            <Route element={<AdminPanel />} path="/admin-panel" />
-                            <Route element={<AdminInbox />} path="/admin-inbox" />
-                            <Route element={<AdminApprovals />} path="/approvals" />
-                            <Route element={<UserProfile />} path="/user-profile" />
-                            <Route element={<UserProfileEdit />} path="/edit-user" />
-                            <Route element={<ChangePassword />} path="/update-password" />
-                            <Route element={<UserInbox />} path="/messages" />
-                            <Route element={<UserSentMessages />} path="/messages/sent" />
-                            <Route element={<UserDeletedMessages />} path="/messages/trash" />
-                            <Route element={<UserComposeMessage />} path="/messages/compose" />
-                        </Route>
-                        <Route element={<About />} path="/about" />
-                        <Route element={<Contact />} path="/contact" />
-                        <Route element={<Artist />} path="/artists" />
-                        <Route element={<GalleryTemplate />} path="/gallery_template" />
-                        <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
-                        <Route element={<Article />} path="/articles/add" />
-                        <Route element={<ArticleDetails />} path="/article/:id" />
-                        <Route element={<Explorer />} path='/explorer' />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<SellArticle />} path="/sell/:id" />
-                        <Route element={<Offers />} path="/offers/:id" />
-                        <Route element={<Cart />} path="/cart" />
-                        <Route element={<h1>Not found!</h1>} />
-                    </Routes>
+                    <PayPalScriptProvider option={initialOptions}>
+                        <Routes>
+                            <Route element={<Home />} path="/" />
+                            <Route element={<Signup />} path="/signup" />
+                            <Route element={<Login />} path="/login" />
+                            <Route element={<PrivateRoutes />}>
+                                <Route element={<AdminPanel />} path="/admin-panel" />
+                                <Route element={<AdminInbox />} path="/admin-inbox" />
+                                <Route element={<AdminApprovals />} path="/approvals" />
+                                <Route element={<UserProfile />} path="/user-profile" />
+                                <Route element={<UserProfileEdit />} path="/edit-user" />
+                                <Route element={<UserSellerDataEdit />} path="/seller" />
+                                <Route element={<ChangePassword />} path="/update-password" />
+                                <Route element={<UserInbox />} path="/messages" />
+                                <Route element={<UserSentMessages />} path="/messages/sent" />
+                                <Route element={<UserDeletedMessages />} path="/messages/trash" />
+                                <Route element={<UserComposeMessage />} path="/messages/compose" />
+                            </Route>
+                            <Route element={<About />} path="/about" />
+                            <Route element={<Contact />} path="/contact" />
+                            <Route element={<Artist />} path="/artists" />
+                            <Route element={<GalleryTemplate />} path="/gallery_template" />
+                            <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
+                            <Route element={<Article />} path="/articles/add" />
+                            <Route element={<ArticleDetails />} path="/article/:id" />
+                            <Route element={<Explorer />} path='/explorer' />
+                            <Route element={<Demo />} path="/demo" />
+                            <Route element={<Single />} path="/single/:theid" />
+                            <Route element={<SellArticle />} path="/sell/:id" />
+                            <Route element={<Offers />} path="/offers/:id" />
+                            <Route element={<Cart />} path="/cart" />
+                            <Route element={<h1>Not found!</h1>} />
+                        </Routes>
+                    </PayPalScriptProvider>
                     <Footer />
                 </ScrollToTop>
             </BrowserRouter>

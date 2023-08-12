@@ -34,6 +34,8 @@ class User(db.Model):
     telefono_comprador = db.Column(db.String(250))
     valoracion = db.Column(db.Integer)
     cantidad_de_valoraciones = db.Column(db.Integer)
+    cliente_ID_paypal = db.Column(db.String(250))
+    secret_key_paypal = db.Column(db.String(250))
     is_admin = db.Column(db.Boolean(), unique=False, nullable=False)
 
     aprobaciones = db.relationship('Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
