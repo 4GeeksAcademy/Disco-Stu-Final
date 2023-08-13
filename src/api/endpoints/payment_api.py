@@ -30,12 +30,22 @@ def handle_response(response):
     return {"error": error_message}, response.status_code
 
 # Función para crear una orden
-@payment_api.route("/create-paypal-order/<int:user_id>", methods=["POST"])
-def create_paypal_order(user_id):
-    user = User.query.get(user_id)
-    cost = request.json.get('cost')
+@payment_api.route("/create-paypal-order", methods=["POST"])
+def create_paypal_order():
 
-    data = {
+    user_id = request.json.get('user_id')
+    cost = request.json.get('cost')
+    isDonation = request.json.get('isDonation')
+
+    user = User.query.get(user_id)
+
+    if isDonation:
+        data = {
+        'CLIENT_ID': os.getenv('CLIENT_ID'),
+        'APP_SECRET': os.getenv('APP_SECRET')
+    }
+    if not isDonation:
+        data = {
         'CLIENT_ID': user.cliente_ID_paypal,
         'APP_SECRET': user.secret_key_paypal
     }
@@ -66,7 +76,23 @@ def create_paypal_order(user_id):
 # Función para capturar un pago de una orden
 @payment_api.route("/capture-paypal-order", methods=["POST"])
 def capture_paypal_order():
-    access_token = generate_access_token()
+
+    user_id = request.json.get('user_id')
+    isDonation = request.json.get('isDonation')
+
+    user = User.query.get(user_id)
+
+    if isDonation:
+        data = {
+        'CLIENT_ID': os.getenv('CLIENT_ID'),
+        'APP_SECRET': os.getenv('APP_SECRET')
+    }
+    if not isDonation:
+        data = {
+        'CLIENT_ID': user.cliente_ID_paypal,
+        'APP_SECRET': user.secret_key_paypal
+    }
+    access_token = generate_access_token(data)
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}"

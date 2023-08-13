@@ -31,6 +31,7 @@ import Article from "./pages/Article.jsx";
 import ArticleDetails from "./pages/ArticleDetails.jsx";
 import SellArticle from './pages/SellArticle.jsx'
 import Offers from './pages/Offers.jsx'
+import InitializeAsSeller from "./pages/InitializeAsSeller.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -52,7 +53,7 @@ const Layout = () => {
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
     const initialOptions = {
-        clientId: "Ab0beSy6I3l9gE7kjOs7F2C8AQ13ht_Co5Xdy2sUlcs78Cz3pvMIFk3yJO1J_MKIkllEtJeVMsfGjFwg",
+        clientId: "",
         currency: "USD",
         intent: "capture",
     };
@@ -91,6 +92,7 @@ const Layout = () => {
                             <Route element={<Demo />} path="/demo" />
                             <Route element={<Single />} path="/single/:theid" />
                             <Route element={<SellArticle />} path="/sell/:id" />
+                            <Route element={<InitializeAsSeller />} path='/sellers' />
                             <Route element={<Offers />} path="/offers/:id" />
                             <Route element={<Cart />} path="/cart" />
                             <Route element={<h1>Not found!</h1>} />

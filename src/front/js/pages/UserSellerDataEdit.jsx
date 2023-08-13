@@ -96,7 +96,7 @@ export const UserSellerDataEdit = () => {
                 </div>
                 <div className="card-body p-4 text-black">
                     <div className="container">
-                        <h1>Editar informacion de vendedor</h1>
+                        <h1>Informacion de vendedor</h1>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="cliente_ID_paypal">Cliente ID*:</label>

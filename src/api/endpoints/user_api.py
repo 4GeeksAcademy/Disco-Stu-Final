@@ -272,3 +272,14 @@ def update_sell_data(user_id):
         return jsonify({"message": "Información actualizada correctamente."}), 200
     else:
         return jsonify({"message": "Usuario no encontrado."}), 404
+
+@user_api.route('/became_seller/<int:user_id>', methods=['PUT'])
+# @jwt_required()
+# @regular_user_required
+def became_user(user_id):
+
+    user = User.query.get(user_id)
+    user.isSeller = True
+    db.session.commit()
+
+    return jsonify('COMPLETED')

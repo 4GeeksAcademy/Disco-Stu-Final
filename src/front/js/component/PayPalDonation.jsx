@@ -1,9 +1,12 @@
 import React from 'react'
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import { useNavigate } from 'react-router-dom';
 
 
 
-const PaymentComponent = () => {
+const PayPalDonation = () => {
+
+    const navigate=useNavigate()
 
     const generateUniqueOrderID = () => {
         const currentDate = new Date();
@@ -27,9 +30,9 @@ const PaymentComponent = () => {
             // like product skus and quantities 
             body: JSON.stringify({
                     orderID: orderID,
-                    user_id: user_id,
-                    cost: '1111',
-                    isDonation: false
+                    user_id: null,
+                    cost: '10',
+                    isDonation: true
             }),
         })
             .then((response) => response.json())
@@ -46,13 +49,40 @@ const PaymentComponent = () => {
             },
             body: JSON.stringify({
                 orderID: data.orderID,
-                user_id: user_id,
-                isDonation: false
+                isDonation: true
             })
         })
         .then((response) => response.json())
         .then((responseData) => {
             console.log('Successfully payment:', responseData);
+            
+            //Convertimos al usuario en vendedor
+            if (responseData.status == 'COMPLETED') {
+                const becameSeller = async () => {
+                    try{
+                        // const token = localStorage.getItem('token');
+                        const backendUrl = process.env.BACKEND_URL + `api/users/became_seller/${user_id}`;
+                        return await fetch(backendUrl, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                // Authorization: `Bearer ${token}`,
+                            },
+                        })
+                        .then((responseUser) => responseUser.json())
+                        .then((data) => {
+                            if (data == 'COMPLETED') {
+                                console.log('funciono')
+                                navigate('/')
+                            }
+                        })
+                    }catch(error){
+                        console.log('Error on becaming seller', error)
+                    }
+                }
+                becameSeller()
+            }
+
         })
         .catch((error) => {
             console.error('Error capturing payment:', error);
@@ -69,4 +99,4 @@ const PaymentComponent = () => {
 
 
 
-export default PaymentComponent
+export default PayPalDonation
