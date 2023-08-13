@@ -69,14 +69,14 @@ export const UserNavbar = () => {
                                             </Link>
                                         </div>
                                         <div className="nav-item me-3 me-lg-0">
-                                            <Link to="" className="nav-link text-white">
+                                            <Link to="/cart" className="nav-link text-white">
                                                 <i className="fas fa-shopping-cart"></i>
                                             </Link>
                                         </div>
 
                                         <div className="nav-item me-3 me-lg-0">
                                             <Link to="/favorites" className="nav-link text-white">
-                                                <i class="fa-solid fa-heart"></i>
+                                                <i className="fa-solid fa-heart"></i>
                                             </Link>
                                         </div>
 
@@ -101,11 +101,11 @@ export const UserNavbar = () => {
                                         >
                                             <hr className="dropdown-divider" />
                                             <Link className="dropdown-item" to="/user-profile">
-                                                <i className="fa-solid fa-face-smile-wink"></i> Perfil
+                                                <i className="fa-solid fa-face-smile-wink"></i> Ayuda
                                             </Link>
 
                                             <Link className="dropdown-item" to="/update-password">
-                                                <i className="fa-solid fa-gear"></i> Configuración
+                                                <i className="fa-solid fa-gear"></i> Contraseña
                                             </Link>
                                             <button
                                                 onClick={handleLogoutClick}

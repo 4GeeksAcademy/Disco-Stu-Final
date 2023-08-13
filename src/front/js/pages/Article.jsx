@@ -66,7 +66,7 @@ const Article = ({ mode }) => {
         pais: Yup.string().required("Campo requerido"),
         publicado: Yup.string().required("Campo requerido"),
         genero: Yup.mixed().required("Campo requerido"),
-        artista_id: Yup.mixed().required("Campo requerido"),
+        artista_id: Yup.mixed().required("Campo requerido")
     });
 
     const loadArtists = async (inputValue) => {
@@ -102,7 +102,7 @@ const Article = ({ mode }) => {
             values.tipo = "edit";
         } else {
             values.tipo = "add";
-        }            
+        }
 
         values.genero = values.genero.value;
         values.artista_id = values.artista_id.value;
@@ -215,18 +215,24 @@ const Article = ({ mode }) => {
                                     />
                                     <ErrorMessage name="artista_id" component="div" className="text-danger" />
                                 </div>
-                                <div>
-                                    <label htmlFor="url_imagen">Foto</label>
-                                    <input
-                                        type="file"
-                                        className="form-control"
-                                        id="url_imagen"
-                                        name="url_imagen"
-                                        onChange={(e) => handleImageUpload(e)}
-                                    />
-                                    <ErrorMessage name="url_imagen" component="div" className="text-danger" />
+                                <div class="row mt-3 align-items-center h-100">
+                                    <div className="col-8">
+                                        <label htmlFor="url_imagen">Foto</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            id="url_imagen"
+                                            name="url_imagen"
+                                            onChange={(e) => handleImageUpload(e)}
+                                        />
+                                        <ErrorMessage name="url_imagen" component="div" className="text-danger" />
+                                    </div>
+                                    {mode == "edit" && article && (
+                                        <div className="col-4">
+                                            <img src={article.url_imagen} width={200} height={200} />
+                                        </div>
+                                    )}
                                 </div>
-
                                 <button className="form-control btn btn-success mt-3" type="submit">
                                     {isSubmitting ? 'Procesando...' : "Enviar"}
                                 </button>

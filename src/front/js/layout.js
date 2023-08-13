@@ -21,8 +21,10 @@ import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { AdminInbox } from "./pages/AdminInbox.jsx"
 import { Contact } from "./pages/Contact.jsx"
 import { About } from "./pages/About.jsx";
+import { UserOrders } from "./pages/UserOrders.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
+import { UserFavorites } from "./pages/userFavorites.jsx";
 import Cart from './pages/Cart.jsx'
 import { UserDeletedMessages } from "./pages/UserDeletedMessages.jsx";
 import { UserComposeMessage } from "./pages/UserComposeMessage.jsx";
@@ -32,6 +34,7 @@ import ArticleDetails from "./pages/ArticleDetails.jsx";
 import SellArticle from './pages/SellArticle.jsx'
 import Offers from './pages/Offers.jsx'
 import InitializeAsSeller from "./pages/InitializeAsSeller.jsx";
+import { ArticleReview } from "./pages/AdminReviewArticle.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -72,10 +75,13 @@ const Layout = () => {
                                 <Route element={<AdminPanel />} path="/admin-panel" />
                                 <Route element={<AdminInbox />} path="/admin-inbox" />
                                 <Route element={<AdminApprovals />} path="/approvals" />
+                                <Route element={<ArticleReview />} path="/article-review/:id" />
                                 <Route element={<UserProfile />} path="/user-profile" />
                                 <Route element={<UserProfileEdit />} path="/edit-user" />
                                 <Route element={<UserSellerDataEdit />} path="/seller" />
+                                <Route element={<UserFavorites />} path="/favorites" />
                                 <Route element={<ChangePassword />} path="/update-password" />
+                                <Route element={<UserOrders />} path="/user-orders" />
                                 <Route element={<UserInbox />} path="/messages" />
                                 <Route element={<UserSentMessages />} path="/messages/sent" />
                                 <Route element={<UserDeletedMessages />} path="/messages/trash" />

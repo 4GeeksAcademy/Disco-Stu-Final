@@ -1,117 +1,274 @@
-import React, { useContext, useState } from "react";
-import ArticleCard from '../component/ArticleCard.jsx';
-import fondo from '../../img/LOGO2.png';
-import { Context } from "../store/appContext";
+import React, { useContext, useEffect, useState } from "react";
 import "../../styles/home.css";
-import { object } from "prop-types";
-import { Collapse } from "react-bootstrap";
+import { Carousel } from 'react-bootstrap';
+import { Context } from "../store/appContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+    const { actions } = useContext(Context)
+    const [articles, setArticles] = useState({});
+    const navigate = useNavigate();
 
-    const [showInfo, setShowInfo] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            const articles_response = await actions.getAllArticlesGroupedByGenre();
+            setArticles(articles_response);
+            //console.log("articles: " + JSON.stringify(articles_response));
+        };
 
-    const objeto = {
-        'titulo': 'Las esperanzas mas esperanzadas',
-        'artista': 'Jose Pedro Buena Vista'
-    }
+        fetchData();
+    }, []);
 
-    const array = [1, 2, 3, 4, 5, 6]
+    useEffect(() => {
+        let current = 0;
+        let autoUpdate = true;
+        const timeTrans = 4000;
 
-    const linksArray = [
-        "https://es.rollingstone.com/wp-content/uploads/2023/01/vinilo-bandeja.jpg",
-        "https://rnz-ressh.cloudinary.com/image/upload/s--AlSPyWni--/c_scale,f_auto,q_auto,w_1050/v1643833786/4M6M278_image_crop_127384",
-        "https://media.pitchfork.com/photos/5f5a4de8f5e6f1d3e7d3d6ce/2:1/w_2560%2Cc_limit/Vinyl%2520records.png",
-        "https://wololosound.com/wp-content/uploads/djs-techno-maestros-del-vinilo.jpg",
-    ]
+        const init = (item) => {
+            const items = item.querySelectorAll("li");
 
-    const handleSetShowInfo = (imageURL) => {
-        if (imageURL == selectedImage) {
-            setShowInfo(!showInfo);
-        } else {
-            setSelectedImage(imageURL);
+            const nav = document.createElement("nav");
+            nav.className = "nav_arrows";
+
+            const prevbtn = document.createElement("button");
+            prevbtn.className = "prev";
+            prevbtn.setAttribute("aria-label", "Prev");
+
+            const nextbtn = document.createElement("button");
+            nextbtn.className = "next";
+            nextbtn.setAttribute("aria-label", "Next");
+
+            const counter = document.createElement("div");
+            counter.className = "counter";
+            counter.innerHTML = "<span>1</span><span>" + items.length + "</span>";
+
+            if (items.length > 1) {
+                nav.appendChild(prevbtn);
+                nav.appendChild(counter);
+                nav.appendChild(nextbtn);
+                item.appendChild(nav);
+            }
+
+            items[current].className = "current";
+            if (items.length > 1) items[items.length - 1].className = "prev_slide";
+
+            const navigate = (dir) => {
+                items[current].className = "";
+
+                if (dir === "right") {
+                    current = current < items.length - 1 ? current + 1 : 0;
+                } else {
+                    current = current > 0 ? current - 1 : items.length - 1;
+                }
+
+                const nextCurrent =
+                    current < items.length - 1 ? current + 1 : 0;
+                const prevCurrent = current > 0 ? current - 1 : items.length - 1;
+
+                // Delay changing opacity and transform
+                setTimeout(() => {
+                    items[current].className = "current";
+                    items[prevCurrent].className = "prev_slide";
+                    items[nextCurrent].className = "";
+                }, 50); // Adjust the delay as needed
+
+                counter.firstChild.textContent = current + 1;
+            };
+
+            item.addEventListener("mouseenter", () => {
+                autoUpdate = false;
+            });
+
+            item.addEventListener("mouseleave", () => {
+                autoUpdate = true;
+            });
+
+            setInterval(() => {
+                if (autoUpdate) navigate("right");
+            }, timeTrans);
+
+            prevbtn.addEventListener("click", () => {
+                navigate("left");
+            });
+
+            nextbtn.addEventListener("click", () => {
+                navigate("right");
+            });
+
+            document.addEventListener("keydown", (ev) => {
+                const keyCode = ev.keyCode || ev.which;
+                switch (keyCode) {
+                    case 37:
+                        navigate("left");
+                        break;
+                    case 39:
+                        navigate("right");
+                        break;
+                }
+            });
+
+            item.addEventListener("touchstart", handleTouchStart, false);
+            item.addEventListener("touchmove", handleTouchMove, false);
+            let xDown = null;
+            let yDown = null;
+            const handleTouchStart = (evt) => {
+                xDown = evt.touches[0].clientX;
+                yDown = evt.touches[0].clientY;
+            };
+            const handleTouchMove = (evt) => {
+                if (!xDown || !yDown) {
+                    return;
+                }
+
+                const xUp = evt.touches[0].clientX;
+                const yUp = evt.touches[0].clientY;
+
+                const xDiff = xDown - xUp;
+                const yDiff = yDown - yUp;
+
+                if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                    if (xDiff > 0) {
+                        navigate("right");
+                    } else {
+                        navigate("left");
+                    }
+                }
+                xDown = null;
+                yDown = null;
+            };
+        };
+
+        const sliderElements = document.querySelectorAll(".cd-slider");
+        sliderElements.forEach((item) => {
+            init(item);
+        });
+    }, []);
+
+    const createSlides = (albums) => {
+        const itemsPerSlide = 5;
+        const slides = [];
+        for (let i = 0; i < albums.length; i += itemsPerSlide) {
+            const slideAlbums = albums.slice(i, i + itemsPerSlide);
+            const slide = (
+                <Carousel.Item key={i}>
+                    <div className="d-flex album-container">
+                        {slideAlbums.map((album, albumIndex) => (
+                            <div
+                                key={i + albumIndex}
+                                className="mr-3 album-item"
+                                onClick={() => {
+                                    // Handle your navigation logic here
+                                    // navigate(`/article/${album.id}`);
+                                    // localStorage.setItem('currentArticle', JSON.stringify(album));
+                                }}
+                            >
+                                <div className="image-container">
+                                    <div
+                                        className="img-wrapper"
+                                        style={{ backgroundImage: `url(${album.url_imagen})` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Carousel.Item>
+            );
+            slides.push(slide);
         }
-    }
+        return slides;
+    };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div id="presentation" style={{ width: '100%', backgroundColor: 'black', paddingTop: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                <img style={{ width: '400px' }} src={fondo} alt="" />
-                <p style={{ width: '80%', color: 'white', textAlign: 'center', paddingTop: '25px' }}>Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.</p>
+        <div className="container">
+            <div className="cd-slider" style={{ background: "black", height: "400px", marginTop: "20px", marginBottom: "0px" }}>
+                <ul>
+                    <li>
+                        <div
+                            className="image"
+                            style={{
+                                backgroundImage:
+                                    "url(https://img.freepik.com/premium-photo/music-mind-music-abstract-art-created-with-generative-ai-technology_545448-15311.jpg)",
+                            }}
+                        ></div>
+                        <div className="content">
+                            <h2>
+                                <font color="white">Jackets Collection 2017</font>
+                            </h2>
+                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div
+                            className="image"
+                            style={{
+                                backgroundImage:
+                                    "url(https://st.depositphotos.com/1008244/3066/v/450/depositphotos_30664567-stock-illustration-vinyl-disc-with-music-notes.jpg)",
+                            }}
+                        ></div>
+                        <div className="content">
+                            <h2>
+                                <font color="white">Jackets Collection 2017</font>
+                            </h2>
+                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div
+                            className="image"
+                            style={{
+                                backgroundImage:
+                                    "url(https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVzaWN8ZW58MHx8MHx8fDA%3D&w=1000&q=80)",
+                            }}
+                        ></div>
+                        <div className="content">
+                            <h2>
+                                <font color="white">Jackets Collection 2017</font>
+                            </h2>
+                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div
+                            className="image"
+                            style={{
+                                backgroundImage:
+                                    "url(https://variety.com/wp-content/uploads/2022/07/Music-Streaming-Wars.jpg)",
+                            }}
+                        ></div>
+                        <div className="content">
+                            <h2>
+                                <font color="white">Jackets Collection 2017</font>
+                            </h2>
+                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div
+                            className="image"
+                            style={{
+                                backgroundImage:
+                                    "url(https://c4.wallpaperflare.com/wallpaper/700/525/104/abstract-flames-music-dark-rainbows-treble-clef-gclef-black-background-1280x1024-entertainment-music-hd-art-wallpaper-preview.jpg)",
+                            }}
+                        ></div>
+                        <div className="content">
+                            <h2>
+                                <font color="white">Jackets Collection 2017</font>
+                            </h2>
+                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div id="top_information" style={{ width: '100%', backgroundColor: 'black', padding: '30px 0px 50px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                <h5 style={{ color: 'white', marginRight: 'auto', marginLeft: '120px' }}><strong>Curiosidades musicales</strong></h5>
-                <div id="general_div" style={{ width: '85%', display: 'flex', height: '380px', justifyContent: 'center', alignItems: 'center' }}>
-                    <div id="main_box" style={{ width: '65%', height: '100%', display: 'flex', alignItems: 'center', }}>
-                        <img onClick={() => handleSetShowInfo(linksArray[0])} style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={linksArray[0]} alt="" />
+            <div>
+                {Object.entries(articles).map(([genre, albums], index) => (
+                    <div key={index}>
+                        <h2>{genre}</h2>
+                        <Carousel interval={null}>{createSlides(albums)}</Carousel>
                     </div>
-                    <div id="secondary_box" style={{ width: '33%', height: '380px', marginLeft: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <div style={{ height: '30%' }}>
-                            <img onClick={() => handleSetShowInfo(linksArray[1])} style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={linksArray[1]} alt="" />
-                        </div>
-                        <div style={{ height: '30%' }}>
-                            <img onClick={() => handleSetShowInfo(linksArray[2])} style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={linksArray[2]} alt="" />
-                        </div>
-                        <div style={{ height: '30%' }}>
-                            <img onClick={() => handleSetShowInfo(linksArray[3])} style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={linksArray[3]} alt="" />
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <Collapse in={showInfo}>
-                        <div style={{ backgroundColor: 'black', padding: '10px', marginTop: '10px' }}>
-                            <div style={{ width: '80%', height: '400px', margin: 'auto' }}>
-                                <img style={{ objectFit: 'cover', width: '100%', height: '100%' }} src={selectedImage} alt="" />
-                            </div>
-                            <p style={{ width: '80%', color: 'white', textAlign: 'center', paddingTop: '50px', margin: 'auto' }}>Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.</p>
-                        </div>
-                    </Collapse>
-                </div>
+                ))}
             </div>
-            <div id="recent_published" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }} >
-                <h5 style={{ paddinigBottom: 'auto', marginRight: 'auto', marginLeft: '120px', marginTop: '30px' }}><strong>Articulos recientes</strong></h5>
-                <p style={{ paddingBottom: 'auto', marginRight: 'auto', marginLeft: '100px', marginTop: '5px', marginBottom: '0px', fontSize: '18px' }}>Electrónica</p>
-                <div style={{ display: 'flex', overflowX: 'scroll', width: '90%', height: '270px' }}>
-
-                    {
-                        array.map((element, index) => (
-                            <ArticleCard
-                                key={index}
-                                title={objeto.titulo}
-                                artist={objeto.artista}
-                            />
-                        ))
-                    }
-                </div>
-                <p style={{ paddingBottom: 'auto', marginRight: 'auto', marginLeft: '100px', marginTop: '5px', marginBottom: '0px', fontSize: '18px' }}>Rock</p>
-                <div style={{ display: 'flex', overflowX: 'scroll', width: '90%', height: '270px' }}>
-
-                    {
-                        array.map((element, index) => (
-                            <ArticleCard
-                                key={index}
-                                title={objeto.titulo}
-                                artist={objeto.artista}
-                            />
-                        ))
-                    }
-                </div>
-                <p style={{ paddingBottom: 'auto', marginRight: 'auto', marginLeft: '100px', marginTop: '5px', marginBottom: '0px', fontSize: '18px' }}>Pop</p>
-                <div style={{ display: 'flex', overflowX: 'scroll', width: '90%', height: '270px' }}>
-
-                    {
-                        array.map((element, index) => (
-                            <ArticleCard
-                                key={index}
-                                title={objeto.titulo}
-                                artist={objeto.artista}
-                            />
-                        ))
-                    }
-                </div>
-            </div>
-        </div>
+        </div >
     );
 };
 
-export default Home
+export default Home;
