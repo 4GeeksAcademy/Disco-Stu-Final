@@ -3,7 +3,7 @@ import { Context } from '../store/appContext';
 import '../../styles/CartComponent.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const CartComponent = ({ data, key }) => {
+const CartComponent = ({ data }) => {
 
   const { store, actions } = useContext(Context)
   const [totalPrice, setTotalPrice] = useState(0)
@@ -43,7 +43,7 @@ const CartComponent = ({ data, key }) => {
 
   return (
     <div className="container mt-4">
-      <div key={key} className="card" >
+      <div className="card" >
         <div className="card-body" style={{ padding: 0 }}>
           <div id='seller_info' className="d-flex justify-content-between align-items-center">
             <p className="mb-0">Realizar pedido de <span style={{ color: '#033BDB' }}>{data.seller.nombre}</span> <span style={{ fontSize: '0.8rem' }}>90%, 15 valoraciones (trucha)</span></p>
