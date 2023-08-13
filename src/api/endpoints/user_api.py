@@ -221,6 +221,8 @@ def get_users():
                 'username': user.usuario,
                 'name': user.nombre,
                 'email': user.correo,
+                'cliente_ID_paypal': user.cliente_ID_paypal,
+                'secret_key_paypal': user.secret_key_paypal,
                 'is_admin': user.is_admin
             }
             user_list.append(user_data)
@@ -237,3 +239,45 @@ def get_users():
 #     db.session.commit()
 
 #     return jsonify({"message": "Todos los usuarios han sido eliminados"})
+
+# Desde aca Karai
+
+@user_api.route('/seller/<int:user_id>', methods=['PUT'])
+@jwt_required()
+@regular_user_required
+def update_sell_data(user_id):
+
+    cliente_ID_paypal = request.json.get('cliente_ID_paypal')
+    secret_key_paypal = request.json.get('secret_key_paypal')
+    update_or_delete = request.json.get('update_or_delete')
+    
+    user = User.query.get(user_id)
+    
+    if user:
+        if update_or_delete == 'update': 
+            
+            user.cliente_ID_paypal = cliente_ID_paypal
+            user.secret_key_paypal = secret_key_paypal
+            
+            db.session.commit()
+            
+        if update_or_delete == 'delete':
+            user.cliente_ID_paypal = None
+            user.secret_key_paypal = None
+
+            db.session.commit()
+        
+        return jsonify({"message": "Información actualizada correctamente."}), 200
+    else:
+        return jsonify({"message": "Usuario no encontrado."}), 404
+
+@user_api.route('/became_seller/<int:user_id>', methods=['PUT'])
+# @jwt_required()
+# @regular_user_required
+def became_user(user_id):
+
+    user = User.query.get(user_id)
+    user.isSeller = True
+    db.session.commit()
+
+    return jsonify('COMPLETED')

@@ -702,14 +702,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 			deleteCartItem: async (cart_element) => {
 				try {
 					const store = getStore()
+					let variable = null
 					const updatedCart = store.cart.map(cartItem => {
 						if (cartItem.seller.id === cart_element.vendedor_id) {
 							const updatedOffers = cartItem.offers.filter(offer => offer.oferta_id !== cart_element.oferta_id);
-							return { ...cartItem, offers: updatedOffers };
+							if (updatedOffers.length === 0) {
+								const { deleteCartItemsBySeller } = getActions()
+								const object = {
+									'user_id': cart_element.user_id,
+									'vendedor_id': cartItem.seller.id
+								}
+								deleteCartItemsBySeller(object)
+								variable = 0
+							} else {
+								return { ...cartItem, offers: updatedOffers };
+							}
 						}
 						return cartItem;
 					});
-					setStore({ ...store, cart: updatedCart })
+					setStore(prevStore => ({
+						...prevStore,
+						cart: updatedCart
+					  }));
+					if (variable === 0) {
+						return
+					}
 					const backendUrl = process.env.BACKEND_URL + '/api/cart/delete_item';
 					const response = await fetch(backendUrl, {
 						method: "DELETE",
@@ -825,6 +842,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+      
+			editSeller: async (seller_info) => {
+				try {
+					const user_id = localStorage.getItem('userID');
+					const token = localStorage.getItem('token');
+					const backendUrl = process.env.BACKEND_URL + `/api/users/seller/${user_id}`;
+					const response = await fetch(backendUrl, {
+						method: "PUT",
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`,
+						},
+						body: JSON.stringify(seller_info),
+					});
+					if (!response.ok) {
+						throw new Error('Error on edditing seller response')
+					}
+					const data = await response.json()
+					return(data)
+				}catch(error){
+					console.log('Error editing seller info', error)
+				}
+			},
+      
 		}
 	};
 };
