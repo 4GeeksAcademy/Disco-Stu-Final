@@ -31,7 +31,7 @@ export const UserNavbar = () => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white">
             <div className="container-fluid">
                 <Link className="nav-link" to="/">
-                    <img style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
+                    <img className="p-2" style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -45,10 +45,11 @@ export const UserNavbar = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarScroll">
-                    <ul className="navbar-nav me-auto my-2 my-lg-0">
+                    <ul className="navbar-nav me-auto my-lg-0" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <SearchBar />
                         <li
                             onClick={() => handlerNavigateToExplorer()}
+
                             style={{
                                 padding: '9px 0px 0px 18px',
                                 margin: 0,
@@ -57,89 +58,85 @@ export const UserNavbar = () => {
                             Explorar
                         </li>
                     </ul>
-
-                    <form className="d-flex">
-                        {logged ? (
-                            <ul className="navbar-nav me-auto my-2 my-lg-0">
-                                <li className="nav-item dropdown mx-3">
-                                    <div className="d-flex align-items-center">
-                                        <div className="nav-item me-3 me-lg-0">
-                                            <Link to="/user-profile" className="nav-link text-white">
-                                                <i className="fa-solid fa-face-smile-wink"></i>
-                                            </Link>
-                                        </div>
-                                        <div className="nav-item me-3 me-lg-0">
-                                            <Link to="/cart" className="nav-link text-white">
-                                                <i className="fas fa-shopping-cart"></i>
-                                            </Link>
-                                        </div>
-
-                                        <div className="nav-item me-3 me-lg-0">
-                                            <Link to="/favorites" className="nav-link text-white">
-                                                <i className="fa-solid fa-heart"></i>
-                                            </Link>
-                                        </div>
-
-                                        <div className="nav-item me-3 me-lg-0">
-                                            <Link to="/messages" className="nav-link text-white">
-                                                <i className="fa-solid fa-message"></i>
-                                            </Link>
-                                        </div>
-
-                                        <div
-                                            className="nav-link dropdown-toggle text-white"
-                                            href="#"
-                                            role="button"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false"
-                                        >
-                                            <i className="far fa-user"></i>
-                                        </div>
-                                        <ul
-                                            className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black"
-                                            aria-labelledby="navbarScrollingDropdown"
-                                        >
-                                            <hr className="dropdown-divider" />
-                                            <Link className="dropdown-item" to="/user-profile">
-                                                <i className="fa-solid fa-face-smile-wink"></i> Ayuda
-                                            </Link>
-
-                                            <Link className="dropdown-item" to="/update-password">
-                                                <i className="fa-solid fa-gear"></i> Contraseña
-                                            </Link>
-                                            <button
-                                                onClick={handleLogoutClick}
-                                                className="dropdown-item"
-
-                                            >
-                                                <i className="fa-solid fa-power-off"></i> Cerrar sesión
-                                            </button>
-                                        </ul>
-                                    </div>
-                                </li>
-                            </ul>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={handleLoginClick}
-                                    className="nav-link text-white btn btn-link"
-                                    tabIndex="-1"
-                                    aria-disabled="true"
-                                    type="button"
-                                >
-                                    Iniciar sesión
-                                </button>
-                                <Link to="/signup">
-                                    <button className="btn btn-success" type="submit">
-                                        Registrarse
-                                    </button>
-                                </Link>
-                            </>
-                        )}
-                    </form>
-
-
                 </div>
+                <form className="d-flex">
+                    {logged ? (
+                        <ul className="navbar-nav me-auto my-2 my-lg-0">
+                            <li className="nav-item dropdown mx-3">
+                                <div className="d-flex align-items-center">
+                                    <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/user-profile" className="nav-link text-white">
+                                            <i className="fa-solid fa-face-smile-wink"></i>
+                                        </Link>
+                                    </div>
+                                    <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/cart" className="nav-link text-white">
+                                            <i className="fas fa-shopping-cart"></i>
+                                        </Link>
+                                    </div>
+
+                                    <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/favorites" className="nav-link text-white">
+                                            <i className="fa-solid fa-heart"></i>
+                                        </Link>
+                                    </div>
+
+                                    <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/messages" className="nav-link text-white">
+                                            <i className="fa-solid fa-message"></i>
+                                        </Link>
+                                    </div>
+                                    <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/admin-support" className="nav-link text-white">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        </Link>
+                                    </div>
+                                    <div
+                                        className="nav-link dropdown-toggle text-white"
+                                        href="#"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        <i className="fa-solid fa-power-off"></i>
+                                    </div>
+                                    <ul
+                                        className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black"
+                                        aria-labelledby="navbarScrollingDropdown"
+                                    >
+                                        <button
+                                            onClick={handleLogoutClick}
+                                            className="dropdown-item"
+
+                                        >
+                                            Cerrar sesión
+                                        </button>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    ) : (
+                        <>
+                            <button
+                                onClick={handleLoginClick}
+                                className="nav-link text-white btn btn-link me-2"
+                                tabIndex="-1"
+                                aria-disabled="true"
+                                type="button"
+                            >
+                                Iniciar sesión
+                            </button>
+                            <Link to="/signup">
+                                <button className="btn btn-success" type="submit">
+                                    Registrarse
+                                </button>
+                            </Link>
+                        </>
+                    )}
+                </form>
+
+
+
             </div>
         </nav >
     );

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import '../../styles/CartComponent.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Swal from 'sweetalert2';
 
 const CartComponent = ({ data }) => {
 
@@ -14,10 +15,10 @@ const CartComponent = ({ data }) => {
     data.offers.forEach(element => {
       newTotalPrice += element.precio;
     });
-    
+
     const formattedTotalPrice = newTotalPrice.toFixed(2);
     const formattedTotalTax = (newTotalPrice * 0.05).toFixed(2);
-    
+
     setTotalPrice(formattedTotalPrice);
     setTotalTax(formattedTotalTax);
   }, [store.cart]);
@@ -41,13 +42,50 @@ const CartComponent = ({ data }) => {
     actions.deleteCartItemsBySeller(object_dict)
   }
 
+  const handlePlacedOrder = async (e) => {
+    try {
+      const user_id = parseInt(localStorage.getItem('userID'));
+      const precio_envio = 0;
+      const precio_total = parseInt(totalPrice, 10);
+      const impuesto = parseInt(totalTax, 10);
+      const articulo_id = parseInt(data.offers[0].oferta_id, 10);
+      const vendedor_id = parseInt(data.offers[0].vendedor_id, 10);
+
+      const swalResult = await Swal.fire({
+        title: 'Confirmar orden',
+        text: '¿Estás seguro de que deseas realizar la orden?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, realizar orden',
+        cancelButtonText: 'Cancelar',
+      });
+
+      if (swalResult.isConfirmed) {
+        const responseData = await actions.createOrder({
+          user_id,
+          precio_envio,
+          precio_total,
+          impuesto,
+          articulo_id,
+          vendedor_id,
+        });
+
+        console.log('Orden creada exitosamente:', responseData);
+
+        navigate('/user-orders');
+      }
+    } catch (error) {
+      console.error('Error al realizar el pedido:', error);
+    }
+  }
+
   return (
     <div className="container mt-4">
       <div className="card" >
         <div className="card-body" style={{ padding: 0 }}>
           <div id='seller_info' className="d-flex justify-content-between align-items-center">
             <p className="mb-0">Realizar pedido de <span style={{ color: '#033BDB' }}>{data.seller.nombre}</span> <span style={{ fontSize: '0.8rem' }}>90%, 15 valoraciones (trucha)</span></p>
-            <i onClick={() => handlerDeleteAllItems()} className="fa-solid fa-trash-can" style={{ color: '#636363',cursor: 'pointer' }}></i>
+            <i onClick={() => handlerDeleteAllItems()} className="fa-solid fa-trash-can" style={{ color: '#636363', cursor: 'pointer' }}></i>
           </div>
           <div className='d-flex space-between' style={{ padding: '15px' }}>
             <div id='articles' className="col-md-8 d-flex flex-column">
@@ -62,7 +100,7 @@ const CartComponent = ({ data }) => {
                         <p><strong>{element.titulo}</strong></p>
                         <p style={{ color: '#6e6e6e' }}>Soporte: {element.condicion_soporte}/ Funda: {element.condicion_funda}</p>
                       </div>
-                      <div style={{marginLeft: 'auto', display: 'flex', marginRight: '30px', alignItems: 'center'}}>
+                      <div style={{ marginLeft: 'auto', display: 'flex', marginRight: '30px', alignItems: 'center' }}>
                         <div className="ml-auto">
                           <p style={{ color: '#CD2906' }}><strong>${element.precio}</strong></p>
                         </div>
@@ -91,7 +129,7 @@ const CartComponent = ({ data }) => {
                 <p><strong>TOTAL:</strong></p>
                 <p><strong>PRECIO</strong></p>
               </div>
-              <button id='btn' type="button" className={`btn btn-success`}>Realizar pedido y pagar ahora</button>
+              <button id='btn' type="button" className={`btn btn-success`} onClick={handlePlacedOrder}>Realizar pedido y pagar ahora</button>
             </div>
           </div>
 
