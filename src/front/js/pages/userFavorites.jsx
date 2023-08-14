@@ -9,6 +9,7 @@ export const UserFavorites = () => {
     const [favoritesData, setFavoritesData] = useState([])
     const user_id = localStorage.getItem('userID')
     const [articleIds, setArticleIds] = useState([]);
+    const [artistData, setArtistData] = useState([]);
     const [articlesData, setArticlesData] = useState([]);
     const navigate = useNavigate();
 
@@ -16,13 +17,11 @@ export const UserFavorites = () => {
         const fetchFavorites = async () => {
             try {
                 const response = await actions.getFavoritesByUserId(user_id);
-                console.log("Estos son los favoritos por usuario:", response);
 
                 setFavoritesData(response);
 
             } catch (error) {
                 console.error("Error al obtener los favoritos:", error);
-                // Mostrar un mensaje de error al usuario si es apropiado
             }
         };
 
@@ -39,16 +38,25 @@ export const UserFavorites = () => {
     const fetchAndSetArticles = async () => {
         try {
             const response = await actions.getAllArticles();
-            console.log("Estos son los artículos:", response);
 
             setArticlesData(response);
 
         } catch (error) {
-            console.error("Error al obtener los artículos:", error);
+        }
+    };
+
+    const fetchAndSetArtists = async () => {
+        try {
+            const response = await actions.getAllArtists();
+
+            setArtistData(response);
+
+        } catch (error) {
         }
     };
 
     useEffect(() => {
+        fetchAndSetArtists();
         fetchAndSetArticles();
     }, []);
 
@@ -66,18 +74,21 @@ export const UserFavorites = () => {
             });
 
             if (result.isConfirmed) {
-                await actions.deleteFavorite(user_id, article_id); // Eliminar en el servidor
+                await actions.deleteFavorite(user_id, article_id);
                 const updatedFavorites = favoritesData.favorites.filter(favorite => favorite.id !== favorite_id);
-                setFavoritesData({ ...favoritesData, favorites: updatedFavorites }); // Actualizar el estado local
+                setFavoritesData({ ...favoritesData, favorites: updatedFavorites });
             }
+
         } catch (error) {
             console.error('Error deleting favorite:', error);
         }
     };
 
     const handleImageClick = (article) => {
-        navigate(`/article/${article.id}`);
-        localStorage.setItem('currentArticle', JSON.stringify(article));
+        if (article && article.id) {
+            navigate(`/article/${article.id}`);
+            localStorage.setItem('currentArticle', JSON.stringify(article));
+        }
     };
 
     return (
@@ -93,73 +104,57 @@ export const UserFavorites = () => {
                 className="p-4 text-black"
                 style={{ backgroundColor: "#f8f9fa" }}
             >
-                <h3 className="text-center">Lista de Favoritos</h3>
+                <h3 className="text-center">Lista de favoritos</h3>
                 <div className="d-flex justify-content-end text-center py-1">
                 </div>
             </div>
 
-            {/* Tabla */}
-            <div className="container-">
-                <div className="container-fluid">
-                    <div className="row">
-                        <div id="messages_center" className="">
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            {/* <th>
-                                                    <input type="checkbox" />
-                                                </th> */}
-                                            <th>#</th>
-                                            <th>Portada</th>
-                                            <th>Nombre del articulo</th>
-                                            <th>Artista</th>
-                                            <th>Genero</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {articleIds.map((articleId, index) => {
-                                            const favorite = favoritesData.favorites.find(fav => fav.articulo_id === articleId);
-                                            const article = articlesData.find(article => article.id === articleId);
-                                            return (
-                                                <tr key={`${articleId}-${index}`}>
-                                                    <td>{articleId}</td>
-                                                    <td>
-                                                        <span
-                                                            onClick={() => handleImageClick(article)} style={{ cursor: 'pointer' }}
-                                                        >
-                                                            {article ? (
-                                                                <img src={article.url_imagen} alt={article.title} className="img-fluid" />
-                                                            ) : (
-                                                                "Imagen no disponible"
-                                                            )}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        {article ? article.title : "Título no disponible"}
-                                                    </td>
-                                                    <td>{article ? article.artista : "Artista no disponible"}</td>
-                                                    <td>{article ? article.genero : "Género no disponible"}</td>
-                                                    <td>
-                                                        <button
-                                                            className="btn btn-outline-dark"
-                                                            onClick={() => handleDelete(user_id, articleId, favorite.id)}
-                                                        >
-                                                            <i className="fas fa-trash"></i> Eliminar
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
 
-                        </div>
-                    </div>
+            {/* Tabla */}
+            <div className="container">
+                <div className="row">
+                    {articleIds.map((articleId, index) => {
+                        const favorite = favoritesData.favorites.find(fav => fav.articulo_id === articleId);
+                        const article = articlesData.find(article => article.id === articleId);
+                        const artist = artistData.find(artist => artist.id === (article ? article.id : null))
+
+                        if (!article) {
+                            // Si no se encuentra el artículo, mostrar un mensaje de "No encontrado"
+                            return (
+                                <div key={`not-found-${index}`} className="col-md-3 mb-4">
+                                    <div className="card d-flex flex-column align-items-center justify-content-center">
+                                        <p>No encontrado</p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        return (
+                            <div key={`${articleId}-${index}`} className="col-md-3 mb-4">
+                                <div className="card d-flex flex-column">
+                                    <span onClick={() => handleImageClick(article)} style={{ cursor: 'pointer' }}>
+                                        <img src={article ? article.url_imagen : 'ruta-de-imagen-por-defecto.jpg'} alt={article ? article.title : 'Título no disponible'} className="card-img-top img-fluid" />
+                                    </span>
+                                    <div className="card-body d-flex flex-column align-items-center">
+                                        <button className="btn btn-sm btn-dark position-absolute top-0 start-0 m-2" onClick={() => handleDelete(user_id, articleId, favorite.id)}>
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                        <h5 className="card-title">{article ? article.title : 'Título no disponible'}</h5>
+                                        <p className="card-text">Artista: {artist ? artist.nombre : 'Artista no disponible'}</p>
+                                        <p className="card-text">Género: {article ? article.genero : 'Género no disponible'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
+            <div className="text-center my-4">
+                <button className="btn btn-outline-dark" onClick={() => navigate('/explorer')}>
+                    Regresar al Explorador
+                </button>
+            </div>
 
         </div>
 

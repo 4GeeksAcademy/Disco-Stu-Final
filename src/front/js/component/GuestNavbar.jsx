@@ -62,7 +62,7 @@ export const GuestNavbar = () => {
                         <>
                             <button
                                 onClick={handleLoginClick}
-                                className="nav-link text-white btn btn-link"
+                                className="nav-link text-white btn btn-link me-2"
                                 tabIndex="-1"
                                 aria-disabled="true"
                                 type="button"

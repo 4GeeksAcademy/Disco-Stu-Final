@@ -14,9 +14,25 @@ const ArticleDetails = () => {
             const response = await actions.addFavorites(user_id, article_id);
             console.log('Favorite added successfully:', response);
 
+            Swal.fire({
+                title: 'Agregado a favoritos',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
         } catch (error) {
             console.error('Error adding favorite:', error);
 
+            Swal.fire({
+                title: 'Uppss...',
+                text: error.message,
+                icon: 'warning',
+                confirmButtonText: 'Cerrar',
+                customClass: {
+                    confirmButton: 'btn btn-success border-0 rounded-0'
+                }
+            });
         }
     };
 

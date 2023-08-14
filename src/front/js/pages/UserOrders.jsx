@@ -1,14 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
+// import PayPalPayment from '../component/PayPalPayment.jsx'
 
 
 export const UserOrders = () => {
     const navigate = useNavigate()
-    const { actions } = useContext(Context)
-    const [selectedItems, setSelectedItems] = useState([]);
-    const userId = localStorage.getItem('userID');
-    const [data, setData] = useState([]);
+    const { store, actions } = useContext(Context);
+    const [ordersList, setOrdersList] = useState([]);
+    const [vendorInfo, setVendorInfo] = useState([]);
+    const [totalArticles, setTotalArticles] = useState(0);
+
+    useEffect(() => {
+        actions.getCart();
+    }, []);
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -29,17 +34,21 @@ export const UserOrders = () => {
         navigate('/messages/compose')
     }
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const fetchedData = await actions.getAllMessages(userId);
-    //             setData(fetchedData);
-    //         } catch (error) {
-    //             console.log('Error fetching messages: ', error);
-    //         }
-    //     };
-    //     fetchData();
-    // }, []);
+    const handleGetOrders = async () => {
+        const user_id = localStorage.getItem('userID')
+        const ordersData = await actions.getOrderPlaced(user_id);
+
+        setOrdersList(ordersData);
+
+        const totalArticles = ordersData.reduce((total, order) => total + order.items.length, 0);
+        setTotalArticles(totalArticles);
+
+    }
+
+    useEffect(() => {
+        handleGetOrders();
+    }, []);
+
 
     return (
         <div>
@@ -83,33 +92,27 @@ export const UserOrders = () => {
                             <div className="mb-3 me-3 d-flex justify-content-end">
                                 <button onClick={() => handleDeleteMessage()} className="btn btn-outline-dark">Eliminar</button>
                             </div>
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead className="bg-light">
+                            <div class="table-responsive">
+                                <h5 style={{ margin: 0 }}><strong>Tienes total de Pedidos:</strong>{totalArticles}</h5>
+                                <table class="table table-hover">
+                                    <thead>
                                         <tr>
-                                            <th className="col"><input type="checkbox" /></th>
-                                            <th className="col">Pedido</th>
-                                            <th className="col">Fecha</th>
-                                            <th className="col">Vendedor</th>
+                                            <th>Número de Pedido</th>
+                                            <th>Vendedor</th>
+                                            <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {/* {data.inbox.length > 0 ? (
-                                            data.inbox.map((element, index) => (
-                                                <tr key={element.id}>
-                                                    <td style={{ width: '30px', padding: '0.5rem' }}>
-                                                        <input type="checkbox" onChange={() => toggleSelectMessage(element.id)} />
-                                                    </td>
-                                                    <td style={{ width: '25%' }}>{element.emisor_id}</td>
-                                                    <td style={{ width: '54%' }}>{element.asunto}</td>
-                                                    <td style={{ width: '18%' }}>{element.fecha}</td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td className="col">No hay mensajes en la bandeja de enviados.</td>
+                                        {ordersList.map(order => (
+
+                                            <tr key={order.id}>
+                                                <td>{order.id}</td>
+                                                <td>Vendedor: {vendorInfo.nombre}</td>
+                                                <td>${order.precio_total}</td>
+                                                {/* <td><PayPalPayment /></td> */}
                                             </tr>
-                                        )} */}
+
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>

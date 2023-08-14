@@ -723,7 +723,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					setStore(prevStore => ({
 						...prevStore,
 						cart: updatedCart
-					  }));
+					}));
 					if (variable === 0) {
 						return
 					}
@@ -842,7 +842,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
-      
+
 			editSeller: async (seller_info) => {
 				try {
 					const user_id = localStorage.getItem('userID');
@@ -860,12 +860,69 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error on edditing seller response')
 					}
 					const data = await response.json()
-					return(data)
-				}catch(error){
+					return (data)
+				} catch (error) {
 					console.log('Error editing seller info', error)
 				}
 			},
-      
+
+			createOrder: async ({ user_id, precio_envio, precio_total, impuesto, articulo_id, vendedor_id }) => {
+				try {
+					const orderData = {
+						precio_envio,
+						precio_total,
+						impuesto,
+						articulo_id,
+						vendedor_id
+					};
+
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}`;
+					const response = await fetch(backendUrl, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(orderData),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to add order');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error adding order:', error);
+					throw error;
+				}
+			},
+
+			getOrderPlaced: async (user_id) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}`;
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						throw new Error('Unable to get orders information.');
+					}
+
+					const data = await response.json();
+					const orders = data.pedidos;
+
+					return orders;
+
+				} catch (error) {
+					console.error('Error getting the orders:', error);
+					throw error;
+				}
+			},
+
 		}
 	};
 };
