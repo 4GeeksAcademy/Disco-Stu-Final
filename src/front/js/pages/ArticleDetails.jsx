@@ -37,6 +37,29 @@ const ArticleDetails = () => {
         }
     };
 
+    const handlerVenderVinilo = () => {
+        const sellerValidation = async () => {
+            const user_id = localStorage.getItem('userID')
+            const backendUrl = process.env.BACKEND_URL + `api/users/validate_seller/${user_id}`;
+            return await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    console.log(result)
+                    if (result == 'VALIDATED') {
+                        navigate(`/sell/${article.id}`)
+                    }else{
+                        navigate('/sellers')
+                    }
+                });
+        };
+        sellerValidation()
+    }
+
     if (!article) {
         return <div>Loading...</div>;
     }
