@@ -1,76 +1,56 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Context } from '../store/appContext';
-import { useNavigate } from 'react-router-dom';
 import "../../styles/searchbar.css";
+import { setNestedObjectValues } from 'formik';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const SearchBar = () => {
+	const { actions } = useContext(Context);
+	const [term, setTerm] = useState('');
+	const location = useLocation();
+	const navigate = useNavigate();
+	let timeout;
 
-	const navigate = useNavigate()
-	const [isExpanded, setIsExpanded] = useState(false);
-	const [loadingIsActive, setLoadingIsActive] = useState(false)
-	const [searchContent, setSearchContent] = useState('')
-	const searchRef = useRef(null);
-	const { store, actions } = useContext(Context)
+	const searchContent = async (e) => {
+		const term = e.target.value;
+		setTerm(term);
 
-	useEffect(() => {
-		const handleOutsideClick = (event) => {
-			if (searchRef.current && !searchRef.current.contains(event.target)) {
-				setIsExpanded(false);
-			}
-		};
+		const isExplorerView = location.pathname === '/explorer';
+		if(!isExplorerView)
+			navigate('/explorer');
 
-		document.addEventListener("click", handleOutsideClick);
+		if (e.key === 'Backspace') {
+			return;
+		}
 
-		return () => {
-			document.removeEventListener("click", handleOutsideClick);
-		};
-	}, []);
+		clearTimeout(timeout);
 
-	const handleExpandedSearch = (value) => {
-		// clearTimeout(timerId); // Limpiamos el temporizador existente (si lo hay)
-		// // setLoadingIsActive(true)
-
-		// const timerId = setTimeout(() => {
-		// 	// return setLoadingIsActive(false)
-		// }, 3000);
-		setSearchContent(value)
-	}
-
-	const handleSearchClick = () => {
-		actions.expandedSearch(searchContent);
-		navigate('/explorer')
-	}
+		if (term.length > 2 || term === "" || e.key === 'Enter') {
+			timeout = setTimeout(async () => {
+				await actions.search(term);
+				setTerm("");
+			}, 700);
+		}
+	};
 
 	return (
 		<div>
-			<div className={`input-group ${isExpanded ? "expanded" : ""}`} ref={searchRef}>
+			<div className="input-group">
 				<input
 					id="search-input"
-					className={`search-click border-start-0 ${isExpanded ? "expanded" : ""}`}
+					className={`search-click border-start-0`}
 					type="search"
 					placeholder="Buscar artistas, álbumes y otros..."
 					aria-label="Search"
-					onChange={(e) => handleExpandedSearch(e.target.value)}
-					value = {searchContent}
+					onInput={(e) => searchContent(e)}
+					onKeyDown={(e) => searchContent(e)}
+					value={term}
 				/>
-				<span
-					id="search-icon"
-					className="search-icon input-group-text bg-white border-end-0"
-					onClick={() => handleSearchClick()}
-				>
-					<i className="fa-solid fa-magnifying-glass"></i>
-				</span>
 			</div>
-			{/* {loadingIsActive && <div className="loading-icon"></div>} */}
 		</div>
 	)
 }
 
 
 export default SearchBar
-
-
-
-
-

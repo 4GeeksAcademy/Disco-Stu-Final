@@ -18,9 +18,19 @@ const Explorer = () => {
     const [articles, setArticles] = useState(null);
 
     useEffect(() => {
+        if (store.searchResults) {
+            setArticles(store.searchResults);
+        }
+    }, [store.searchResults])
+
+    useEffect(() => {
         const fetchArticles = async () => {
-            const data = await actions.getAllArticles();
-            setArticles(data);
+            if (store.searchResults) {
+                setArticles(store.searchResults);
+            } else {
+                const data = await actions.getAllArticles();
+                setArticles(data);
+            }
         }
 
 

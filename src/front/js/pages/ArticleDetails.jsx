@@ -9,6 +9,7 @@ const ArticleDetails = () => {
     const user_id = localStorage.getItem('userID');
     const navigate = useNavigate();
 
+
     const handleAddFavorites = async (user_id, article_id) => {
         try {
             const response = await actions.addFavorites(user_id, article_id);
@@ -148,7 +149,8 @@ const ArticleDetails = () => {
                         </div>
                         <button className="btn btn-success mb-2" onClick={() => handleAddFavorites(user_id, article.id)}>Agregar a deseados</button>
                         <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
-                        <button onClick={() => handlerVenderVinilo()} className="btn btn-secondary mb-2">Vender Vinilo</button>
+                        <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
+                        <button onClick={() => window.history.back()} className="btn btn-secondary mb-2">Regresar</button>
                     </div>
                 </div>
             </div>
