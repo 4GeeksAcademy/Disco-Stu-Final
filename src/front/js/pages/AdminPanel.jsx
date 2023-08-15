@@ -88,7 +88,7 @@ export const AdminPanel = () => {
                 <div className="card border-0 rounded-0">
                     <div
                         className="text-white d-flex flex-row"
-                        style={{ backgroundColor: "#000", height: "200px" }}
+                        style={{ backgroundColor: "#000", height: "150px" }}
                     >
                         <div
                             className="ms-4 mt-5 d-flex flex-column"
@@ -104,67 +104,59 @@ export const AdminPanel = () => {
                         <div className="d-flex justify-content-end text-center py-1">
                         </div>
                     </div>
-                    <div className="card-body p-4 text-black"></div>
                 </div>
             </div>
 
             {/* Tabla y menu izquierdo */}
-            <div className="container-">
-                <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
-                    <div className="container-fluid" style={{ margin: '30px' }}>
-                        <div className="row" style={{ margin: '30px 100px' }}>
-                            <div id="messages_center" className="">
-                                <h1 className="mb-3">Administrar usuarios</h1>
-                                <div className="mb-3">
-                                    <button onClick={() => handleDeleteSelectedUsers()} className="btn btn-light"><i className="fa-solid fa-trash"></i> Eliminar</button>
-                                </div>
-                                {status === "loading" ? (
-                                    <p>Cargando...</p>
-                                ) : status === "error" ? (
-                                    <p>Acceso no autorizado o error al obtener los usuarios.</p>
-                                ) : (
-                                    <div className="table-responsive">
-                                        {filteredUsers.length === 0 ? (
-                                            <p>No hay usuarios registrados</p>
-                                        ) : (
-                                            <table className="table table-hover">
-                                                <tr>
-                                                    <th>
-                                                        <input type="checkbox" />
-                                                    </th>
-                                                    <th>Usuario</th>
-                                                    <th>Nombre Real</th>
-                                                    <th>Correo Electrónico</th>
-                                                    <th></th>
-                                                </tr>
-                                                <tbody>
-                                                    {filteredUsers.map((user) => (
-                                                        <tr key={user.id}>
-                                                            <td style={{ width: '30px', padding: '0.5rem' }}>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    onChange={(e) => toggleUserSelection(e, user.id)}
-                                                                    checked={user.isSelected}
-                                                                />
-                                                            </td>
-                                                            <td style={{ width: '25%' }}>{user.username}</td>
-                                                            <td style={{ width: '54%' }}>{user.nombre_real}</td>
-                                                            <td style={{ width: '18%' }}>{user.email}</td>
-                                                            <td style={{ width: '18%' }}>{user.country}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+
+            <div className="container-fluid">
+                <div className="p-4">
+                    <h1 className="mb-3">Administrar usuarios</h1>
+                    <div className="mb-3">
+                        <button onClick={() => handleDeleteSelectedUsers()} className="btn btn-light"><i className="fa-solid fa-trash"></i> Eliminar</button>
                     </div>
+                    {status === "loading" ? (
+                        <p>Cargando...</p>
+                    ) : status === "error" ? (
+                        <p>Acceso no autorizado o error al obtener los usuarios.</p>
+                    ) : (
+                        <div className="table-responsive">
+                            {filteredUsers.length === 0 ? (
+                                <p>No hay usuarios registrados</p>
+                            ) : (
+                                <table className="table table-hover">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" />
+                                        </th>
+                                        <th>Usuario</th>
+                                        <th>Nombre Real</th>
+                                        <th>Correo Electrónico</th>
+                                        <th></th>
+                                    </tr>
+                                    <tbody>
+                                        {filteredUsers.map((user) => (
+                                            <tr key={user.id}>
+                                                <td style={{ width: '30px', padding: '0.5rem' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={(e) => toggleUserSelection(e, user.id)}
+                                                        checked={user.isSelected}
+                                                    />
+                                                </td>
+                                                <td style={{ width: '25%' }}>{user.username}</td>
+                                                <td style={{ width: '54%' }}>{user.nombre_real}</td>
+                                                <td style={{ width: '18%' }}>{user.email}</td>
+                                                <td style={{ width: '18%' }}>{user.country}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
-
         </div>
-
     );
 };

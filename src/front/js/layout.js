@@ -14,13 +14,13 @@ import { Single } from "./pages/single";
 import { Signup } from "./pages/Signup.jsx";
 import { Login } from "./pages/Login.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
-import { UserProfileEdit } from "./pages/UserProfileEdit.jsx"
+import UserProfileEdit from "./pages/UserProfileEdit.jsx"
 import { UserSellerDataEdit } from "./pages/UserSellerDataEdit.jsx"
 import { ChangePassword } from "./pages/passChange.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { AdminInbox } from "./pages/AdminInbox.jsx"
 import { Contact } from "./pages/Contact.jsx"
-import { About } from "./pages/About.jsx";
+import About from "./pages/About.jsx";
 import { UserOrders } from "./pages/UserOrders.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
@@ -77,7 +77,7 @@ const Layout = () => {
                                 <Route element={<AdminApprovals />} path="/approvals" />
                                 <Route element={<ArticleReview />} path="/article-review/:id" />
                                 <Route element={<UserProfile />} path="/user-profile" />
-                                <Route element={<UserProfileEdit />} path="/edit-user" />
+                                <Route element={<UserProfileEdit />} path="/edit-profile" />
                                 <Route element={<UserSellerDataEdit />} path="/seller" />
                                 <Route element={<UserFavorites />} path="/favorites" />
                                 <Route element={<ChangePassword />} path="/update-password" />

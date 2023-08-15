@@ -55,7 +55,7 @@ export const AdminApprovals = () => {
                 <div className="card border-0 rounded-0">
                     <div
                         className="text-white d-flex flex-row"
-                        style={{ backgroundColor: "#000", height: "200px" }}
+                        style={{ backgroundColor: "#000", height: "150px" }}
                     >
                         <div
                             className="ms-4 mt-5 d-flex flex-column"
@@ -71,56 +71,53 @@ export const AdminApprovals = () => {
                         <div className="d-flex justify-content-end text-center py-1">
                         </div>
                     </div>
-                    <div className="card-body p-4 text-black"></div>
-                </div>
+                    \                </div>
             </div>
 
             {/* Tabla y menu izquierdo */}
-            <div className="container-">
-                <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
-                    <div className="container-fluid" style={{ margin: '30px' }}>
-                        <div className="row" style={{ margin: '30px 100px' }}>
-                            <div id="messages_center" className="">
-                                <h1 className="mb-3">Articulos pendientes de aprobación</h1>
-                                <div className="d-flex justify-content-between mb-3">
-                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Aprobar</button>
-                                    <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Rechazar</button>
-                                </div>
-
-                                <div className="table-responsive">
-                                    <table className="table table-hover">
-                                        <tr>
-                                            <th>
-                                                <input type="checkbox" />
-                                            </th>
-                                            <th>Titulo:</th>
-                                            <th>Usuario: </th>
-                                            <th>Genero:</th>
-                                            <th>Pais:</th>
-                                        </tr>
-                                        <tbody>
-                                            {approvalData.map((item, index) => (
-                                                <tr key={index}>
-                                                    <td style={{ width: "30px", padding: "0.5rem" }}>
-                                                        <input type="checkbox" />
-                                                    </td>
-                                                    <td>
-                                                        <Link to={`/article-review/${item.id}`}>{item.titulo}</Link>
-                                                    </td>
-                                                    <td>{articleUsers[item.id]?.username}</td>
-                                                    <td>{item.genero}</td>
-                                                    <td>{item.pais}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-
-                                </div>
-
-                            </div>
+            <div className="container-fluid px-4 pb-4">
+                <div className="row">
+                    <div className="">
+                        <h1 className="mb-3">Articulos pendientes de aprobación</h1>
+                        <div className="d-flex justify-content-between mb-3">
+                            <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Aprobar</button>
+                            <button className="btn btn-light"><i className="fa-solid fa-trash"></i> Rechazar</button>
                         </div>
+
+                        <div className="table-responsive">
+                            <table className="table table-hover">
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" />
+                                    </th>
+                                    <th>Titulo:</th>
+                                    <th>Usuario: </th>
+                                    <th>Genero:</th>
+                                    <th>Pais:</th>
+                                </tr>
+                                <tbody>
+                                    {approvalData.map((item, index) => (
+                                        <tr key={index}>
+                                            <td style={{ width: "30px", padding: "0.5rem" }}>
+                                                <input type="checkbox" />
+                                            </td>
+                                            <td>
+                                                <Link to={`/article-review/${item.id}`}>{item.titulo}</Link>
+                                            </td>
+                                            <td>{articleUsers[item.id]?.username}</td>
+                                            <td>{item.genero}</td>
+                                            <td>{item.pais}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                        </div>
+
                     </div>
                 </div>
+
+
             </div>
 
         </div>

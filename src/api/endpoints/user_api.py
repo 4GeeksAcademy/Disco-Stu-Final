@@ -15,6 +15,7 @@ user_api = Blueprint('user_api', __name__)
 
 jwt_manager = JWTManager()
 
+
 @user_api.route('/signup', methods=['POST'])
 def signup():
 
@@ -177,28 +178,32 @@ def delete_user(user_id):
 @jwt_required()
 @regular_user_required
 def edit_user(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"message": "Usuario no encontrado"}), 404
-
     try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"message": "Usuario no encontrado"}), 404
+
         data = request.get_json()
-        user.nombre = data.get('name', user.nombre)
-        user.correo = data.get('email', user.correo)
-        user.is_admin = data.get('is_admin', user.is_admin)
-        # user.contrasenha = data.get('password', user.contrasenha)
-        user.direccion_comprador = data.get(
-            'address', user.direccion_comprador)
-        user.ciudad_comprador = data.get('city', user.direccion_comprador)
-        user.estado_comprador = data.get('state', user.direccion_comprador)
-        user.codigo_postal_comprador = data.get(
-            'postal_code', user.direccion_comprador)
-        user.pais_comprador = data.get('country', user.direccion_comprador)
-        user.telefono_comprador = data.get(
-            'telephone', user.direccion_comprador)
-        # user.valoracion = data.get('country', user.valoracion)
-        # user. cantidad_de_valoraciones = data.get(
-        #     'telephone', user.cantidad_de_valoraciones)
+        nombre = data.get('name', user.nombre)
+        correo = data.get('email', user.correo)
+        is_admin = data.get('is_admin', user.is_admin)
+        direccion_comprador = data.get('address', user.direccion_comprador)
+        ciudad_comprador = data.get('city', user.ciudad_comprador)
+        estado_comprador = data.get('state', user.estado_comprador)
+        codigo_postal_comprador = data.get(
+            'postal_code', user.codigo_postal_comprador)
+        pais_comprador = data.get('country', user.pais_comprador)
+        telefono_comprador = data.get('telephone', user.telefono_comprador)
+
+        user.nombre = nombre
+        user.correo = correo
+        user.is_admin = is_admin
+        user.direccion_comprador = direccion_comprador
+        user.ciudad_comprador = ciudad_comprador
+        user.estado_comprador = estado_comprador
+        user.codigo_postal_comprador = codigo_postal_comprador
+        user.pais_comprador = pais_comprador
+        user.telefono_comprador = telefono_comprador
 
         db.session.commit()
         return jsonify({"message": "Usuario editado exitosamente"}), 200
@@ -250,26 +255,27 @@ def update_sell_data(user_id):
     cliente_ID_paypal = request.json.get('cliente_ID_paypal')
     secret_key_paypal = request.json.get('secret_key_paypal')
     update_or_delete = request.json.get('update_or_delete')
-    
+
     user = User.query.get(user_id)
-    
+
     if user:
-        if update_or_delete == 'update': 
-            
+        if update_or_delete == 'update':
+
             user.cliente_ID_paypal = cliente_ID_paypal
             user.secret_key_paypal = secret_key_paypal
-            
+
             db.session.commit()
-            
+
         if update_or_delete == 'delete':
             user.cliente_ID_paypal = None
             user.secret_key_paypal = None
 
             db.session.commit()
-        
+
         return jsonify({"message": "Información actualizada correctamente."}), 200
     else:
         return jsonify({"message": "Usuario no encontrado."}), 404
+
 
 @user_api.route('/became_seller/<int:user_id>', methods=['PUT'])
 # @jwt_required()

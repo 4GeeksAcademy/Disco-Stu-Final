@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const ArticleDetails = () => {
     const { store, actions } = useContext(Context);
@@ -123,7 +124,7 @@ const ArticleDetails = () => {
                         <div onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }}>
                             Editar artículo
                         </div>
-                        <button className="btn btn-success mb-2" onClick={() => handleAddFavorites(user_id, article.id)}>Agregar a deseados</button>
+                        <button className="btn btn-success mb-2" onClick={() => handleAddFavorites({ user_id, articulo_id: article.id })}>Agregar a deseados</button>
                         <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
                         <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
                     </div>

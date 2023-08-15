@@ -43,7 +43,7 @@ const SearchBar = () => {
 	}
 
 	return (
-		<div>
+		<div className='m-2'>
 			<div className={`input-group ${isExpanded ? "expanded" : ""}`} ref={searchRef}>
 				<input
 					id="search-input"
@@ -52,7 +52,7 @@ const SearchBar = () => {
 					placeholder="Buscar artistas, álbumes y otros..."
 					aria-label="Search"
 					onChange={(e) => handleExpandedSearch(e.target.value)}
-					value = {searchContent}
+					value={searchContent}
 				/>
 				<span
 					id="search-icon"

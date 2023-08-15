@@ -773,7 +773,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			addFavorites: async ({ user_id, articulo_id }) => {
 				try {
 					const article = {
-						article_id: article_id
+						article_id: articulo_id
 					};
 					const backendUrl = process.env.BACKEND_URL + `/api/favorites/${user_id}`;
 					const response = await fetch(backendUrl, {
@@ -785,8 +785,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 
 					if (!response.ok) {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'Failed to add favorite');
+						if (response.status === 409) {
+							const errorData = await response.json();
+							throw new Error(errorData.message || 'El articulo ya esta agregado a Favoritos');
+						} else {
+							const errorData = await response.json();
+							throw new Error(errorData.message || 'Failed to add favorite');
+						}
 					}
 
 					const responseData = await response.json();
@@ -866,14 +871,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			createOrder: async ({ user_id, precio_envio, precio_total, impuesto, articulo_id, vendedor_id }) => {
+			createOrder: async ({ user_id, precio_envio, precio_total, impuesto, articulo_id, vendedor_id, condicion_funda, condicion_soporte }) => {
 				try {
 					const orderData = {
 						precio_envio,
 						precio_total,
 						impuesto,
 						articulo_id,
-						vendedor_id
+						vendedor_id,
+						condicion_funda,
+						condicion_soporte,
 					};
 
 					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}`;

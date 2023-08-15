@@ -2,15 +2,15 @@
 This module takes ordere of starting the API Server for users, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pedido
+from api.models import db, User, Pedido, Pedido_articulos
 from api.utils import generate_sitemap, APIException
 
 order_api = Blueprint('order_api', __name__)
 
 
-@order_api.route('/hello_order/<string:order_name>', methods=['GET'])
-def hello_order(order_name):
-    return {"message": "hello " + order_name}, 200
+# @order_api.route('/hello_order/<string:order_name>', methods=['GET'])
+# def hello_order(order_name):
+#     return {"message": "hello " + order_name}, 200
 
 
 @order_api.route('/<int:user_id>', methods=['POST'])
@@ -24,6 +24,8 @@ def create_order(user_id):
         precio_envio = data['precio_envio']
         precio_total = data['precio_total']
         impuesto = data['impuesto']
+        condicion_funda = data['condicion_funda']
+        condicion_soporte = data['condicion_soporte']
         articulo_id = data['articulo_id']
         vendedor_id = data['vendedor_id']
 
@@ -31,6 +33,8 @@ def create_order(user_id):
             precio_envio=precio_envio,
             precio_total=precio_total,
             impuesto=impuesto,
+            condicion_funda=condicion_funda,
+            condicion_soporte=condicion_soporte,
             articulo_id=articulo_id,
             user_id=user_id,
             vendedor_id=vendedor_id
@@ -60,11 +64,33 @@ def get_pedidos_by_user_id(user_id):
                 'precio_total': pedido.precio_total,
                 'impuesto': pedido.impuesto,
                 'articulo_id': pedido.articulo_id,
-                'vendedor_id': pedido.vendedor_id
+                'vendedor_id': pedido.vendedor_id,
+                'condicion_funda': pedido.condicion_funda,
+                'condicion_soporte': pedido.condicion_soporte
             }
             pedidos_list.append(pedido_data)
 
         return jsonify({'pedidos': pedidos_list}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@order_api.route('/<int:user_id>/<int:order_id>', methods=['DELETE'])
+def delete_order(user_id, order_id):
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        order = Pedido.query.filter_by(id=order_id, user_id=user_id).first()
+        if not order:
+            return jsonify({'error': 'Pedido no encontrado'}), 404
+
+        db.session.delete(order)
+        db.session.commit()
+
+        return jsonify({'message': 'Pedido eliminado con éxito'}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

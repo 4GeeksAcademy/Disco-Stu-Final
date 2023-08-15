@@ -3,12 +3,15 @@ import { Context } from '../store/appContext';
 import '../../styles/CartComponent.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const CartComponent = ({ data }) => {
 
   const { store, actions } = useContext(Context)
   const [totalPrice, setTotalPrice] = useState(0)
   const [totalTax, setTotalTax] = useState(0)
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     let newTotalPrice = 0;
@@ -50,6 +53,8 @@ const CartComponent = ({ data }) => {
       const impuesto = parseInt(totalTax, 10);
       const articulo_id = parseInt(data.offers[0].oferta_id, 10);
       const vendedor_id = parseInt(data.offers[0].vendedor_id, 10);
+      const condicion_funda = data.offers[0].condicion_funda;
+      const condicion_soporte = data.offers[0].condicion_soporte;
 
       const swalResult = await Swal.fire({
         title: 'Confirmar orden',
@@ -68,8 +73,10 @@ const CartComponent = ({ data }) => {
           impuesto,
           articulo_id,
           vendedor_id,
+          condicion_funda,
+          condicion_soporte,
         });
-
+  
         console.log('Orden creada exitosamente:', responseData);
 
         navigate('/user-orders');

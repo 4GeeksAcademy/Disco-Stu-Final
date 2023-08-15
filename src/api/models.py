@@ -212,6 +212,14 @@ class Pedido(db.Model):
     precio_envio = db.Column(db.Integer)
     precio_total = db.Column(db.Integer)
     impuesto = db.Column(db.Integer)
+    condicion_funda = db.Column(db.String(250))
+    condicion_soporte = db.Column(db.String(250))
+    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    user = db.relationship('User', foreign_keys=[user_id], backref='pedidos_realizados')
+    vendedor = db.relationship('User', foreign_keys=[vendedor_id], backref='pedidos_vendidos')
 
 
 class Pedido_articulos(db.Model):

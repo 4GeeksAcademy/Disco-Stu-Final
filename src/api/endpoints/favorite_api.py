@@ -51,6 +51,13 @@ def add_favorite(user_id):
     if 'article_id' not in data:
         return jsonify({'message': 'Missing article_id'}), 400
 
+    article_id = data['article_id']
+
+    existing_favorite = Favoritos.query.filter_by(
+        user_id=user_id, articulo_id=article_id).first()
+    if existing_favorite:
+        return jsonify({'message': 'El articulo ya esta agregado a Favoritos'}), 400
+
     new_favorite = Favoritos(user_id=user_id, articulo_id=data['article_id'])
     db.session.add(new_favorite)
     db.session.commit()

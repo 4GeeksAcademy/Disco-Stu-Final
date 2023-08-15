@@ -1,19 +1,53 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
-// import PayPalPayment from '../component/PayPalPayment.jsx'
-
+import PayPalPayment from '../component/PayPalPayment.jsx'
 
 export const UserOrders = () => {
-    const navigate = useNavigate()
+
+    const navigate = useNavigate();
     const { store, actions } = useContext(Context);
     const [ordersList, setOrdersList] = useState([]);
-    const [vendorInfo, setVendorInfo] = useState([]);
-    const [totalArticles, setTotalArticles] = useState(0);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        actions.getCart();
+        const fetchUsers = async () => {
+            const userData = await actions.getAllUsersInfo();
+            setUsers(userData);
+        };
+
+        fetchUsers();
     }, []);
+
+    const generateRandomOrderNumber = () => {
+        return Math.floor(Math.random() * 900000) + 100000;
+    };
+
+    useEffect(() => {
+        const handleGetOrders = async () => {
+            const user_id = localStorage.getItem('userID');
+            const ordersData = await actions.getOrderPlaced(user_id);
+
+            const ordersWithUserInfo = ordersData.map(order => {
+                const user = users.find(user => user.id === order.vendedor_id);
+                return {
+                    ...order,
+                    vendedor_nombre: user ? user.nombre : 'Usuario no encontrado'
+                };
+            });
+
+            setOrdersList(ordersWithUserInfo);
+        };
+
+        handleGetOrders();
+    }, [users]);
+
+    const formatDate = date => {
+        if (!date) return ''; // Return an empty string if date is not available
+
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(date).toLocaleDateString('es-ES', options);
+    };
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -34,42 +68,17 @@ export const UserOrders = () => {
         navigate('/messages/compose')
     }
 
-    const handleGetOrders = async () => {
-        const user_id = localStorage.getItem('userID')
-        const ordersData = await actions.getOrderPlaced(user_id);
-
-        setOrdersList(ordersData);
-
-        const totalArticles = ordersData.reduce((total, order) => total + order.items.length, 0);
-        setTotalArticles(totalArticles);
-
-    }
-
-    useEffect(() => {
-        handleGetOrders();
-    }, []);
-
-
     return (
         <div>
             {/* Header */}
             <div className="card bg-black rounded-0 border-0">
-                <div
-                    className="text-white d-flex flex-row w-100 border-0"
-                >
-                    <div
-                        className="ms-4 mt-5 d-flex flex-column"
-                        style={{ width: "150px" }}
-                    ></div>
+                <div className="text-white d-flex flex-row w-100 border-0">
+                    <div className="ms-4 mt-5 d-flex flex-column" style={{ width: "150px" }}></div>
                     <div className="ms-3" style={{ marginTop: "130px" }}></div>
                 </div>
-                <div
-                    className="p-4 text-black"
-                    style={{ backgroundColor: "#f8f9fa" }}
-                >
+                <div className="p-4 text-black" style={{ backgroundColor: "#f8f9fa" }}>
                     <h3 className="text-center">Mensajes</h3>
-                    <div className="d-flex justify-content-end text-center py-1">
-                    </div>
+                    <div className="d-flex justify-content-end text-center py-1"></div>
                 </div>
             </div>
             <div>
@@ -90,37 +99,72 @@ export const UserOrders = () => {
                         </div>
                         <div id="messages_center" className="col-md-9">
                             <div className="mb-3 me-3 d-flex justify-content-end">
-                                <button onClick={() => handleDeleteMessage()} className="btn btn-outline-dark">Eliminar</button>
+                                <button className="btn btn-outline-dark">Eliminar</button>
                             </div>
-                            <div class="table-responsive">
-                                <h5 style={{ margin: 0 }}><strong>Tienes total de Pedidos:</strong>{totalArticles}</h5>
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Número de Pedido</th>
-                                            <th>Vendedor</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {ordersList.map(order => (
-
-                                            <tr key={order.id}>
-                                                <td>{order.id}</td>
-                                                <td>Vendedor: {vendorInfo.nombre}</td>
-                                                <td>${order.precio_total}</td>
-                                                {/* <td><PayPalPayment /></td> */}
-                                            </tr>
-
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <div className="table-responsive">
+                                {ordersList.map(order => (
+                                    <div className="card mt-4">
+                                        <div className="card-header">
+                                            <h5 className="card-title">Pedido n°{generateRandomOrderNumber()}</h5>
+                                            <p className="card-text">
+                                                Creado: {formatDate(new Date())}
+                                            </p>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="row">
+                                                <div className="col-md-4">
+                                                    <div className="mb-3">
+                                                        <strong>ID:</strong>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="mb-3">
+                                                        <strong>Artículo:</strong>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="mb-3 d-flex justify-content-center align-items-end">
+                                                        <strong>Precio:</strong>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="mb-3">
+                                                        {order.id}
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="mb-3">
+                                                        Soporte: {order.condicion_soporte}/ Funda: {order.condicion_funda}
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="mb-3 d-flex justify-content-center align-items-end">
+                                                        USD$ {order.precio_total}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="card flex-column align-items-end border-0 border-top">
+                                                <div className="card-body" style={{ width: "200px" }}>
+                                                    <p className="card-title"><strong>Envío:</strong> $ 10</p>
+                                                    <p className="card-title"><strong>Impuesto:</strong> $ {order.impuesto}</p>
+                                                    <p className="card-title"><strong>Total:</strong> $ {order.impuesto + order.precio_total + 10}</p>
+                                                </div>
+                                            </div>
+                                            <div className="card flex-column align-items-end border-0 border-top">
+                                                <div className="card-body">
+                                                    <PayPalPayment />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     )
 }
 
