@@ -36,6 +36,29 @@ const ArticleDetails = () => {
         }
     };
 
+    const handlerVenderVinilo = () => {
+        const sellerValidation = async () => {
+            const user_id = localStorage.getItem('userID')
+            const backendUrl = process.env.BACKEND_URL + `api/users/validate_seller/${user_id}`;
+            return await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    console.log(result)
+                    if (result == 'VALIDATED') {
+                        navigate(`/sell/${article.id}`)
+                    }else{
+                        navigate('/sellers')
+                    }
+                });
+        };
+        sellerValidation()
+    }
+
     if (!article) {
         return <div>Loading...</div>;
     }
@@ -125,7 +148,7 @@ const ArticleDetails = () => {
                         </div>
                         <button className="btn btn-success mb-2" onClick={() => handleAddFavorites(user_id, article.id)}>Agregar a deseados</button>
                         <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
-                        <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
+                        <button onClick={() => handlerVenderVinilo()} className="btn btn-secondary mb-2">Vender Vinilo</button>
                     </div>
                 </div>
             </div>
