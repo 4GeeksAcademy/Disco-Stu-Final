@@ -24,6 +24,8 @@ def add():
     file = request.files['file']
     file_name = file.filename
 
+    print(file_name)
+
     session = db.session()
 
     if data and file:
@@ -33,7 +35,7 @@ def add():
                 aprobacion = Aprobaciones(**data)
                 artist = Artista.query.get(aprobacion.artista_id)
                 aprobacion.titulo = artist.nombre + " - " + aprobacion.titulo
-                aprobacion.url_imagen = save_to_cloudinary(file, file_name)
+                aprobacion.url_imagen = save_to_cloudinary(file, file_name, False)
                 db.session.add(aprobacion)
                 db.session.commit()
 

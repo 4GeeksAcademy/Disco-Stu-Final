@@ -9,16 +9,23 @@ import json
 
 article_api = Blueprint('article_api', __name__)
 
+
 @article_api.route('/', methods=['GET'])
 def get_all():
     articles = Articulo.query.all()
-    print("articles size: " + str(len(articles)))
     response = [article.to_dict() for article in articles]
 
     return jsonify(response), 200
 
+
+@article_api.route('/search/', methods=['GET'])
 @article_api.route('/search/<string:term>', methods=['GET'])
-def search(term):
+def search(term=None):
+    if term is None:
+        articles = Articulo.query.all()
+        response = [article.to_dict() for article in articles]
+        return jsonify(response), 200
+
     term = term.lower()
     articles = Articulo.query.filter(
         or_(
@@ -28,7 +35,8 @@ def search(term):
             Articulo.pais.ilike(f'%{term}%'),
             Articulo.genero.ilike(f'%{term}%'),
             Articulo.estilos.ilike(f'%{term}%'),
-            Articulo.artista.has(nombre=term) | Articulo.artista.has(nombre_real=term)
+            Articulo.artista.has(
+                nombre=term) | Articulo.artista.has(nombre_real=term)
         )
     ).all()
 
@@ -66,7 +74,7 @@ def get_all_grouped_by_genre():
 @article_api.route('/style/<string:style_name>', methods=['GET'])
 def get_by_style(style_name):
     style_name = style_name.replace("%20", " ").strip()
-    #response = db.session.query(Articulo).filter(Articulo.estilos.ilike(f"%, {style_name},") |
+    # response = db.session.query(Articulo).filter(Articulo.estilos.ilike(f"%, {style_name},") |
     #                                            Articulo.estilos.ilike(f"{style_name}, %")).all()
     response = db.session.query(Articulo).filter(or_(
         Articulo.estilos.ilike(f"%{style_name},%"),
@@ -76,11 +84,14 @@ def get_by_style(style_name):
     matching_articulos_json = [articulo.to_dict() for articulo in response]
     return jsonify(matching_articulos_json), 200
 
+
 @article_api.route('/country/<string:country_name>', methods=['GET'])
 def get_by_country(country_name):
-    response = db.session.query(Articulo).filter(Articulo.pais == country_name).all()
+    response = db.session.query(Articulo).filter(
+        Articulo.pais == country_name).all()
     matching_articulos_json = [articulo.to_dict() for articulo in response]
     return jsonify(matching_articulos_json), 200
+
 
 @article_api.route('/get_all_filter', methods=['GET'])
 def get_all_filters():
@@ -178,5 +189,5 @@ def add_article():
         return jsonify({'message': 'Articulo agregado exitosamente', 'article_id': nuevo_articulo.id}), 201
 
     except Exception as e:
-        db.session.rollback() 
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500

@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
+			searchResults: [],
 
 			explorer_articles: [],
 			filtered_explorer_articles: [],
@@ -556,6 +557,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				} catch (error) {
 					console.log('Error in searching', error)
+				}
+			},
+			search: async (term) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "api/articles/search/" + (term ? term : "");
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+
+					if (!response.ok)
+						throw new Error("Error al intentar buscar");
+
+					const data = await response.json();
+					let store = getStore();
+					setStore({ ...store, searchResults: data });
+				} catch (error) {
+					console.log("Error fatal: ", error);
 				}
 			},
 			getGenres: async () => {
