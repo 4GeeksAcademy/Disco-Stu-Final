@@ -871,30 +871,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			createOrder: async ({ user_id, precio_envio, precio_total, impuesto, articulo_id, vendedor_id, condicion_funda, condicion_soporte }) => {
+			createOrder: async ({ usuario_id, articles_ids, precio_envio, precio_total, impuesto, condicion_funda, condicion_soporte, vendedor_id }) => {
 				try {
-					const orderData = {
-						precio_envio,
-						precio_total,
-						impuesto,
-						articulo_id,
-						vendedor_id,
-						condicion_funda,
-						condicion_soporte,
+					const requestData = {
+						usuario_id: usuario_id,
+						articles_ids: articles_ids,
+						precio_envio: precio_envio,
+						precio_total: precio_total,
+						impuesto: impuesto,
+						condicion_funda: condicion_funda,
+						condicion_soporte: condicion_soporte,
+						vendedor_id: vendedor_id
 					};
 
-					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}`;
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/`;
 					const response = await fetch(backendUrl, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify(orderData),
+						body: JSON.stringify(requestData),
 					});
 
 					if (!response.ok) {
 						const errorData = await response.json();
-						throw new Error(errorData.message || 'Failed to add order');
+						const errorMessage = errorData.message || 'Failed to add order';
+						console.error('Error adding order:', errorMessage, errorData);
+						throw new Error(errorMessage);
 					}
 
 					const responseData = await response.json();
@@ -904,6 +907,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+
 
 			getOrderPlaced: async (user_id) => {
 				try {
@@ -926,6 +930,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				} catch (error) {
 					console.error('Error getting the orders:', error);
+					throw error;
+				}
+			},
+
+			deleteOrderbyOrderId: async ({ user_id, order_id }) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}/${order_id}`;
+					const response = await fetch(backendUrl, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to delete order');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error deleting order', error);
 					throw error;
 				}
 			},

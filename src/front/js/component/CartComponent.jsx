@@ -6,7 +6,6 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
 const CartComponent = ({ data }) => {
-
   const { store, actions } = useContext(Context)
   const [totalPrice, setTotalPrice] = useState(0)
   const [totalTax, setTotalTax] = useState(0)
@@ -45,16 +44,25 @@ const CartComponent = ({ data }) => {
     actions.deleteCartItemsBySeller(object_dict)
   }
 
-  const handlePlacedOrder = async (e) => {
+  const generateRandomOrderNumber = () => {
+    const timestamp = Date.now(); // Obtener la marca de tiempo actual
+    const random = Math.floor(Math.random() * 900000) + 100000; // Número aleatorio entre 100000 y 999999
+    const uniqueNumber = `${timestamp}${random}`;
+    return uniqueNumber;
+  };
+
+  const handlePlacedOrder = async () => {
     try {
-      const user_id = parseInt(localStorage.getItem('userID'));
-      const precio_envio = 0;
-      const precio_total = parseInt(totalPrice, 10);
-      const impuesto = parseInt(totalTax, 10);
-      const articulo_id = parseInt(data.offers[0].oferta_id, 10);
-      const vendedor_id = parseInt(data.offers[0].vendedor_id, 10);
+
+      const usuario_id = localStorage.getItem('userID');
+      const pedido_id = generateRandomOrderNumber();
+      const articles_ids = data.offers.map(offer => offer.articulo_id);
+      const precio_envio = 10;
+      const precio_total = data.offers.reduce((total, element) => total + element.precio, 0);
+      const impuesto = precio_total * 0.05;
       const condicion_funda = data.offers[0].condicion_funda;
       const condicion_soporte = data.offers[0].condicion_soporte;
+      const vendedor_id = data.seller.id;
 
       const swalResult = await Swal.fire({
         title: 'Confirmar orden',
@@ -66,19 +74,18 @@ const CartComponent = ({ data }) => {
       });
 
       if (swalResult.isConfirmed) {
-        const responseData = await actions.createOrder({
-          user_id,
+        const response = await actions.createOrder({
+          usuario_id,
+          pedido_id,
+          articles_ids,
           precio_envio,
           precio_total,
           impuesto,
-          articulo_id,
-          vendedor_id,
           condicion_funda,
           condicion_soporte,
+          vendedor_id,
         });
-  
-        console.log('Orden creada exitosamente:', responseData);
-
+        handlerDeleteAllItems();
         navigate('/user-orders');
       }
     } catch (error) {

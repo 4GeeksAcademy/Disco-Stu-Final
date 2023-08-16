@@ -19,7 +19,6 @@ import { UserSellerDataEdit } from "./pages/UserSellerDataEdit.jsx"
 import { ChangePassword } from "./pages/passChange.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { AdminInbox } from "./pages/AdminInbox.jsx"
-import { Contact } from "./pages/Contact.jsx"
 import About from "./pages/About.jsx";
 import { UserOrders } from "./pages/UserOrders.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
@@ -88,7 +87,6 @@ const Layout = () => {
                                 <Route element={<UserComposeMessage />} path="/messages/compose" />
                             </Route>
                             <Route element={<About />} path="/about" />
-                            <Route element={<Contact />} path="/contact" />
                             <Route element={<Artist />} path="/artists" />
                             <Route element={<GalleryTemplate />} path="/gallery_template" />
                             <Route element={<Article mode='edit' />} path="/articles/edit/:id" />

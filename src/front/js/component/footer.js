@@ -2,40 +2,28 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 export const Footer = () => (
-	<div className="layout">
-		<div className="content" style={{ height: '10vh' }}></div>
-		<div className="footer">
-			<footer className="container-fluid bg-black text-white">
-				<div className="d-flex p-3">
-					<p className="col-md-4 ms-3 mb-0 text-muted flex-fill fs-6">
-						<span className="fs-3 text-white">Disco Stu</span>© 2023 Company,
-						Inc
-					</p>
-
-					<ul className="nav col-md-4 d-flex align-items-center justify-content-end mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-						<li className="nav-item">
-							<Link to="" className="nav-link px-2 text-muted">
-								Inicio
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link to="/about" className="nav-link px-2 text-muted">
-								Acerca
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link to="/contact" className="nav-link px-2 text-muted">
-								Contacto
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link to="/explorer" className="nav-link px-2 text-muted">
-								Explorar
-							</Link>
-						</li>
-					</ul>
-				</div>
-			</footer>
+	<footer class="footer mt-auto py-3 bg-black">
+		<div class="container d-flex justify-content-between align-items-center">
+			<p class="mb-0 text-white fs-6">
+				<span class="fs-3">Disco Stu</span>© 2023 Company, Inc
+			</p>
+			<ul class="nav d-flex align-items-center mb-0 link-light text-decoration-none">
+				<li class="nav-item text-white">
+					<Link to="" class="nav-link px-2">
+						Inicio
+					</Link>
+				</li>
+				<li class="nav-item text-white">
+					<Link to="/about" class="nav-link px-2">
+						Acerca
+					</Link>
+				</li>
+				<li class="nav-item text-white">
+					<Link to="/explorer" class="nav-link px-2">
+						Explorar
+					</Link>
+				</li>
+			</ul>
 		</div>
-	</div>
+	</footer>
 );
