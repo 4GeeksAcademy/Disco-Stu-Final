@@ -39,7 +39,8 @@ class User(db.Model):
     isSeller = db.Column(db.Boolean(), unique=False, default=False)
     is_admin = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    aprobaciones = db.relationship('Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
+    aprobaciones = db.relationship(
+        'Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
 
 
 class Articulo(db.Model):
@@ -88,7 +89,12 @@ class Aprobaciones(db.Model):
     genero = db.Column(db.String(250), nullable=False)
     estilos = db.Column(db.String(250))
     tipo = db.Column(db.String(15), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    estatus = db.Column(db.String(15), nullable=False, default="pending")
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'user.id', ondelete='CASCADE'), nullable=False)
+
+    user_relationship = db.relationship(
+        'User', backref='aprobaciones_related', viewonly=True)
 
     def to_dict(self):
         return {
@@ -103,8 +109,13 @@ class Aprobaciones(db.Model):
             'genero': self.genero,
             'estilos': self.estilos,
             'tipo': self.tipo,
-            "user_id": self.user_id
+            "estatus": self.estatus,
+            'user': {
+                'id': self.user_relationship.id,
+                'usuario': self.user_relationship.usuario
+            }
         }
+
 
 class Tracks(db.Model):
     __tablename__ = 'tracks'

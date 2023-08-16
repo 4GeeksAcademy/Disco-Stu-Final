@@ -238,14 +238,14 @@ def get_users():
         return jsonify({"error": "A ocurrido un error al intentar obtener usuarios: " + str(e)}), 500
 
 
-# @user_api.route('/delete_all', methods=['GET'])
-# def delete_all():
-#     User.query.delete()
-#     db.session.commit()
-
-#     return jsonify({"message": "Todos los usuarios han sido eliminados"})
+@user_api.route('/delete_all', methods=['GET'])
+def delete_all():
+    User.query.delete()
+    db.session.commit()
+    return jsonify({"message": "Todos los usuarios han sido eliminados"})
 
 # Desde aca Karai
+
 
 @user_api.route('/seller/<int:user_id>', methods=['PUT'])
 @jwt_required()
@@ -280,10 +280,23 @@ def update_sell_data(user_id):
 @user_api.route('/became_seller/<int:user_id>', methods=['PUT'])
 # @jwt_required()
 # @regular_user_required
-def became_user(user_id):
+def became_seller(user_id):
 
     user = User.query.get(user_id)
     user.isSeller = True
     db.session.commit()
 
     return jsonify('COMPLETED')
+
+@user_api.route('/validate_seller/<int:user_id>', methods=['GET'])
+def validate_seller(user_id):
+    
+    user = User.query.get(user_id)
+
+    isSeller = user.isSeller
+
+    if (isSeller):
+        return jsonify('VALIDATED')
+    else:
+        return jsonify('NOT VALIDATED')
+    

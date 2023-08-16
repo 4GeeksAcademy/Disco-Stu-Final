@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { Context } from '../store/appContext'
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import '../../styles/SellArticle.css';
 import Swal from 'sweetalert2';
@@ -8,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 const SellArticle = () => {
     const navigate = useNavigate()
     const { actions } = useContext(Context)
+    const navigate = useNavigate()
 
     const article = JSON.parse(localStorage.getItem('currentArticle'));
 
@@ -61,6 +63,27 @@ const SellArticle = () => {
             });
         }
     }
+
+    useEffect(() => {
+        const sellerValidation = async () => {
+            const user_id = localStorage.getItem('userID')
+            const backendUrl = process.env.BACKEND_URL + `api/users/validate_seller/${user_id}`;
+            return await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if (result == 'NOT VALIDATED') {
+                        console.log('entre')
+                        navigate('/sellers')
+                    }
+                });
+        };
+        sellerValidation()
+    }), [] 
 
     return (
         <div className="container">

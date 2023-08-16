@@ -4,7 +4,7 @@ import styles from "../../styles/Explorer.module.css";
 import ArticleCard from '../component/ArticleCardExplorer.jsx';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const Explorer = () => {
@@ -18,9 +18,19 @@ const Explorer = () => {
     const [articles, setArticles] = useState(null);
 
     useEffect(() => {
+        if (store.searchResults) {
+            setArticles(store.searchResults);
+        }
+    }, [store.searchResults])
+
+    useEffect(() => {
         const fetchArticles = async () => {
-            const data = await actions.getAllArticles();
-            setArticles(data);
+            if (store.searchResults && store.searchResults.length > 0) {
+                setArticles(store.searchResults);
+            } else {
+                const data = await actions.getAllArticles();
+                setArticles(data);
+            }
         }
 
 
@@ -32,7 +42,7 @@ const Explorer = () => {
                 }
             });
             const data = await result.json();
-            //console.log(data);
+
             setGeneros(Array.from(new Set(data.generos)).sort());
             setEstilos(Array.from(new Set(data.estilos)).sort());
             setPaises(Array.from(new Set(data.paises)).sort());
@@ -95,6 +105,9 @@ const Explorer = () => {
     return (
         <div id='general_div' className={styles.generalDiv}>
             <div id='filter_center' className={styles.filterCenter}>
+                <div id='button-section'>
+                    <Link className='btn btn-dark mb-3' to={'/articles/add'}>Agregar nuevo Artículo</Link>
+                </div>
                 <div id='genres_filters'>
                     <p><strong>Género</strong></p>
                     {generos && generos.map((genero, index) => (

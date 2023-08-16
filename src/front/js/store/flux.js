@@ -5,6 +5,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			inbox: [],
 			sent_messages: [],
 			deleted_messages: [],
+			searchResults: [],
+			articleInReview: {},
 
 			explorer_articles: [],
 			filtered_explorer_articles: [],
@@ -422,6 +424,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return response;
 			},
+			rejectArticle: async (article) => {
+				const backendUrl = process.env.BACKEND_URL + "api/approvals/reject";
+				const response = await fetch(backendUrl, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(article)
+				});
+
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
+				}
+
+				const data = await response.json();
+
+				return data;
+			},
+
 
 			getArticleForApproval: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/approvals/";
@@ -444,29 +465,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 			},
 			addApprovedArticle: async (newArticle) => {
-				try {
-					const backendUrl = process.env.BACKEND_URL + "api/articles/add";
-					const response = await fetch(backendUrl, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify(newArticle)
-					});
+				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(newArticle)
+				});
 
-					if (!response.ok) {
-						throw new Error('Error on adding Article response');
-					}
-
-					const data = await response.json();
-
-					console.log('Article added:', data);
-					return data;
-
-				} catch (error) {
-					console.error('Error posting Article:', error);
-					throw error;
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
 				}
+
+				const data = await response.json();
+
+				return data;
 			},
 
 			deleteApprovedArticle: async (newArticle) => {
@@ -556,6 +570,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				} catch (error) {
 					console.log('Error in searching', error)
+				}
+			},
+			search: async (term) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "api/articles/search/" + (term ? term : "");
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+
+					if (!response.ok)
+						throw new Error("Error al intentar buscar");
+
+					const data = await response.json();
+					let store = getStore();
+					setStore({ ...store, searchResults: data });
+				} catch (error) {
+					console.log("Error fatal: ", error);
 				}
 			},
 			getGenres: async () => {
@@ -933,6 +967,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			setArticleToApprove: (articleInReview) => {
+				let store = getStore();
+				setStore({ ...store, articleInReview: articleInReview });
+			}
 
 			deleteOrderbyOrderId: async ({ user_id, order_id }) => {
 				try {
