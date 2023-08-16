@@ -3,16 +3,33 @@ import "../../styles/home.css";
 import { Carousel } from 'react-bootstrap';
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
+import { Collapse } from 'react-bootstrap';
+import logo from '../../img/LOGO2.png'
 
 const Home = () => {
     const { actions } = useContext(Context)
     const [articles, setArticles] = useState({});
+    const [curiosities, setCuriosities] = useState([]);
+    const [carouselPaused, setCarouselPaused] = useState(false);
+    const [collapseStates, setCollapseStates] = useState(Array(curiosities.length).fill(false));
+    const [collapseActivated, setCollapseActivated] = useState('')
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             const articles_response = await actions.getAllArticlesGroupedByGenre();
             setArticles(articles_response);
+            //console.log("articles: " + JSON.stringify(articles_response));
+        };
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const curiosities_response = await actions.getCuriosities();
+            setCuriosities(curiosities_response);
+            console.log(curiosities_response)
             //console.log("articles: " + JSON.stringify(articles_response));
         };
 
@@ -152,24 +169,33 @@ const Home = () => {
             const slide = (
                 <Carousel.Item key={i}>
                     <div className="d-flex album-container">
-                        {slideAlbums.map((album, albumIndex) => (
-                            <div
-                                key={i + albumIndex}
-                                className="mr-3 album-item"
-                                onClick={() => {
-                                    // Handle your navigation logic here
-                                    // navigate(`/article/${album.id}`);
-                                    // localStorage.setItem('currentArticle', JSON.stringify(album));
-                                }}
-                            >
-                                <div className="image-container">
-                                    <div
-                                        className="img-wrapper"
-                                        style={{ backgroundImage: `url(${album.url_imagen})` }}
-                                    ></div>
+                        {slideAlbums.map((album, albumIndex) => {
+                            const [artista, articulo] = album.titulo.split(' - ');
+
+                            return (
+                                <div
+                                    key={i + albumIndex}
+                                    className="mr-3 album-item"
+                                    onClick={() => {
+                                        // Handle your navigation logic here
+                                        // navigate(`/article/${album.id}`);
+                                        // localStorage.setItem('currentArticle', JSON.stringify(album));
+                                    }}
+                                >
+                                    <div className="image-container">
+                                        <div
+                                            className="img-wrapper"
+                                            style={{ backgroundImage: `url(${album.url_imagen})` }}
+                                        ></div>
+                                    </div>
+                                    <div className="text-container">
+                                        <p className="ellipsis" style={{ color: 'white' }}>{articulo}</p>
+                                        <p className="ellipsis" style={{ color: 'white' }}>{artista}</p>
+                                    </div>
+
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </Carousel.Item>
             );
@@ -178,91 +204,101 @@ const Home = () => {
         return slides;
     };
 
+    const toggleCollapse = (index) => {
+        setCollapseActivated(index)
+        const newCollapseStates = [...collapseStates];
+        newCollapseStates[index] = !newCollapseStates[index];
+        setCollapseStates(newCollapseStates);
+
+        // Pausar o reanudar el carrusel dependiendo del estado del colapso
+        setCarouselPaused(!carouselPaused);
+    };
+
     return (
-        <div className="container">
+        <div className="container-fluid" style={{ padding: 0 }}>
+            <div id='title' style={{ backgroundColor: 'black', width: '100%', margin: 0, flexDirection: 'column' }} className='titleAndInfo'>
+                <img src={logo} alt="" />
+                <p>Disco Stu Store es un entorno online para compra, venta y publicación de artículos de
+                    registros musicales fisicos como vinilos, casetes y cd’s. Brindamos
+                    un servicio de intercambio entre compradores y vendedores para
+                    coordinar la entrega de los paquetes a cualquier parte del mundo,
+                    facilitando el acceso a distintos artículos para personas que no
+                    tengan la posibilidad de obtenerlos localmente. Las
+                    características de la página buscan generar una comunidad de intercambio
+                    musical, con usuarios habilitados a agregar nuevos artículos y a
+                    editar los artículos existentes para una mejor experiencia. </p>
+
+            </div>
+            <h3 className="curiosidadesMusicalesH3">Curiosidades musicales</h3>
             <div className="cd-slider" style={{ background: "black", height: "400px", marginTop: "20px", marginBottom: "0px" }}>
                 <ul>
                     <li>
-                        <div
-                            className="image"
-                            style={{
-                                backgroundImage:
-                                    "url(https://img.freepik.com/premium-photo/music-mind-music-abstract-art-created-with-generative-ai-technology_545448-15311.jpg)",
-                            }}
-                        ></div>
+                        <div className="image" style={{ backgroundImage: curiosities[0] ? `url(${curiosities[0].url_imagen})` : 'none' }}>
+                            {!curiosities[0] && <p>Cargando imagen...</p>}
+                        </div>
                         <div className="content">
                             <h2>
-                                <font color="white">Jackets Collection 2017</font>
+                                <font color="white">{curiosities[0] ? curiosities[0].titulo : 'Cargando título...'}</font>
                             </h2>
-                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                            <button className="btn btn-warning btn-lg verDetallesBtn" onClick={() => toggleCollapse(0)}>Ver Detalles</button>
                         </div>
                     </li>
                     <li>
-                        <div
-                            className="image"
-                            style={{
-                                backgroundImage:
-                                    "url(https://st.depositphotos.com/1008244/3066/v/450/depositphotos_30664567-stock-illustration-vinyl-disc-with-music-notes.jpg)",
-                            }}
-                        ></div>
+                        <div className="image" style={{ backgroundImage: curiosities[1] ? `url(${curiosities[1].url_imagen})` : 'none' }}>
+                            {!curiosities[1] && <p>Cargando imagen...</p>}
+                        </div>
                         <div className="content">
                             <h2>
-                                <font color="white">Jackets Collection 2017</font>
+                                <font color="white">{curiosities[1] ? curiosities[1].titulo : 'Cargando título...'}</font>
                             </h2>
-                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                            <button className="btn btn-warning btn-lg verDetallesBtn" onClick={() => toggleCollapse(1)}>Ver Detalles</button>
                         </div>
                     </li>
                     <li>
-                        <div
-                            className="image"
-                            style={{
-                                backgroundImage:
-                                    "url(https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVzaWN8ZW58MHx8MHx8fDA%3D&w=1000&q=80)",
-                            }}
-                        ></div>
+                        <div className="image" style={{ backgroundImage: curiosities[2] ? `url(${curiosities[2].url_imagen})` : 'none' }}>
+                            {!curiosities[2] && <p>Cargando imagen...</p>}
+                        </div>
                         <div className="content">
                             <h2>
-                                <font color="white">Jackets Collection 2017</font>
+                                <font color="white">{curiosities[2] ? curiosities[2].titulo : 'Cargando título...'}</font>
                             </h2>
-                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                            <button className="btn btn-warning btn-lg verDetallesBtn" onClick={() => toggleCollapse(2)}>Ver Detalles</button>
                         </div>
                     </li>
                     <li>
-                        <div
-                            className="image"
-                            style={{
-                                backgroundImage:
-                                    "url(https://variety.com/wp-content/uploads/2022/07/Music-Streaming-Wars.jpg)",
-                            }}
-                        ></div>
+                        <div className="image" style={{ backgroundImage: curiosities[3] ? `url(${curiosities[3].url_imagen})` : 'none' }}>
+                            {!curiosities[3] && <p>Cargando imagen...</p>}
+                        </div>
                         <div className="content">
                             <h2>
-                                <font color="white">Jackets Collection 2017</font>
+                                <font color="white">{curiosities[3] ? curiosities[3].titulo : 'Cargando título...'}</font>
                             </h2>
-                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                            <button className="btn btn-warning btn-lg verDetallesBtn" onClick={() => toggleCollapse(3)}>Ver Detalles</button>
                         </div>
                     </li>
                     <li>
-                        <div
-                            className="image"
-                            style={{
-                                backgroundImage:
-                                    "url(https://c4.wallpaperflare.com/wallpaper/700/525/104/abstract-flames-music-dark-rainbows-treble-clef-gclef-black-background-1280x1024-entertainment-music-hd-art-wallpaper-preview.jpg)",
-                            }}
-                        ></div>
+                        <div className="image" style={{ backgroundImage: curiosities[4] ? `url(${curiosities[4].url_imagen})` : 'none' }}>
+                            {!curiosities[4] && <p>Cargando imagen...</p>}
+                        </div>
                         <div className="content">
                             <h2>
-                                <font color="white">Jackets Collection 2017</font>
+                                <font color="white">{curiosities[4] ? curiosities[4].titulo : 'Cargando título...'}</font>
                             </h2>
-                            <button className="btn btn-warning btn-lg">Ver Detalles</button>
+                            <button className="btn btn-warning btn-lg verDetallesBtn" onClick={() => toggleCollapse(4)}>Ver Detalles</button>
                         </div>
                     </li>
                 </ul>
             </div>
-            <div>
+            <Collapse in={collapseStates[collapseActivated]}>
+                <div>
+                    <p>{curiosities[collapseActivated]?.descripcion}</p>
+                </div>
+            </Collapse>
+            <div className="divArticles">
+                <h3>Articulos recientes</h3>
                 {Object.entries(articles).map(([genre, albums], index) => (
                     <div key={index}>
-                        <h2>{genre}</h2>
+                        <h5 style={{ marginTop: '30px' }}>{genre}</h5>
                         <Carousel interval={null}>{createSlides(albums)}</Carousel>
                     </div>
                 ))}
