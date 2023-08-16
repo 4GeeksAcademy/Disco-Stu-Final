@@ -8,11 +8,6 @@ from api.utils import generate_sitemap, APIException
 favorite_api = Blueprint('favorite_api', __name__)
 
 
-# @favorite_api.route('/hello_favorite/<string:favorite_name>', methods=['GET'])
-# def hello_favorite(favorite_name):
-#     return {"message": "hello " + favorite_name}, 200
-
-
 @favorite_api.route('/', methods=['GET'])
 def get_all():
     favorites = Favoritos.query.all()
@@ -50,6 +45,13 @@ def add_favorite(user_id):
 
     if 'article_id' not in data:
         return jsonify({'message': 'Missing article_id'}), 400
+
+    article_id = data['article_id']
+
+    existing_favorite = Favoritos.query.filter_by(
+        user_id=user_id, articulo_id=article_id).first()
+    if existing_favorite:
+        return jsonify({'message': 'El articulo ya esta agregado a Favoritos'}), 400
 
     new_favorite = Favoritos(user_id=user_id, articulo_id=data['article_id'])
     db.session.add(new_favorite)

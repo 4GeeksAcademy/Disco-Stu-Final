@@ -217,20 +217,31 @@ class Ofertas(db.Model):
     comentario = db.Column(db.String(250))
 
 
+# Tabla intermedia para la relación many-to-many entre Pedido y Articulo
+pedido_articulos = db.Table('pedido_articulos',
+    db.Column('pedido_id', db.Integer, db.ForeignKey('pedido.id'), primary_key=True),
+    db.Column('articulo_id', db.Integer, db.ForeignKey('articulo.id'), primary_key=True)
+)
+
+
 class Pedido(db.Model):
     __tablename__ = 'pedido'
     id = db.Column(db.Integer, primary_key=True)
     precio_envio = db.Column(db.Integer)
     precio_total = db.Column(db.Integer)
     impuesto = db.Column(db.Integer)
+    condicion_funda = db.Column(db.String(250))
+    condicion_soporte = db.Column(db.String(250))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pagado = db.Column(db.Boolean, default=False)
 
+    user = db.relationship('User', foreign_keys=[user_id], backref='pedidos_realizados')
+    vendedor = db.relationship('User', foreign_keys=[vendedor_id], backref='pedidos_vendidos')
+    articulos = db.relationship('Articulo', secondary=pedido_articulos, backref=db.backref('pedidos', lazy='dynamic'))
 
-class Pedido_articulos(db.Model):
-    __tablename__ = 'pedido_articulos'
-    id = db.Column(db.Integer, primary_key=True)
-    pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'))
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
-
+    def marcar_como_pagado(self):
+        self.pagado = True
 
 class Artista(db.Model):
     __tablename__ = 'artista'
