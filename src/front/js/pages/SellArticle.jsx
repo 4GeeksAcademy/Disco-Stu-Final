@@ -1,8 +1,9 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Context } from '../store/appContext'
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import '../../styles/SellArticle.css';
+import Swal from 'sweetalert2';
 
 const SellArticle = () => {
 
@@ -11,11 +12,11 @@ const SellArticle = () => {
 
     const article = JSON.parse(localStorage.getItem('currentArticle'));
 
-    const [ soporte, setSoporte ] = useState({})
-    const [ funda, setFunda ] = useState('')
-    const [ comentario, setComentario ] = useState('')
-    const [ cantidad, setCantidad ] = useState('')
-    const [ precio, setPrecio ] = useState('')
+    const [soporte, setSoporte] = useState({})
+    const [funda, setFunda] = useState('')
+    const [comentario, setComentario] = useState('')
+    const [cantidad, setCantidad] = useState('')
+    const [precio, setPrecio] = useState('')
 
     const handleSoporte = (event) => {
         setSoporte(event.target.value)
@@ -33,7 +34,7 @@ const SellArticle = () => {
         setPrecio(event.target.value)
     }
 
-    const postOffer = () => {
+    const postOffer = async () => {
         const user_id = localStorage.getItem('userID');
         const offer = {
             'vendedor_id': user_id,
@@ -44,7 +45,22 @@ const SellArticle = () => {
             'cantidad': cantidad,
             'precio': precio,
         }
-        actions.postOffer(offer)
+
+        try {
+            await actions.postOffer(offer);
+            Swal.fire({
+                icon: 'success',
+                title: 'Oferta agregada',
+                text: 'La oferta se ha agregado correctamente.',
+            });
+            navigate(`/offers/${article.id}`);
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al agregar la oferta. Por favor, inténtalo nuevamente.',
+            });
+        }
     }
 
     useEffect(() => {
@@ -66,7 +82,7 @@ const SellArticle = () => {
                 });
         };
         sellerValidation()
-    }), [] 
+    }), []
 
     return (
         <div className="container">
@@ -81,27 +97,27 @@ const SellArticle = () => {
                 <div className="col-md-9">
                     <h5><strong>{article.titulo}</strong></h5>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Sello:</p>
+                        <p style={{ width: '40px' }}>Sello:</p>
                         <p>{article.sello}</p>
                     </div>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Formato:</p>
+                        <p style={{ width: '40px' }}>Formato:</p>
                         <p>{article.formato}</p>
                     </div>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Pais:</p>
+                        <p style={{ width: '40px' }}>Pais:</p>
                         <p>{article.pais}</p>
                     </div>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Publicado:</p>
+                        <p style={{ width: '40px' }}>Publicado:</p>
                         <p>{article.publicado}</p>
                     </div>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Genero:</p>
+                        <p style={{ width: '40px' }}>Genero:</p>
                         <p>{article.genero}</p>
                     </div>
                     <div className="d-flex">
-                        <p style={{width: '40px'}}>Estilos:</p>
+                        <p style={{ width: '40px' }}>Estilos:</p>
                         <p>{article.estilos}</p>
                     </div>
                 </div>
@@ -159,7 +175,7 @@ const SellArticle = () => {
                     <label htmlFor="precio">Precio (USD)</label>
                     <div style={{ paddingLeft: '10px' }}>
                         <span>$</span>
-                        <input onChange={(e) => handlePrecio(e)} value={precio} type="text" style={{width: '100px'}}/>
+                        <input onChange={(e) => handlePrecio(e)} value={precio} type="text" style={{ width: '100px' }} />
                     </div>
                 </div>
                 <button onClick={() => postOffer()} type='button' className='btn btn-dark'>Poner articulos en venta</button>

@@ -20,7 +20,7 @@ import { ChangePassword } from "./pages/passChange.jsx";
 import { AdminPanel } from "./pages/AdminPanel.jsx";
 import { AdminInbox } from "./pages/AdminInbox.jsx"
 import { Contact } from "./pages/Contact.jsx"
-import { About } from "./pages/About.jsx";
+import About from "./pages/About.jsx";
 import { UserOrders } from "./pages/UserOrders.jsx";
 import UserInbox from "./pages/UserInbox.jsx";
 import UserSentMessages from "./pages/UserSentMessages.jsx";
