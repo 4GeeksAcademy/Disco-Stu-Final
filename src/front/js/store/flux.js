@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			sent_messages: [],
 			deleted_messages: [],
 			searchResults: [],
+			articleInReview: {},
 
 			explorer_articles: [],
 			filtered_explorer_articles: [],
@@ -423,6 +424,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return response;
 			},
+			rejectArticle: async (article) => {
+				const backendUrl = process.env.BACKEND_URL + "api/approvals/reject";
+				const response = await fetch(backendUrl, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(article)
+				});
+
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
+				}
+
+				const data = await response.json();
+
+				return data;
+			},
+
 
 			getArticleForApproval: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/approvals/";
@@ -445,29 +465,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 			},
 			addApprovedArticle: async (newArticle) => {
-				try {
-					const backendUrl = process.env.BACKEND_URL + "api/articles/add";
-					const response = await fetch(backendUrl, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify(newArticle)
-					});
+				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(newArticle)
+				});
 
-					if (!response.ok) {
-						throw new Error('Error on adding Article response');
-					}
-
-					const data = await response.json();
-
-					console.log('Article added:', data);
-					return data;
-
-				} catch (error) {
-					console.error('Error posting Article:', error);
-					throw error;
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
 				}
+
+				const data = await response.json();
+
+				return data;
 			},
 
 			deleteApprovedArticle: async (newArticle) => {
@@ -943,6 +956,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			setArticleToApprove: (articleInReview) => {
+				let store = getStore();
+				setStore({ ...store, articleInReview: articleInReview });
+			}
 
 		}
 	};

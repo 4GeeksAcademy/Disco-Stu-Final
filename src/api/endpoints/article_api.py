@@ -166,28 +166,36 @@ def delete_all():
 
 @article_api.route('/add', methods=['POST'])
 def add_article():
+    data = request.json
+    session = db.session
+
+    session.begin()
+
     try:
-        data = request.json
+        approved_article = session.query(Aprobaciones).get(data['id'])
+        approved_article.estatus = "approved"
+        session.add(approved_article)
 
-        artista_id = int(data['artista_id'])
+        print(data)
 
-        nuevo_articulo = Articulo(
-            artista_id=artista_id,
+        articulo = Articulo(
+            url_imagen=data['url_imagen'],
+            artista_id=data['artista_id'],
             titulo=data['titulo'],
             sello=data['sello'],
             formato=data['formato'],
             pais=data['pais'],
             publicado=data['publicado'],
             genero=data['genero'],
-            estilos=data['estilos'],
-            url_imagen=data['url_imagen']
+            estilos=data['estilos']
         )
+        session.add(articulo)
 
-        db.session.add(nuevo_articulo)
-        db.session.commit()
+        session.commit()
 
-        return jsonify({'message': 'Articulo agregado exitosamente', 'article_id': nuevo_articulo.id}), 201
-
+        return jsonify({"message": "Artículo guardado satisfactoriamente"})
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        session.rollback()
+        error_message = 'Error al agregar artículo: ' + str(e)
+        print(error_message)
+        return jsonify({'error': error_message}), 500
