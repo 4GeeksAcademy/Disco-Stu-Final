@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import SearchBar from "./SearchBar.jsx";
@@ -12,6 +12,33 @@ export const AdminNavbar = () => {
     const logged = localStorage.getItem('token');
     const Auth = localStorage.getItem('Auth');
     const { actions } = useContext(Context);
+    const [pendingApprovalsCount, setPendingApprovalsCount] = useState(
+        sessionStorage.getItem("pendingApprovals") || 0
+    );
+
+    useEffect(() => {
+        const fetchPendingApprovals = async () => {
+            const pendingApprovals = await actions.getArticleForApproval();
+            if (pendingApprovals)
+                sessionStorage.setItem("pendingApprovals", pendingApprovals.length);
+            setPendingApprovalsCount(pendingApprovals.length);
+        };
+
+        const handlePendingApprovalsUpdate = (event) => {
+            if (event.data && event.data.type === "pendingApprovalsUpdated") {
+                const newValue = event.data.value;
+                setPendingApprovalsCount(newValue);
+            }
+        };
+
+        fetchPendingApprovals();
+
+        window.addEventListener("message", handlePendingApprovalsUpdate);
+
+        return () => {
+            window.removeEventListener("message", handlePendingApprovalsUpdate);
+        };
+    }, []);
 
     const handlerNavigateToExplorer = () => {
         navigate('/explorer')
@@ -71,6 +98,17 @@ export const AdminNavbar = () => {
                                     <div className="nav-item me-3 me-lg-0">
                                         <Link to="/approvals" className="nav-link text-white">
                                             <i className="fa-solid fa-clipboard"></i>
+                                            {pendingApprovalsCount > 0 && (
+                                                <span className="badge bg-danger top-0 start-100 translate-middle"
+                                                    style={{
+                                                        fontSize: '0.5rem',
+                                                        padding: '0.2rem 0.5rem',
+                                                        top: '-1rem'
+                                                    }}
+                                                >
+                                                    {pendingApprovalsCount}
+                                                </span>
+                                            )}
                                         </Link>
                                     </div>
                                     <div className="nav-item me-3 me-lg-0">

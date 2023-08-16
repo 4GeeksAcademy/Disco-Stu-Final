@@ -4,70 +4,72 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 export const ArticleReview = ({ id }) => {
-    const { actions } = useContext(Context);
+    const { actions, store } = useContext(Context);
+    const [articleInReview, setArticleInReview] = useState(null)
     const navigate = useNavigate();
 
-    const [articlesWithDataAndId, setArticlesWithDataAndId] = useState([]);
-
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await actions.getArticleForApproval();
-                console.log(response);
+        setArticleInReview(store.articleInReview);
+    }, [articleInReview]);
 
-                const articlesWithDataAndId = response.map(item => ({
-                    id: item.id,
-                    data: item
-                }));
-
-                console.log("Este es el arreglo obtenido por id", articlesWithDataAndId);
-                setArticlesWithDataAndId(articlesWithDataAndId);
-
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    const handleAddArticle = async (selectedArticle) => {
+    const handleAddArticle = async () => {
         try {
-            const addedArticle = await actions.addArticle(selectedArticle);
-            console.log('Article added:', addedArticle);
-
+            const data = await actions.addApprovedArticle(articleInReview);
+            Swal.fire({
+                title: 'Artículo ha sido agregado satisfactoriamente',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                upateSessionStoragePendingApprovals();
+                navigate('/approvals');
+            });
         } catch (error) {
-            console.error('Error adding Article:', error);
-
+            Swal.fire({
+                title: 'Artículo no pudo ser agregado',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
-    };
 
-    const handleRejectedArticle = async (favorite_id) => {
+    }
+
+    const handleRejectArticle = async () => {
         try {
-            const rejectedArticle = await actions.deleteFavorite(favorite_id);
-            console.log('Article rejected:', rejectedArticle);
-
+            const data = await actions.rejectArticle(articleInReview);
+            Swal.fire({
+                title: 'Artículo ha sido marcado como rechazado',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                upateSessionStoragePendingApprovals();
+                navigate('/approvals');
+            });
         } catch (error) {
-            console.error('Error to delete Article:', error);
-
+            Swal.fire({
+                title: 'La aprobación no pudo rechazarse, intentelo de nuevo',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
-    };
+
+    }
+
+    const upateSessionStoragePendingApprovals = () => {
+        const currentPendingApprovals = sessionStorage.getItem('pendingApprovals');
+        const newPendingApprovals = parseInt(currentPendingApprovals, 10) - 1;
+        sessionStorage.setItem('pendingApprovals', newPendingApprovals.toString());
+        window.postMessage({ type: "pendingApprovalsUpdated", value: newPendingApprovals }, "*");
+    }
 
     return (
         <div className="container-fluid">
             {/* Encabezado */}
             <div className="container-fluid px-0 mx-0">
                 <div className="card border-0 rounded-0">
-                    <div
-                        className="text-white d-flex flex-row"
-                        style={{ backgroundColor: "#000", height: "200px" }}
-                    >
-                        <div
-                            className="ms-4 mt-5 d-flex flex-column"
-                            style={{ width: "150px" }}
-                        ></div>
-                        <div className="ms-3" style={{ marginTop: "130px" }}></div>
-                    </div>
                     <div
                         className="p-4 text-black"
                         style={{ backgroundColor: "#f8f9fa" }}
@@ -81,16 +83,16 @@ export const ArticleReview = ({ id }) => {
             </div>
 
             <div className="container mt-3">
-                {articlesWithDataAndId.map(articleData => (
-                    <div key={articleData.id} className="row">
-                        <div className="col-md-3">
-                            <img src={articleData.data.url_imagen} alt="{articleData.data.title}"
+                {articleInReview && (
+                    <div key={articleInReview.id} className="row">
+                        <div className="col-md-4">
+                            <img src={articleInReview.url_imagen} alt="{articleInReview.title}"
                                 className="img-fluid" />
                         </div>
-                        <div className="col-md-7">
+                        <div className="col-md-6">
                             <div className="row mb-3">
                                 <div className="col-md-7">
-                                    <h3>{articleData.data.title}</h3>
+                                    <h3>{articleInReview.titulo}</h3>
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -98,7 +100,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>ID:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.id}
+                                    {articleInReview.id}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -106,7 +108,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Arista:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.artist}
+                                    {articleInReview.artista_id}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -114,7 +116,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Sello:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.sello}
+                                    {articleInReview.sello}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -122,7 +124,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Formato:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.formato}
+                                    {articleInReview.formato}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -130,7 +132,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>País:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.pais}
+                                    {articleInReview.pais}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -138,7 +140,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Publicado:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.publicado}
+                                    {articleInReview.publicado}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -146,7 +148,7 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Género:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.genero}
+                                    {articleInReview.genero}
                                 </div>
                             </div>
                             <div className="row mb-2">
@@ -154,12 +156,14 @@ export const ArticleReview = ({ id }) => {
                                     <strong>Estilos:</strong>
                                 </div>
                                 <div className="col-md-3">
-                                    {articleData.data.estilos}
+                                    {articleInReview.estilos}
                                 </div>
                             </div>
-                            <div className="d-flex justify-content-between mb-3">
+                        </div>
+                        <div className="col-md-2">
+                            <div>
                                 <button
-                                    className="btn btn-light"
+                                    className="btn btn-light w-100"
                                     onClick={() => {
                                         Swal.fire({
                                             title: '¿Estás seguro de aprobar este artículo?',
@@ -172,7 +176,7 @@ export const ArticleReview = ({ id }) => {
                                             cancelButtonText: 'Cancelar'
                                         }).then((result) => {
                                             if (result.isConfirmed) {
-                                                handleAddArticle(articleData.data);
+                                                handleAddArticle();
                                             }
                                         });
                                     }}
@@ -180,7 +184,7 @@ export const ArticleReview = ({ id }) => {
                                     <i className="fa-solid fa-check"></i> Aprobar
                                 </button>
                                 <button
-                                    className="btn btn-light"
+                                    className="btn btn-light mt-3 w-100"
                                     onClick={() => {
                                         Swal.fire({
                                             title: '¿Estás seguro de rechazar este artículo?',
@@ -193,7 +197,7 @@ export const ArticleReview = ({ id }) => {
                                             cancelButtonText: 'Cancelar'
                                         }).then((result) => {
                                             if (result.isConfirmed) {
-                                                handleRejectArticle(articleData.data);
+                                                handleRejectArticle();
                                             }
                                         });
                                     }}
@@ -201,10 +205,9 @@ export const ArticleReview = ({ id }) => {
                                     <i className="fa-solid fa-trash"></i> Rechazar
                                 </button>
                             </div>
-
                         </div>
                     </div>
-                ))}
+                )}
             </div >
         </div>
 

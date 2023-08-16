@@ -6,7 +6,6 @@ from api.models import db, Artista
 from api.utils import generate_sitemap, APIException
 #from api.endpoints.utils import saveImages
 
-
 artist_api = Blueprint('artist_api', __name__)
 
 @artist_api.route('/hello_artist/<string:artist_name>', methods=['GET'])
