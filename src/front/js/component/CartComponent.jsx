@@ -10,6 +10,7 @@ const CartComponent = ({ data }) => {
   const { store, actions } = useContext(Context)
   const [totalPrice, setTotalPrice] = useState(0)
   const [totalTax, setTotalTax] = useState(0)
+  const navigate = useNavigate();
 
   useEffect(() => {
     let newTotalPrice = 0;
@@ -86,7 +87,8 @@ const CartComponent = ({ data }) => {
           vendedor_id,
           pagado
         });
-        // handlerDeleteAllItems();
+        console.log(response);
+        handlerDeleteAllItems();
         navigate('/user-orders');
       }
     } catch (error) {

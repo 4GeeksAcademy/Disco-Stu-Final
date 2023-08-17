@@ -1016,6 +1016,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			updatePaymentStatus: async ({ orderID, nuevo_estado_pagado }) => {
+				try {
+					const backendUrl = `${process.env.BACKEND_URL}/api/orders/${orderID}`;
+					const response = await fetch(backendUrl, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ pagado: nuevo_estado_pagado }),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to update payment status');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error updating payment status', error);
+					throw error;
+				}
+
 			addCuriositie: async (formData) => {
 				const backendUrl = process.env.BACKEND_URL + "api/home/edit";
 				const response = await fetch(backendUrl, {
@@ -1024,6 +1047,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				return response;
+
 			},
 		}
 	};

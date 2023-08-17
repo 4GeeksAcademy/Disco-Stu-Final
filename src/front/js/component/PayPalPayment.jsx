@@ -1,18 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { Context } from '../store/appContext'
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import Swal from 'sweetalert2';
 
-
-
-const PaymentComponent = () => {
-
-    const generateUniqueOrderID = () => {
-        const currentDate = new Date();
-        const randomSuffix = Math.floor(Math.random() * 1000); // Genera un número aleatorio entre 0 y 999
-        const orderID = `ORDER-${currentDate.getTime()}-${randomSuffix}`;
-        return orderID;
-    }
-
-    const orderID = generateUniqueOrderID()
+const PaymentComponent = ({ orderID, cost, updatePageData }) => {
+    const { store, actions } = useContext(Context);
 
     const createOrder = async (data) => {
         // Order is created on the server and the order id is returned
@@ -26,37 +18,60 @@ const PaymentComponent = () => {
             // use the "body" param to optionally pass additional order information
             // like product skus and quantities 
             body: JSON.stringify({
-                    orderID: orderID,
-                    user_id: user_id,
-                    cost: '1111',
-                    isDonation: false
+                orderID: orderID,
+                user_id: user_id,
+                cost: cost,
+                isDonation: false
             }),
         })
             .then((response) => response.json())
             .then((order) => order.id);
     };
+
     const onApprove = async (data) => {
-        // Order is captured on the server and the response is returned to the browser
-        const user_id = localStorage.getItem('userID')
-        const backendUrl = process.env.BACKEND_URL + `api/payment/capture-paypal-order`;
-        return await fetch(backendUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                orderID: data.orderID,
-                user_id: user_id,
-                isDonation: false
-            })
-        })
-        .then((response) => response.json())
-        .then((responseData) => {
+        try {
+            const user_id = localStorage.getItem('userID');
+            const backendUrl = process.env.BACKEND_URL + `api/payment/capture-paypal-order`;
+
+            const response = await fetch(backendUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    orderID: data.orderID,
+                    user_id: user_id,
+                    isDonation: false
+                })
+            });
+
+            const responseData = await response.json();
+
             console.log('Successfully payment:', responseData);
-        })
-        .catch((error) => {
+
+            if (responseData.status === 'COMPLETED') {
+                const nuevo_estado_pagado = true;
+                console.log(orderID, nuevo_estado_pagado);
+                const pedido_id = orderID;
+
+                await actions.updatePaymentStatus({ orderID: pedido_id, nuevo_estado_pagado });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pago exitoso',
+                    text: 'Tu pago ha sido procesado exitosamente. El vendedor se pondra en contacto para hacer entrega de la orden',
+                    confirmButtonText: 'Aceptar',
+                    timer: 5000,
+                    timerProgressBar: true
+                }).then(() => {
+                    updatePageData();
+                });
+
+            }
+
+        } catch (error) {
             console.error('Error capturing payment:', error);
-        });
+        }
     };
 
     return (

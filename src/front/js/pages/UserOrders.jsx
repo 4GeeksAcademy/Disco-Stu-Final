@@ -1,13 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
-import PayPalPayment from '../component/PayPalPayment.jsx'
+import PaymentComponent from '../component/PayPalPayment.jsx'
 import Swal from 'sweetalert2';
 
 export const UserOrders = () => {
     const navigate = useNavigate();
     const { store, actions } = useContext(Context);
     const [ordersList, setOrdersList] = useState([]);
+    const [refreshOrders, setRefreshOrders] = useState(false);
+
+    const paidOrders = ordersList.filter(order => order.pagado);
+    const pendingOrders = ordersList.filter(order => !order.pagado);
+
+    const sortedOrdersList = [...pendingOrders, ...paidOrders];
 
     useEffect(() => {
         const handleGetOrders = async () => {
@@ -16,9 +22,23 @@ export const UserOrders = () => {
             console.log("esta es la data de orders", ordersData)
 
             setOrdersList(ordersData);
+
+            // Restablecer la actualización de pedidos
+            setRefreshOrders(false);
         };
+
         handleGetOrders();
-    }, []);
+    }, [refreshOrders]);
+
+    const updatePageData = async () => {
+        try {
+            const user_id = localStorage.getItem('userID');
+            const ordersData = await actions.getOrderPlaced(user_id);
+            setOrdersList(ordersData);
+        } catch (error) {
+            console.error('Error updating page data:', error);
+        }
+    };
 
     const handlerDeleteOrder = async (order_id) => {
         const user_id = localStorage.getItem('userID');
@@ -103,64 +123,43 @@ export const UserOrders = () => {
                             </div>
                         </div>
                         <div id="messages_center" className="col-md-9">
-
                             <div className="table-responsive">
-                                {ordersList.map(order => (
-                                    <div className="card mt-4">
-                                        <div className="card-header bg-white d-flex justify-content-between">
-                                            <div>
-                                                <h5 className="card-title">Pedido n. °{order.id}</h5>
-                                                <p className="card-text">Creado: {formatDate(new Date())}</p>
-                                            </div>
-                                            <div>
-                                                <p className="card-text">Estado: PENDIENTE</p>
-                                            </div>
-                                            <div className="mb-3 me-3 d-flex justify-content-end">
-                                                <button className="btn btn-outline-dark" onClick={() => handlerDeleteOrder(order.id)}>Eliminar</button>                                            </div>
-                                        </div>
-                                        <div className="card-body p-0 ">
-                                            <div class="card-header">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        ID
-                                                    </div>
-                                                    <div class="col">
-                                                        Artículo
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {order.articulos.map(articulo => (
-                                                <div className="row mx-2" key={articulo.id}>
-                                                    <div className="col-md-4">
-                                                        <div className="mb-3">
-                                                            {articulo.id}
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-4">
-                                                        <div className="mb-3">
-                                                            {articulo.titulo}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div className="card flex-column align-items-end border-0 border-top">
-                                                <div className="card-body" style={{ width: "200px" }}>
-                                                    <p className="card-title"><strong>Total:</strong> {order.precio_total}</p>
-                                                    <p className="card-title"><strong>Envío:</strong> $ 10</p>
-                                                    <p className="card-title"><strong>Impuesto:</strong> $ {order.impuesto}</p>
-                                                    <p className="card-title"><strong>Total:</strong> $ {order.impuesto + order.precio_total + 10}</p>
-                                                </div>
-                                            </div>
-                                            <div className="card flex-column align-items-end border-0 border-top">
-                                                <div className="card-body">
-                                                    <PayPalPayment />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                <table className="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Pedido</th>
+                                            <th>Fecha de Creación</th>
+                                            <th>Estado</th>
+                                            <th>ID</th>
+                                            <th>Artículo</th>
+                                            <th>Total</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedOrdersList.map(order => (
+                                            <tr key={order.id}>
+                                                <td>{order.id}</td>
+                                                <td>{formatDate(new Date())}</td>
+                                                <td>{order.pagado ? "Pagado" : "Pendiente"}</td>
+                                                <td>{order.articulos.map(articulo => articulo.id).join(', ')}</td>
+                                                <td>{order.articulos.map(articulo => articulo.titulo).join(', ')}</td>
+                                                <td>${order.impuesto + order.precio_total + 10}</td>
+                                                <td>
+                                                    {!order.pagado && (
+                                                        <button className="btn btn-outline-dark w-100 mb-2" onClick={() => handlerDeleteOrder(order.id)}>Cancelar pedido</button>
+                                                    )}
+                                                    {!order.pagado && (
+                                                        <PaymentComponent orderID={order.id} cost={order.precio_total + 10} updatePageData={updatePageData} />
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
