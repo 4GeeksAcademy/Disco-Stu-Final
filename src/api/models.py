@@ -263,3 +263,11 @@ class Artista(db.Model):
             'nombre_real': self.nombre_real,
             'perfil': self.perfil
         }
+
+class Curiosidades_home(db.Model):
+    __tablename__='home_content'
+    id = db.Column(db.Integer, primary_key=True)
+    posicion = db.Column(db.Integer)
+    titulo = db.Column(db.String(100))
+    descripcion = db.Column(db.String(2000))
+    url_imagen = db.Column(db.String(250))
