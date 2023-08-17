@@ -39,7 +39,8 @@ class User(db.Model):
     isSeller = db.Column(db.Boolean(), unique=False, default=False)
     is_admin = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    aprobaciones = db.relationship('Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
+    aprobaciones = db.relationship(
+        'Aprobaciones', backref='user', cascade='all, delete-orphan', single_parent=True)
 
 
 class Articulo(db.Model):
@@ -88,7 +89,12 @@ class Aprobaciones(db.Model):
     genero = db.Column(db.String(250), nullable=False)
     estilos = db.Column(db.String(250))
     tipo = db.Column(db.String(15), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    estatus = db.Column(db.String(15), nullable=False, default="pending")
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'user.id', ondelete='CASCADE'), nullable=False)
+
+    user_relationship = db.relationship(
+        'User', backref='aprobaciones_related', viewonly=True)
 
     def to_dict(self):
         return {
@@ -103,8 +109,13 @@ class Aprobaciones(db.Model):
             'genero': self.genero,
             'estilos': self.estilos,
             'tipo': self.tipo,
-            "user_id": self.user_id
+            "estatus": self.estatus,
+            'user': {
+                'id': self.user_relationship.id,
+                'usuario': self.user_relationship.usuario
+            }
         }
+
 
 class Tracks(db.Model):
     __tablename__ = 'tracks'
@@ -206,20 +217,31 @@ class Ofertas(db.Model):
     comentario = db.Column(db.String(250))
 
 
+# Tabla intermedia para la relación many-to-many entre Pedido y Articulo
+pedido_articulos = db.Table('pedido_articulos',
+    db.Column('pedido_id', db.Integer, db.ForeignKey('pedido.id'), primary_key=True),
+    db.Column('articulo_id', db.Integer, db.ForeignKey('articulo.id'), primary_key=True)
+)
+
+
 class Pedido(db.Model):
     __tablename__ = 'pedido'
     id = db.Column(db.Integer, primary_key=True)
     precio_envio = db.Column(db.Integer)
     precio_total = db.Column(db.Integer)
     impuesto = db.Column(db.Integer)
+    condicion_funda = db.Column(db.String(250))
+    condicion_soporte = db.Column(db.String(250))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pagado = db.Column(db.Boolean, default=False)
 
+    user = db.relationship('User', foreign_keys=[user_id], backref='pedidos_realizados')
+    vendedor = db.relationship('User', foreign_keys=[vendedor_id], backref='pedidos_vendidos')
+    articulos = db.relationship('Articulo', secondary=pedido_articulos, backref=db.backref('pedidos', lazy='dynamic'))
 
-class Pedido_articulos(db.Model):
-    __tablename__ = 'pedido_articulos'
-    id = db.Column(db.Integer, primary_key=True)
-    pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'))
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
-
+    def marcar_como_pagado(self):
+        self.pagado = True
 
 class Artista(db.Model):
     __tablename__ = 'artista'

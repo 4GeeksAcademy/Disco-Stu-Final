@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			sent_messages: [],
 			deleted_messages: [],
 			searchResults: [],
+			articleInReview: {},
 
 			explorer_articles: [],
 			filtered_explorer_articles: [],
@@ -423,6 +424,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return response;
 			},
+			rejectArticle: async (article) => {
+				const backendUrl = process.env.BACKEND_URL + "api/approvals/reject";
+				const response = await fetch(backendUrl, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(article)
+				});
+
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
+				}
+
+				const data = await response.json();
+
+				return data;
+			},
+
 
 			getArticleForApproval: async () => {
 				const backendUrl = process.env.BACKEND_URL + "api/approvals/";
@@ -445,29 +465,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 			},
 			addApprovedArticle: async (newArticle) => {
-				try {
-					const backendUrl = process.env.BACKEND_URL + "api/articles/add";
-					const response = await fetch(backendUrl, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify(newArticle)
-					});
+				const backendUrl = process.env.BACKEND_URL + "api/articles/add";
+				const response = await fetch(backendUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(newArticle)
+				});
 
-					if (!response.ok) {
-						throw new Error('Error on adding Article response');
-					}
-
-					const data = await response.json();
-
-					console.log('Article added:', data);
-					return data;
-
-				} catch (error) {
-					console.error('Error posting Article:', error);
-					throw error;
+				if (!response.ok) {
+					throw new Error('Error on adding Article response');
 				}
+
+				const data = await response.json();
+
+				return data;
 			},
 
 			deleteApprovedArticle: async (newArticle) => {
@@ -794,7 +807,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			addFavorites: async ({ user_id, articulo_id }) => {
 				try {
 					const article = {
-						article_id: article_id
+						article_id: articulo_id
 					};
 					const backendUrl = process.env.BACKEND_URL + `/api/favorites/${user_id}`;
 					const response = await fetch(backendUrl, {
@@ -806,8 +819,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 
 					if (!response.ok) {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'Failed to add favorite');
+						if (response.status === 409) {
+							const errorData = await response.json();
+							throw new Error(errorData.message || 'El articulo ya esta agregado a Favoritos');
+						} else {
+							const errorData = await response.json();
+							throw new Error(errorData.message || 'Failed to add favorite');
+						}
 					}
 
 					const responseData = await response.json();
@@ -887,28 +905,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			createOrder: async ({ user_id, precio_envio, precio_total, impuesto, articulo_id, vendedor_id }) => {
+			createOrder: async ({ usuario_id, articles_ids, precio_envio, precio_total, impuesto, condicion_funda, condicion_soporte, vendedor_id, pagado }) => {
 				try {
-					const orderData = {
-						precio_envio,
-						precio_total,
-						impuesto,
-						articulo_id,
-						vendedor_id
+					const requestData = {
+						usuario_id: usuario_id,
+						articles_ids: articles_ids,
+						precio_envio: precio_envio,
+						precio_total: precio_total,
+						impuesto: impuesto,
+						condicion_funda: condicion_funda,
+						condicion_soporte: condicion_soporte,
+						vendedor_id: vendedor_id,
+						pagado: pagado
 					};
-
-					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}`;
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/`;
 					const response = await fetch(backendUrl, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify(orderData),
+						body: JSON.stringify(requestData),
 					});
 
 					if (!response.ok) {
 						const errorData = await response.json();
-						throw new Error(errorData.message || 'Failed to add order');
+						const errorMessage = errorData.message || 'Failed to add order';
+						console.error('Error adding order:', errorMessage, errorData);
+						throw new Error(errorMessage);
 					}
 
 					const responseData = await response.json();
@@ -949,19 +972,46 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const backendUrl = process.env.BACKEND_URL + `/api/home/`;
 					const response = await fetch(backendUrl, {
 						method: 'GET',
-						headers: {
+    				headers: {
 							'Content-Type': 'application/json',
 						},
 					});
 
 					if (!response.ok) {
-						throw new Error('Error on getting curiosities fetch');
+            throw new Error('Error on getting curiosities fetch');
 					}
 					const data = await response.json();
 					return data;
 
 				} catch (error) {
 					console.error('Error getting curiosities:', error);
+        }
+      },
+
+			setArticleToApprove: (articleInReview) => {
+				let store = getStore();
+				setStore({ ...store, articleInReview: articleInReview });
+			},
+
+			deleteOrderbyOrderId: async ({ user_id, order_id }) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/${user_id}/${order_id}`;
+					const response = await fetch(backendUrl, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to delete order');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error deleting order', error);
 					throw error;
 				}
 			},
@@ -975,7 +1025,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				return response;
 			},
-
 		}
 	};
 };
