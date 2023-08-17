@@ -967,6 +967,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			getCuriosities: async () => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/api/home/`;
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+    				headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+            throw new Error('Error on getting curiosities fetch');
+					}
+					const data = await response.json();
+					return data;
+
+				} catch (error) {
+					console.error('Error getting curiosities:', error);
+        }
+      },
+
 			setArticleToApprove: (articleInReview) => {
 				let store = getStore();
 				setStore({ ...store, articleInReview: articleInReview });
@@ -1017,6 +1038,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error updating payment status', error);
 					throw error;
 				}
+
+			addCuriositie: async (formData) => {
+				const backendUrl = process.env.BACKEND_URL + "api/home/edit";
+				const response = await fetch(backendUrl, {
+					method: "PUT",
+					body: formData
+				});
+
+				return response;
+
 			},
 		}
 	};

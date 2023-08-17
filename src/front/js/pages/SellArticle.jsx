@@ -76,7 +76,6 @@ const SellArticle = () => {
                 .then((response) => response.json())
                 .then((result) => {
                     if (result == 'NOT VALIDATED') {
-                        console.log('entre')
                         navigate('/sellers')
                     }
                 });

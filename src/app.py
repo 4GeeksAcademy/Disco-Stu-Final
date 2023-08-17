@@ -26,6 +26,7 @@ from api.endpoints.searchbar_api import searchbar_api
 from api.endpoints.track_api import track_api
 from api.endpoints.user_api import user_api
 from api.endpoints.utils import utils_api
+from api.endpoints.home_api import home_api
 
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -84,6 +85,7 @@ app.register_blueprint(searchbar_api, url_prefix='/api/searchbar')
 app.register_blueprint(track_api, url_prefix='/api/tracks')
 app.register_blueprint(user_api, url_prefix='/api/users')
 app.register_blueprint(utils_api, url_prefix='/api/utils')
+app.register_blueprint(home_api, url_prefix='/api/home')
 
 # Handle/serialize errors like a JSON object
 

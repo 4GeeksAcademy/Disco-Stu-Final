@@ -40,13 +40,12 @@
     will-change: visibility;
   }
   .image {
-    position: absolute;
     top: 0;
     left: 0;
-    width: 70%;
+    width: 100%;
     height: 100%;
     background-size: cover;
-    background-position: 50% 50%;
+    background-position: center;
     clip: rect(0, 80rem, 50rem, 80rem);
     transition: clip .5s cubic-bezier(0.99, 0.01, 0.45, 0.9) .5s;
     will-change: clip;
@@ -108,7 +107,8 @@
     bottom: 0;
     right: 0;
     z-index: 2;
-    background: black;
+    background: transparent;
+    margin-right: 10px;
   }
   .prev, .next, .counter {
     vertical-align: middle;
@@ -121,7 +121,7 @@
     border: 0;
     cursor: pointer;
     /*background: transparent;*/
-    background: black;
+    background: transparent;
     color: white;
   }
   .prev::before, .next::before {
@@ -146,7 +146,7 @@
     background: white;
     height: .1rem;
     min-height: 1px;
-    width: 2.5rem;
+    width: 2rem;
     transition: width .3s;
   }
   .next::before {
@@ -162,10 +162,9 @@
   }
   .counter {
     display: inline-block;
-    font-size: 4rem;
+    font-size: 2rem;
     font-family: serif;
-    font-style: italic;
-    background: black;
+    background: transparent;
     color: white;
   }
   .counter span:last-child::before {
@@ -182,6 +181,7 @@
   }
 
   .cd-slider {
+    margin: 0;
     position: relative;
     overflow: hidden;
   }
@@ -241,6 +241,7 @@
 
   .album-item {
     width: 20%; /* Adjust as needed to fit 5 items per slide */
+    height: 370px;
   }
   
   .image-container {
@@ -267,3 +268,42 @@
   .album-item {
     margin-right: 15px; /* Adjust this value as needed */
   }
+
+  .titleAndInfo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .titleAndInfo p{
+    color: white;
+    text-align: center;
+    padding: 40px 80px;
+    }
+  .titleAndInfo img {
+    width: 500px;
+    padding-top: 40px;
+  }
+
+  .divArticles {
+    background-color: black;
+    padding: 30px 80px;
+    margin-top: 60px;
+    color: white;
+  }
+
+  .ellipsis {
+    /* white-space: nowrap; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.curiosidadesMusicalesH3{
+  padding-left: 80px;
+  padding-top: 20px;
+  margin: 0;
+}
+
+.verDetallesBtn {
+  margin-top: auto;
+  margin-right: auto;
+}
