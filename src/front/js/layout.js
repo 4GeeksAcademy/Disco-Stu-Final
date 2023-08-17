@@ -35,6 +35,7 @@ import SellArticle from './pages/SellArticle.jsx'
 import Offers from './pages/Offers.jsx'
 import InitializeAsSeller from "./pages/InitializeAsSeller.jsx";
 import { ArticleReview } from "./pages/AdminReviewArticle.jsx";
+import EditHome from "./pages/EditHome.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -76,6 +77,7 @@ const Layout = () => {
                                 <Route element={<AdminInbox />} path="/admin-inbox" />
                                 <Route element={<AdminApprovals />} path="/approvals" />
                                 <Route element={<ArticleReview />} path="/article-review/:id" />
+                                <Route element={<EditHome />} path="/home-edition" />
                                 <Route element={<UserProfile />} path="/user-profile" />
                                 <Route element={<UserProfileEdit />} path="/edit-user" />
                                 <Route element={<UserSellerDataEdit />} path="/seller" />

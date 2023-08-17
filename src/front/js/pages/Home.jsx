@@ -5,6 +5,7 @@ import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import { Collapse } from 'react-bootstrap';
 import logo from '../../img/LOGO2.png'
+import logoVendedor from '../../img/DISCOSTUVENDEDORES.png'
 
 const Home = () => {
     const { actions } = useContext(Context)
@@ -13,6 +14,7 @@ const Home = () => {
     const [carouselPaused, setCarouselPaused] = useState(false);
     const [collapseStates, setCollapseStates] = useState(Array(curiosities.length).fill(false));
     const [collapseActivated, setCollapseActivated] = useState('')
+    const [isSeller, setIsSeller] = useState(false)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -214,10 +216,40 @@ const Home = () => {
         setCarouselPaused(!carouselPaused);
     };
 
+    const handlerNavigateToAbout = () => {
+        navigate('/about')
+    }
+    const handlerNavigateToBecameSeller = () => {
+        navigate('/sellers')
+    }
+
+    useEffect(() => {
+        const sellerValidation = async () => {
+            const user_id = localStorage.getItem('userID')
+            const backendUrl = process.env.BACKEND_URL + `api/users/validate_seller/${user_id}`;
+            return await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if (result == 'VALIDATED') {
+                        setIsSeller(true)
+                    }
+                });
+        };
+        sellerValidation()
+    }), []
+
     return (
         <div className="container-fluid" style={{ padding: 0 }}>
             <div id='title' style={{ backgroundColor: 'black', width: '100%', margin: 0, flexDirection: 'column' }} className='titleAndInfo'>
-                <img src={logo} alt="" />
+                {isSeller ?
+                    (<img src={logoVendedor} alt="" />) :
+                    (<img src={logo} alt="" />)
+                }
                 <p>Disco Stu Store es un entorno online para compra, venta y publicación de artículos de
                     registros musicales fisicos como vinilos, casetes y cd’s. Brindamos
                     un servicio de intercambio entre compradores y vendedores para
@@ -227,6 +259,10 @@ const Home = () => {
                     características de la página buscan generar una comunidad de intercambio
                     musical, con usuarios habilitados a agregar nuevos artículos y a
                     editar los artículos existentes para una mejor experiencia. </p>
+                <div className="d-flex mb-5 w-100 justify-content-between">
+                    <button onClick={() => handlerNavigateToAbout()} type="button" className="btn btn-light" style={{ marginLeft: '80px', width: '240px' }}>Sobre nosotros</button>
+                    <button onClick={() => handlerNavigateToBecameSeller()} type="button" className="btn btn-light" style={{ marginRight: '80px', width: '240px' }}>Convertirme en vendedor</button>
+                </div>
 
             </div>
             <h3 className="curiosidadesMusicalesH3">Curiosidades musicales</h3>
@@ -289,11 +325,13 @@ const Home = () => {
                     </li>
                 </ul>
             </div>
-            <Collapse in={collapseStates[collapseActivated]}>
-                <div>
-                    <p>{curiosities[collapseActivated]?.descripcion}</p>
-                </div>
-            </Collapse>
+            <div className="titleAndInfo">
+                <Collapse in={collapseStates[collapseActivated]}>
+                    <div>
+                        <p style={{ color: 'black' }}>{curiosities[collapseActivated]?.descripcion}</p>
+                    </div>
+                </Collapse>
+            </div>
             <div className="divArticles">
                 <h3>Articulos recientes</h3>
                 {Object.entries(articles).map(([genre, albums], index) => (

@@ -964,7 +964,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error getting curiosities:', error);
 					throw error;
 				}
-			}
+			},
+
+			addCuriositie: async (formData) => {
+				const backendUrl = process.env.BACKEND_URL + "api/home/edit";
+				const response = await fetch(backendUrl, {
+					method: "PUT",
+					body: formData
+				});
+
+				return response;
+			},
 
 		}
 	};

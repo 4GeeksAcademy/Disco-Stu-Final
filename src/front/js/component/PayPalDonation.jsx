@@ -72,7 +72,6 @@ const PayPalDonation = () => {
                         .then((responseUser) => responseUser.json())
                         .then((data) => {
                             if (data == 'COMPLETED') {
-                                console.log('funciono')
                                 navigate('/')
                             }
                         })
