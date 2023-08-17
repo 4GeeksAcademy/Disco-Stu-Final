@@ -4,11 +4,13 @@ This module takes ordere of starting the API Server for users, Loading the DB an
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Pedido, pedido_articulos
 from api.utils import generate_sitemap, APIException
-from datetime import datetime 
+from datetime import datetime
 
 order_api = Blueprint('order_api', __name__)
 
 # Ruta para crear un pedido
+
+
 @order_api.route('/', methods=['POST'])
 def create_order():
     try:
@@ -22,7 +24,7 @@ def create_order():
         condicion_funda = data.get('condicion_funda', '')
         condicion_soporte = data.get('condicion_soporte', '')
         vendedor_id = data.get('vendedor_id')
-        pagado=False 
+        pagado = False
 
         if not user_id or not articles_ids:
             return jsonify({'error': 'Datos incompletos'}), 400
@@ -59,6 +61,8 @@ def create_order():
         return jsonify({"error": str(e)}), 500
 
 # Ruta para obtener el pedido
+
+
 @order_api.route('/<int:user_id>', methods=['GET'])
 def get_pedidos_by_user_id(user_id):
     try:
@@ -77,7 +81,6 @@ def get_pedidos_by_user_id(user_id):
                 'condicion_funda': pedido.condicion_funda,
                 'condicion_soporte': pedido.condicion_soporte,
                 'articulos': [],
-                'fecha_creacion': pedido.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S'),
                 'pagado': pedido.pagado
             }
 
@@ -97,6 +100,8 @@ def get_pedidos_by_user_id(user_id):
         return jsonify({'error': str(e)}), 500
 
 # Ruta para borrar un pedido
+
+
 @order_api.route('/<int:user_id>/<int:order_id>', methods=['DELETE'])
 def delete_order(user_id, order_id):
     try:
@@ -108,7 +113,6 @@ def delete_order(user_id, order_id):
         if not order:
             return jsonify({'error': 'Pedido no encontrado'}), 404
 
-
         db.session.delete(order)
         db.session.commit()
 
@@ -116,15 +120,25 @@ def delete_order(user_id, order_id):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 # Ruta para actualizar el estado de pagado de un pedido
-@order_api.route('/pedido/<int:pedido_id>', methods=['PUT'])
-def marcar_pedido_pagado(pedido_id):
+
+
+@order_api.route('/<int:pedido_id>', methods=['PUT'])
+def actualizar_estado_pago_pedido(pedido_id):
     pedido = Pedido.query.get(pedido_id)
+
     if pedido:
-        pedido.marcar_como_pagado()
-        db.session.commit()
-        return jsonify({'message': 'Pedido marcado como pagado',
-                        'fecha_pagado': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}), 200
+        try:
+            nuevo_estado_pagado = request.json.get('pagado')
+            if nuevo_estado_pagado is not None:
+                pedido.pagado = nuevo_estado_pagado
+                db.session.commit()
+                return jsonify({'message': 'Estado de pago del pedido actualizado'}), 200
+            else:
+                return jsonify({'message': 'La propiedad "pagado" no fue proporcionada'}), 400
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'message': 'Error al actualizar el estado de pago del pedido', 'error': str(e)}), 500
     else:
         return jsonify({'message': 'Pedido no encontrado'}), 404
