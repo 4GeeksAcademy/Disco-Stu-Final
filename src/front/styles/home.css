@@ -301,9 +301,19 @@
   padding-left: 80px;
   padding-top: 20px;
   margin: 0;
+  color: white;
 }
 
 .verDetallesBtn {
   margin-top: auto;
   margin-right: auto;
+}
+
+.column-container {
+  column-count: 3;
+  column-gap: 30px; /* Espacio entre las columnas */
+  width: 100%; /* Ancho total */
+}
+.shadowed-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Ajusta los valores de sombreado según tus preferencias */
 }

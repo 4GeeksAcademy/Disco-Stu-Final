@@ -269,5 +269,6 @@ class Curiosidades_home(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     posicion = db.Column(db.Integer)
     titulo = db.Column(db.String(100))
-    descripcion = db.Column(db.String(2000))
+    subtitulo = db.Column(db.String(100))
+    descripcion = db.Column(db.String(4000))
     url_imagen = db.Column(db.String(250))
