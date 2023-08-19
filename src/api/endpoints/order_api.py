@@ -166,7 +166,7 @@ def actualizar_valoracion():
             valoracion = 0
 
         vendedor.valoracion = valoracion
-
+        print('llegue')
         db.session.commit()
 
         return jsonify('COMPLETED'), 200

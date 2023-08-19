@@ -98,7 +98,7 @@ const Offers = () => {
                                         </td>
                                         <td style={{ width: '25%', paddingLeft: '10px' }}>
                                             <p style={{ marginBottom: '5px' }}><strong>{offer.vendedor_nombre}</strong></p>
-                                            {/* <p>{offer.valoracion}</p> */}
+                                            <p>{offer.valoracion}</p>
                                             <div className={styles.properties}>
                                                 <p className={styles.articleConditions}>Enviado desde:</p>
                                                 <p>{offer.pais_vendeor}</p>

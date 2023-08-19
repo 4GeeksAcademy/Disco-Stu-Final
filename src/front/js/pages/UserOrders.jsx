@@ -98,14 +98,16 @@ export const UserOrders = () => {
         navigate('/messages/compose')
     }
 
-    const handleEnviarValoracion = (vendedor_id) => {
+    const handleEnviarValoracion = async (vendedor_id) => {
         if (valoracionPositiva) {
             const object = {
                 'vendedor_id': vendedor_id,
                 'positivo_o_negativo': 'POSITIVO'
             }
-            const response = actions.sendRating(object)
+            console.log('llegamos1')
+            const response = await actions.sendRating(object)
             if (response == 'COMPLETED') {
+                console.log('llegamos2')
                 window.location.reload();
             }
         } else if (valoracionNegativa) {
@@ -113,7 +115,7 @@ export const UserOrders = () => {
                 'vendedor_id': vendedor_id,
                 'positivo_o_negativo': 'NEGATIVO'
             }
-            const response = actions.sendRating(object)
+            const response = await actions.sendRating(object)
             if (response == 'COMPLETED') {
                 window.location.reload();
             }
