@@ -1,15 +1,15 @@
 """
 This module takes care of starting the API Server for users, Loading the DB and Adding the endpoints
 """
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity, unset_access_cookies
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, Blueprint
 from datetime import timedelta, datetime, timezone
 from api.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from api.endpoints.decorators import admin_required, regular_user_required
 from sqlalchemy.exc import SQLAlchemyError
+from flask_mail import Mail
 
 user_api = Blueprint('user_api', __name__)
 
