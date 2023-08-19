@@ -31,6 +31,7 @@ from api.endpoints.home_api import home_api
 from api.admin import setup_admin
 from api.commands import setup_commands
 
+from flask_mail import Mail
 # from models import Person
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -46,6 +47,16 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(
 # Tiempo de expiración del refresh token: 30 días
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 jwt = JWTManager(app)
+
+# Configure email settings
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = "username@gmail.com"
+app.config['MAIL_PASSWORD'] = "password"
+
+# Initialize Mail object
+mail = Mail(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")

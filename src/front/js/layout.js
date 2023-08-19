@@ -36,6 +36,7 @@ import Offers from './pages/Offers.jsx'
 import InitializeAsSeller from "./pages/InitializeAsSeller.jsx";
 import { ArticleReview } from "./pages/AdminReviewArticle.jsx";
 import EditHome from "./pages/EditHome.jsx";
+import ForgotPassword from "./pages/forgotPassword.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -89,6 +90,7 @@ const Layout = () => {
                                 <Route element={<UserDeletedMessages />} path="/messages/trash" />
                                 <Route element={<UserComposeMessage />} path="/messages/compose" />
                             </Route>
+                            <Route element={<ForgotPassword />} path="/forgot-password" />
                             <Route element={<About />} path="/about" />
                             <Route element={<Contact />} path="/contact" />
                             <Route element={<Artist />} path="/artists" />
