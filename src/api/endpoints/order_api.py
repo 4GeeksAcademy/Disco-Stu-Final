@@ -81,7 +81,8 @@ def get_pedidos_by_user_id(user_id):
                 'condicion_funda': pedido.condicion_funda,
                 'condicion_soporte': pedido.condicion_soporte,
                 'articulos': [],
-                'pagado': pedido.pagado
+                'pagado': pedido.pagado,
+                'valorado': pedido.valorado
             }
 
             for articulo in pedido.articulos:
@@ -142,3 +143,35 @@ def actualizar_estado_pago_pedido(pedido_id):
             return jsonify({'message': 'Error al actualizar el estado de pago del pedido', 'error': str(e)}), 500
     else:
         return jsonify({'message': 'Pedido no encontrado'}), 404
+
+@order_api.route('/upload_rating', methods=['PUT'])
+def actualizar_valoracion(): 
+    
+    vendedor_id = request.json.get('vendedor_id')
+    positivo_o_negativo = request.json.get('positivo_o_negativo')
+
+    vendedor = User.query.get(vendedor_id)
+    if vendedor:
+        if positivo_o_negativo == 'POSITIVO':
+            vendedor.valoraciones_positivas += 1
+            vendedor.cantidad_de_valoraciones += 1
+        elif positivo_o_negativo == 'NEGATIVO':
+            vendedor.valoraciones_negativas += 1
+            vendedor.cantidad_de_valoraciones += 1
+
+        total_valoraciones = vendedor.valoraciones_positivas + vendedor.valoraciones_negativas
+        if total_valoraciones > 0:
+            valoracion = (vendedor.valoraciones_positivas / total_valoraciones) * 100
+        else:
+            valoracion = 0
+
+        vendedor.valoracion = valoracion
+
+        db.session.commit()
+
+        return jsonify('COMPLETED'), 200
+    else:
+        return jsonify({'error': 'Vendedor no encontrado.'}), 404
+
+
+

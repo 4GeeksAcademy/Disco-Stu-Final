@@ -3,12 +3,11 @@ import { Context } from '../store/appContext'
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import Swal from 'sweetalert2';
 
-const PaymentComponent = ({ orderID, cost, updatePageData }) => {
+const PaymentComponent = ({ orderID, cost, updatePageData, seller_id }) => {
     const { store, actions } = useContext(Context);
 
     const createOrder = async (data) => {
         // Order is created on the server and the order id is returned
-        const user_id = localStorage.getItem('userID')
         const backendUrl = process.env.BACKEND_URL + `api/payment/create-paypal-order`;
         return await fetch(backendUrl, {
             method: "POST",
@@ -19,7 +18,7 @@ const PaymentComponent = ({ orderID, cost, updatePageData }) => {
             // like product skus and quantities 
             body: JSON.stringify({
                 orderID: orderID,
-                user_id: user_id,
+                user_id: seller_id,
                 cost: cost,
                 isDonation: false
             }),
@@ -40,14 +39,14 @@ const PaymentComponent = ({ orderID, cost, updatePageData }) => {
                 },
                 body: JSON.stringify({
                     orderID: data.orderID,
-                    user_id: user_id,
+                    user_id: seller_id,
                     isDonation: false
                 })
             });
 
             const responseData = await response.json();
 
-            console.log('Successfully payment:', responseData);
+            console.log('Payment response:', responseData);
 
             if (responseData.status === 'COMPLETED') {
                 const nuevo_estado_pagado = true;
