@@ -20,7 +20,7 @@ const PayPalDonation = () => {
     const createOrder = async (data) => {
         // Order is created on the server and the order id is returned
         const user_id = localStorage.getItem('userID')
-        const backendUrl = process.env.BACKEND_URL + `api/payment/create-paypal-order`;
+        const backendUrl = process.env.BACKEND_URL + 'api/payment/create-paypal-order';
         return await fetch(backendUrl, {
             method: "POST",
             headers: {

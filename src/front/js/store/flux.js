@@ -1046,8 +1046,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					method: "PUT",
 					body: formData
 				});
-
-				return response;
+				const data = await response.json()
+				return data;
 
 			},
 		}

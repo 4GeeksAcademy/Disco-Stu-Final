@@ -9,6 +9,7 @@ const EditHome = () => {
     const { actions } = useContext(Context)
     const [posicion, setPosicion] = useState('')
     const [titulo, setTitulo] = useState('')
+    const [subtitulo, setSubtitulo] = useState('')
     const [descripcion, setDescripcion] = useState('')
     const [imagen, setImagen] = useState(null)
 
@@ -17,6 +18,9 @@ const EditHome = () => {
     }
     const handleTitulo = (e) => {
         setTitulo(e.target.value)
+    }
+    const handleSubtitulo = (e) => {
+        setSubtitulo(e.target.value)
     }
     const handleDescripcion = (e) => {
         setDescripcion(e.target.value)
@@ -29,10 +33,13 @@ const EditHome = () => {
         const formData = new FormData();
         formData.append('posicion', posicion);
         formData.append('titulo', titulo);
+        formData.append('subtitulo', subtitulo);
         formData.append('descripcion', descripcion);
         formData.append('imagen', imagen);
         const response = await actions.addCuriositie(formData)
-        console.log(response)
+        if (response.status == 'COMPLETED') {
+            navigate('/')
+        }
     }
 
     return (
@@ -80,8 +87,12 @@ const EditHome = () => {
                     <input onChange={(e) => handleTitulo(e)} value={titulo} type="text" id='titulo' />
                 </div>
                 <div className='d-flex flex-column'>
+                    <label htmlFor="subtitulo">Subtítulo</label>
+                    <input onChange={(e) => handleSubtitulo(e)} value={subtitulo} type="text" id='subtitulo' />
+                </div>
+                <div className='d-flex flex-column'>
                     <label htmlFor="descripcion">Descripción</label>
-                    <input onChange={(e) => handleDescripcion(e)} value={descripcion} type="text" id='descripcion' maxLength='2000' />
+                    <input onChange={(e) => handleDescripcion(e)} value={descripcion} type="text" id='descripcion' maxLength='4000' />
                 </div>
                 <div className='d-flex flex-column'>
                     <label htmlFor="imagen">Imagen</label>

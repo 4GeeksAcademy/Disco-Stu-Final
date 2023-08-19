@@ -68,9 +68,6 @@ const About = () => {
                             de música, con usuarios habilitados a agregar nuevos artículos y a
                             editar los artículos existentes.
                         </p>
-                        <div className="text-align-center">
-                            <PayPalDonation />
-                        </div>
                     </div>
                 </section>
 

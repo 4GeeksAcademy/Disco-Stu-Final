@@ -55,7 +55,7 @@ export const AdminNavbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{marginRight: '0'}}>
             <div className="container-fluid">
                 <Link className="nav-link" to="/">
                     <img className="p-2" style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
@@ -92,7 +92,7 @@ export const AdminNavbar = () => {
                                 <div className="d-flex align-items-center">
                                     <div className="nav-item me-3 me-lg-0">
                                         <Link to="/admin-panel" className="nav-link text-white">
-                                            <i class="fa-solid fa-users"></i>
+                                            <i className="fa-solid fa-users"></i>
                                         </Link>
                                     </div>
                                     <div className="nav-item me-3 me-lg-0">

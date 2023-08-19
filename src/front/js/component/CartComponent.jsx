@@ -136,7 +136,7 @@ const CartComponent = ({ data }) => {
               </div>
               <div className='d-flex justify-content-between'>
                 <p>Envío:</p>
-                <p>A determinar por el vendedor</p>
+                <p>$10</p>
               </div>
               <div className='d-flex justify-content-between'>
                 <p>Impuesto:</p>

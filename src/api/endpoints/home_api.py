@@ -65,6 +65,7 @@ def get_home():
         curiosidades_dict = {
             'posicion': curiosidad.posicion,
             'titulo': curiosidad.titulo,
+            'subtitulo': curiosidad.subtitulo,
             'descripcion': curiosidad.descripcion,
             'url_imagen': curiosidad.url_imagen
         }
@@ -78,11 +79,11 @@ def edit_home():
 
     posicion = request.form.get('posicion')
     titulo = request.form.get('titulo')
+    subtitulo = request.form.get('subtitulo')
     descripcion = request.form.get('descripcion')
     imagen_file = request.files.get('imagen')
 
     curiosidad = Curiosidades_home.query.filter_by(posicion=posicion).first()
-    url_imagen = save_to_cloudinary(imagen_file, posicion)
 
     if (curiosidad):
         if (curiosidad.url_imagen):
@@ -94,8 +95,9 @@ def edit_home():
                 print("Error al eliminar la imagen")
 
         # Guardamos nueva información 
-
+        url_imagen = save_to_cloudinary(imagen_file, posicion)
         curiosidad.titulo = titulo
+        curiosidad.subtitulo = subtitulo
         curiosidad.descripcion = descripcion
         curiosidad.url_imagen = url_imagen
 
@@ -104,16 +106,18 @@ def edit_home():
         response_body = {
             'posicion': curiosidad.posicion,
             'titulo': curiosidad.titulo,
+            'subtitulo': curiosidad.subtitulo,
             'descripcion': curiosidad.descripcion,
             'url_imagen': curiosidad.url_imagen
         }
 
-        return jsonify('COMPLETED', response_body), 200
+        return jsonify({'status':'COMPLETED'}), 200
     
-    
+    url_imagen = save_to_cloudinary(imagen_file, posicion)
     new_curiosidad = Curiosidades_home(
         posicion= posicion,
         titulo= titulo,
+        subtitulo= subtitulo,
         descripcion= descripcion,
         url_imagen= url_imagen
     )
@@ -124,11 +128,12 @@ def edit_home():
     response_body = {
         'posicion': new_curiosidad.posicion,
         'titulo': new_curiosidad.titulo,
+        'subtitulo': new_curiosidad.subtitulo,
         'descripcion': new_curiosidad.descripcion,
         'url_imagen': new_curiosidad.url_imagen
     }
 
-    return jsonify('COMPLETED', response_body), 200
+    return jsonify({'status':'COMPLETED'}), 200
 
 
 @home_api.route('/delete', methods=['DELETE'])

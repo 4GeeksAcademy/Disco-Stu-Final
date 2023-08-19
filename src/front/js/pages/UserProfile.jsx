@@ -6,6 +6,7 @@ import { Context } from "../store/appContext";
 
 export const UserProfile = () => {
     const [userData, setUserData] = useState({});
+    const [isSeller, setIsSeller] = useState(false)
     const { actions } = useContext(Context);
 
     useEffect(() => {
@@ -23,6 +24,26 @@ export const UserProfile = () => {
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        const sellerValidation = async () => {
+            const user_id = localStorage.getItem('userID')
+            const backendUrl = process.env.BACKEND_URL + `api/users/validate_seller/${user_id}`;
+            return await fetch(backendUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if (result == 'VALIDATED') {
+                        setIsSeller(true)
+                    }
+                });
+        };
+        sellerValidation()
+    }), []
+
     return (
         <div className="container-fluid px-0 mx-0">
 
@@ -33,23 +54,7 @@ export const UserProfile = () => {
                     </div>
                 </div>
                 <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
-                    <div className="d-flex justify-content-end text-center py-1">
-
-                        <Link to="/edit-user" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
-                            <i className="fa-solid fa-gear"></i> Configuración
-                        </Link>
-                        <h3 className="text-center mb-3">Perfil de {userData.nombre}</h3>
-                        <div className="d-flex justify-content-center align-items-center flex-column flex-md-row">
-                            {/* Agregar cualquier otro contenido aquí */}
-
-                            <div className="mt-3 mt-md-0 ml-md-auto">
-                                <Link to="/edit_user" className="btn btn-outline-dark" data-mdb-ripple-color="dark">
-                                    <i className="fa-solid fa-gear"></i> Editar
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
+                    <h3 className="text-center mb-3">Perfil de {userData.nombre}</h3>
                     <div className="card-body p-4 text-black">
                         <div className="mb-5">
                             <p className="lead fw-normal mb-1">Información de envio: </p>
@@ -60,26 +65,30 @@ export const UserProfile = () => {
                                 <p className="font-italic mb-0">Codigo Postal: {userData.codigo_postal_comprador} </p>
                                 <p className="font-italic mb-0">Telefono: {userData.telefono_comprador} </p>
                             </div>
+                            <div className="d-flex justify-content-end text-center py-1" style={{ width: '320px', marginRight: '24px', marginLeft: 'auto' }}>
+                                <Link to="/edit-user" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
+                                    <i className="fa-solid fa-gear"></i> Configurar informacion de usuario
+                                </Link>
+                            </div>
                         </div>
                         <div className="mb-5">
                             <p className="lead fw-normal mb-1">Informacion de vendedor:</p>
                             <div className="p-4" style={{ backgroundColor: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <i className="fa-solid fa-circle-check" style={{ color: '#239a4d', marginRight: '10px' }}></i>
-                                    <i className="fa-solid fa-xmark" style={{ color: '#cf0707', marginRight: '10px' }}></i>
+                                    {isSeller ? (
+                                        <i className="fa-solid fa-circle-check" style={{ color: '#239a4d', marginRight: '10px' }}></i>
+                                    ) : (
+                                        <i className="fa-solid fa-xmark" style={{ color: '#cf0707', marginRight: '10px' }}></i>
+                                    )
+                                    }
                                     <p className="font-italic mb-1"> Conectado con PayPal</p>
                                 </div>
-                                <div>
+                                <div style={{width: '320px'}}>
                                     <Link to="/seller" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: '1' }}>
-                                        Configurar información del vendedor
+                                        <i className="fa-solid fa-gear"></i> Configurar información del vendedor
                                     </Link>
                                 </div>
                             </div>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center mb-4">
-                            <p className="lead fw-normal mb-0">Recent tracks</p>
-                            <p className="mb-0">
-                            </p>
                         </div>
                     </div>
                 </div>

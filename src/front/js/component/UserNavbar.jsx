@@ -28,7 +28,7 @@ export const UserNavbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{marginRight: 0}}>
             <div className="container-fluid">
                 <Link className="nav-link" to="/">
                     <img className="p-2" style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
@@ -51,7 +51,7 @@ export const UserNavbar = () => {
                             onClick={() => handlerNavigateToExplorer()}
 
                             style={{
-                                padding: '9px 0px 0px 18px',
+                                padding: '9px 0px 9px 18px',
                                 margin: 0,
                                 cursor: 'pointer'
                             }}>
@@ -64,11 +64,7 @@ export const UserNavbar = () => {
                         <ul className="navbar-nav me-auto my-2 my-lg-0">
                             <li className="nav-item dropdown mx-3">
                                 <div className="d-flex align-items-center">
-                                    <div className="nav-item me-3 me-lg-0">
-                                        <Link to="/user-profile" className="nav-link text-white">
-                                            <i className="fa-solid fa-face-smile-wink"></i>
-                                        </Link>
-                                    </div>
+
                                     <div className="nav-item me-3 me-lg-0">
                                         <Link to="/cart" className="nav-link text-white">
                                             <i className="fas fa-shopping-cart"></i>
@@ -86,11 +82,6 @@ export const UserNavbar = () => {
                                             <i className="fa-solid fa-message"></i>
                                         </Link>
                                     </div>
-                                    <div className="nav-item me-3 me-lg-0">
-                                        <Link to="/admin-support" className="nav-link text-white">
-                                            <i class="fa-solid fa-circle-info"></i>
-                                        </Link>
-                                    </div>
                                     <div
                                         className="nav-link dropdown-toggle text-white"
                                         href="#"
@@ -104,6 +95,23 @@ export const UserNavbar = () => {
                                         className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-black"
                                         aria-labelledby="navbarScrollingDropdown"
                                     >
+                                        <div className="nav-item me-3 me-lg-0">
+                                            <Link to="/user-profile" className="nav-link text-white">
+                                                <div className="d-flex align-items-center">
+                                                    <i style={{marginRight: '10px'}} className="fa-solid fa-face-smile-wink"></i>
+                                                    <p className="ml-2">Perfil</p>
+                                                </div>
+                                            </Link>
+
+                                        </div>
+                                        <div className="nav-item me-3 me-lg-0">
+                                            <Link to="/admin-support" className="nav-link text-white">
+                                                <div className="d-flex align-items-center">
+                                                    <i style={{marginRight: '10px'}} class="fa-solid fa-circle-info"></i>
+                                                    <p className="ml-2">Ayuda</p>
+                                                </div>
+                                            </Link>
+                                        </div>
                                         <button
                                             onClick={handleLogoutClick}
                                             className="dropdown-item"
