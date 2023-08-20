@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import { Context } from '../store/appContext';
 import { Container, Card, Form, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -10,17 +11,29 @@ const validationSchema = Yup.object().shape({
 });
 
 const ForgotPassword = () => {
-    const handleFormSubmit = (values, { setSubmitting }) => {
-        setTimeout(() => {
-            // Simulated success response (replace this with your actual API call)
+    const { actions } = useContext(Context);
+    const [email, setEmail] = useState('');
+
+    const handleFormSubmit = async (values, { setSubmitting }) => {
+        try {
+            const response = await actions.forgotPassword(values.email);
+
             Swal.fire({
-                title: 'Olvidaste tu contraseña',
-                text: 'Revisa tu correo electrónico para obtener más instrucciones. Si no las recibes en cuestión de unos minutos, mira en tu carpeta de spam.',
                 icon: 'success',
-                confirmButtonText: 'Ok',
+                title: 'Correo enviado',
+                text: 'Se han enviado las instrucciones de restablecimiento a tu correo electrónico.',
             });
-            setSubmitting(false);
-        }, 1000); // Simulated delay for demo purposes
+
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al enviar el correo de restablecimiento. Por favor, intenta de nuevo más tarde.',
+            });
+        } finally {
+            setSubmitting(false); // Asegurarse de que el botón de envío se habilite nuevamente
+        }
     };
 
     return (
@@ -45,17 +58,17 @@ const ForgotPassword = () => {
                             validationSchema={validationSchema}
                             onSubmit={handleFormSubmit}
                         >
-                            {({ isSubmitting }) => (
-                                <Form noValidate className='m-3'>
+                            {({ isSubmitting, handleSubmit }) => (
+                                <Form noValidate className='m-3' onSubmit={handleSubmit}>
                                     <Form.Group controlId="email">
                                         <Form.Label>Dirección de correo electrónico</Form.Label>
                                         <Field type="email" name="email" className="form-control" />
                                         <ErrorMessage name="email" component="div" className="text-danger" />
                                     </Form.Group>
-                                    <Button type="submit" name="Action.EmailResetInstructions" className="btn btn-success mt-3" disabled={isSubmitting}>
+                                    <button type="submit" name="Action.EmailResetInstructions" className="btn btn-success mt-3" disabled={isSubmitting}>
                                         <i className="fa-solid fa-envelope me-3"></i>
                                         Envíame las instrucciones por correo electrónico
-                                    </Button>
+                                    </button>
                                 </Form>
                             )}
                         </Formik>

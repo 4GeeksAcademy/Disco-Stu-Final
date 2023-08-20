@@ -32,15 +32,20 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 
 from flask_mail import Mail
+from dotenv import load_dotenv
+load_dotenv()
+
 # from models import Person
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
+
 app.url_map.strict_slashes = False
 
 app.config["JWT_SECRET_KEY"] = "disco-stu-store"
+
 
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(
     hours=1)  # Tiempo de expiración del access token: 1 hora
@@ -49,11 +54,13 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 jwt = JWTManager(app)
 
 # Configure email settings
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = "username@gmail.com"
-app.config['MAIL_PASSWORD'] = "password"
+app.config.update(
+    MAIL_SERVER=os.getenv('MAIL_SERVER'),
+    MAIL_PORT=int(os.getenv('MAIL_PORT')),
+    MAIL_USE_SSL=os.getenv('MAIL_USE_SSL') == 'True',
+    MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')
+)
 
 # Initialize Mail object
 mail = Mail(app)
