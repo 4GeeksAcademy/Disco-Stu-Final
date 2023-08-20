@@ -21,6 +21,8 @@ def get_offers(article_id):
             'id': article.id,
             'vendedor_nombre': vendedor.nombre,
             'pais_vendedor': vendedor.pais_comprador,
+            'valoracion': vendedor.valoracion,
+            'cantidad_de_valoraciones': vendedor.cantidad_de_valoraciones,
             'vendedor_id': article.vendedor_id,
             'articulo_id': article.articulo_id,
             'condicion_funda': article.condicion_funda,

@@ -1050,7 +1050,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 
 			},
-
+      
 			forgotPassword: async (email) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + 'api/users/reset_password_request';
@@ -1076,6 +1076,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error al enviar la solicitud de restablecimiento de contraseña:', error.message);
 				}
 			},
+
+			sendRating: async (object) => {
+				try {
+					const backendUrl = `${process.env.BACKEND_URL}/api/orders/upload_rating`;
+					const response = await fetch(backendUrl, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(object),
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'Failed to update rating');
+					}
+
+					const responseData = await response.json();
+					return responseData;
+				} catch (error) {
+					console.error('Error updating rating', error);
+					throw error;
+				}
+			}
 		}
 	};
 };
