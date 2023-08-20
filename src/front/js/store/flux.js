@@ -414,12 +414,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				const formData = new FormData();
 				formData.append("article", JSON.stringify(article));
-				formData.append("file", file);
+				if (file)
+					formData.append("file", file);
 
 				const response = await fetch(backendUrl, {
 					method: "POST",
-					body: formData,
-					mode: "no-cors"
+					body: formData
 				});
 
 				return response;

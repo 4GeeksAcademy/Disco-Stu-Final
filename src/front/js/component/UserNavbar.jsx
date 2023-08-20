@@ -13,7 +13,8 @@ export const UserNavbar = () => {
     const Auth = localStorage.getItem('Auth');
     const { actions } = useContext(Context);
 
-    const handlerNavigateToExplorer = () => {
+    const handlerNavigateToExplorer = async () => {
+        await actions.search();
         navigate('/explorer')
     }
 
@@ -28,7 +29,7 @@ export const UserNavbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{marginRight: 0}}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{ marginRight: 0 }}>
             <div className="container-fluid">
                 <Link className="nav-link" to="/">
                     <img className="p-2" style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
@@ -98,7 +99,7 @@ export const UserNavbar = () => {
                                         <div className="nav-item me-3 me-lg-0">
                                             <Link to="/user-profile" className="nav-link text-white">
                                                 <div className="d-flex align-items-center">
-                                                    <i style={{marginRight: '10px'}} className="fa-solid fa-face-smile-wink"></i>
+                                                    <i style={{ marginRight: '10px' }} className="fa-solid fa-face-smile-wink"></i>
                                                     <p className="ml-2">Perfil</p>
                                                 </div>
                                             </Link>
@@ -107,7 +108,7 @@ export const UserNavbar = () => {
                                         <div className="nav-item me-3 me-lg-0">
                                             <Link to="/admin-support" className="nav-link text-white">
                                                 <div className="d-flex align-items-center">
-                                                    <i style={{marginRight: '10px'}} class="fa-solid fa-circle-info"></i>
+                                                    <i style={{ marginRight: '10px' }} class="fa-solid fa-circle-info"></i>
                                                     <p className="ml-2">Ayuda</p>
                                                 </div>
                                             </Link>
