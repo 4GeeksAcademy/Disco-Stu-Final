@@ -1050,6 +1050,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 
 			},
+      
+			forgotPassword: async (email) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + 'api/users/reset_password_request';
+					const response = await fetch(backendUrl, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							email: email,
+						}),
+					});
+
+					if (response.ok) {
+						const responseData = await response.json();
+						return responseData; 
+					} else {
+						console.error('Error en la solicitud de restablecimiento de contraseña:', response.status);
+					}
+
+				} catch (error) {
+					// Error de red u otro error, puedes manejarlo aquí
+					console.error('Error al enviar la solicitud de restablecimiento de contraseña:', error.message);
+				}
+			},
 
 			sendRating: async (object) => {
 				try {
