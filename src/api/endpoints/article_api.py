@@ -168,6 +168,7 @@ def delete_all():
 def add_article():
     data = request.json
     session = db.session
+    articulo = None
 
     session.begin()
 
@@ -176,21 +177,33 @@ def add_article():
         approved_article.estatus = "approved"
         session.add(approved_article)
 
-        print(data)
+        if approved_article.articulo_id and approved_article.articulo_id > 0:
+            articulo = session.query(Articulo).get(
+                approved_article.articulo_id)
 
-        articulo = Articulo(
-            url_imagen=data['url_imagen'],
-            artista_id=data['artista_id'],
-            titulo=data['titulo'],
-            sello=data['sello'],
-            formato=data['formato'],
-            pais=data['pais'],
-            publicado=data['publicado'],
-            genero=data['genero'],
-            estilos=data['estilos']
-        )
+            articulo.url_imagen = data['url_imagen']
+            articulo.artista_id = data['artista_id']
+            articulo.titulo = data['titulo']
+            articulo.sello = data['sello']
+            articulo.formato = data['formato']
+            articulo.pais = data['pais']
+            articulo.publicado = data['publicado']
+            articulo.genero = data['genero']
+            articulo.estilos = data['estilos']
+        else:
+            articulo = Articulo(
+                url_imagen=data['url_imagen'],
+                artista_id=data['artista_id'],
+                titulo=data['titulo'],
+                sello=data['sello'],
+                formato=data['formato'],
+                pais=data['pais'],
+                publicado=data['publicado'],
+                genero=data['genero'],
+                estilos=data['estilos']
+            )
+
         session.add(articulo)
-
         session.commit()
 
         return jsonify({"message": "Artículo guardado satisfactoriamente"})

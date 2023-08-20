@@ -53,7 +53,7 @@ const ArticleDetails = () => {
                     console.log(result)
                     if (result == 'VALIDATED') {
                         navigate(`/sell/${article.id}`)
-                    }else{
+                    } else {
                         navigate('/sellers')
                     }
                 });
@@ -145,14 +145,33 @@ const ArticleDetails = () => {
                 </div>
                 <div className="col-md-2">
                     <div className="btn-group-vertical btn-block" role="group">
-                        <div onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }}>
-                            Editar artículo
-                        </div>
                         <button className="btn btn-success mb-2" onClick={() => handleAddFavorites({ user_id, articulo_id: article.id })}>Agregar a deseados</button>                        <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
                         <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
+                        <button onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }} className="btn btn-secondary mb-2">
+                            Editar artículo
+                        </button>
                         <button onClick={() => window.history.back()} className="btn btn-secondary mb-2">Regresar</button>
                     </div>
                 </div>
+            </div>
+            <div className="row">
+                <h3>Lista de pistas</h3>
+                <table className="table">
+                    <thead className="table-dark">
+                        <tr>
+                            <td style={{ width: '5%' }}>#</td>
+                            <td style={{ width: '95%' }}>TITULO</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {article.tracks.map((track) => (
+                            <tr key={track.id}>
+                                <td className="text-left">{track.posicion}</td>
+                                <td>{track.nombre}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div >
     )

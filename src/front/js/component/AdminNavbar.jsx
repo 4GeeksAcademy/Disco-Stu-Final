@@ -40,7 +40,8 @@ export const AdminNavbar = () => {
         };
     }, []);
 
-    const handlerNavigateToExplorer = () => {
+    const handlerNavigateToExplorer = async () => {
+        await actions.search();
         navigate('/explorer')
     }
 
@@ -55,7 +56,7 @@ export const AdminNavbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{marginRight: '0'}}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-black text-white" style={{ marginRight: '0' }}>
             <div className="container-fluid">
                 <Link className="nav-link" to="/">
                     <img className="p-2" style={{ width: '160px' }} src={logoNabVar} alt="logo_navbar" />
