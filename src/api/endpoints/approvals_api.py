@@ -37,6 +37,7 @@ def reject():
 
 @approvals_api.route('/add', methods=['POST'])
 def add():
+    print("adding approval")
     data = json.loads(request.form.get('article'))
     file = None
     file_name = None
@@ -72,7 +73,7 @@ def add():
                     artist = Artista.query.get(aprobacion.artista_id)
                     aprobacion.titulo = artist.nombre + " - " + aprobacion.titulo
                     if file is not None:
-                        aprobacion.url_imagen = save_to_cloudinary(file, file_name)
+                        aprobacion.url_imagen = save_to_cloudinary(file, file_name, True)
                     db.session.add(aprobacion)
                     db.session.commit()
 

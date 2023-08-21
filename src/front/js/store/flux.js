@@ -1050,7 +1050,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return data;
 
 			},
-      
+
 			forgotPassword: async (email) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + 'api/users/reset_password_request';
@@ -1066,7 +1066,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const responseData = await response.json();
-						return responseData; 
+						return responseData;
 					} else {
 						console.error('Error en la solicitud de restablecimiento de contraseña:', response.status);
 					}

@@ -89,14 +89,14 @@ const Layout = () => {
                                 <Route element={<UserSentMessages />} path="/messages/sent" />
                                 <Route element={<UserDeletedMessages />} path="/messages/trash" />
                                 <Route element={<UserComposeMessage />} path="/messages/compose" />
+                                <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
+                                <Route element={<Article />} path="/articles/add" />
                             </Route>
                             <Route element={<ForgotPassword />} path="/forgot-password" />
                             <Route element={<About />} path="/about" />
                             <Route element={<Contact />} path="/contact" />
                             <Route element={<Artist />} path="/artists" />
                             <Route element={<GalleryTemplate />} path="/gallery_template" />
-                            <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
-                            <Route element={<Article />} path="/articles/add" />
                             <Route element={<ArticleDetails />} path="/article/:id" />
                             <Route element={<Explorer />} path='/explorer' />
                             <Route element={<Demo />} path="/demo" />
