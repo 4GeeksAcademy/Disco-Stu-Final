@@ -1011,7 +1011,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			sendShippingCost: async (data) => {
+			sendShippingCost: async (object) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + '/api/orders/order';
 					const response = await fetch(backendUrl, {
@@ -1019,7 +1019,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify(data),
+						body: JSON.stringify(object),
 					});
 
 					if (!response.ok) {

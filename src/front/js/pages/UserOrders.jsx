@@ -138,7 +138,7 @@ export const UserOrders = () => {
             <div>
                 <div className="container-fluid" style={{ margin: '30px' }}>
                     <div className="row me-3">
-                        <div className="col-md-3">
+                        <div className="col-md-2">
                             <div style={{ marginTop: '10px' }}>
                                 <div>
                                     <button onClick={() => handleNavigateOrders()} style={{ width: '100%', textAlign: 'left', padding: '6px' }} type="button" className="btn btn-outline"><strong>Pedidos</strong></button>
@@ -148,7 +148,7 @@ export const UserOrders = () => {
                                 </div>
                             </div>
                         </div>
-                        <div id="messages_center" className="col-md-9">
+                        <div id="messages_center" className="col-md-10" style={{marginRight: '10px', width: '80%'}}>
                             {sortedOrdersList.map(order => (
                                 <div>
                                     <div className="table-responsive">
@@ -178,20 +178,21 @@ export const UserOrders = () => {
                                                     <td>{order.pagado ? "Pagado" : "Pendiente"}</td>
                                                     <td>{order.articulos.map(articulo => articulo.id).join(', ')}</td>
                                                     <td>{order.articulos.map(articulo => articulo.titulo).join(', ')}</td>
+                                                    <td><span>${order.precio_total + order.precio_envio}</span></td>
                                                     <td>
-                                                        {!(order.haveShipping === false) ? (
-                                                            <span>${order.precio_total + order.precio_envio}</span>
+                                                        {(order.haveShipping === false) ? (
+                                                            <p>Contacta al vendedor para establecer precio de envío</p>
                                                         ) : (
-                                                            <span>${order.precio_total}</span>
+                                                            <div>
+                                                                {!order.pagado && (
+                                                                    <button className="btn btn-outline-dark w-100 mb-2" onClick={() => handlerDeleteOrder(order.id)}>Cancelar pedido</button>
+                                                                )}
+                                                                {!order.pagado && (
+                                                                    <PaymentComponent orderID={order.id} cost={order.precio_total} updatePageData={updatePageData} seller_id={order.vendedor_id} />
+                                                                )}
+                                                            </div>
                                                         )}
-                                                    </td>
-                                                    <td>
-                                                        {!order.pagado && (
-                                                            <button className="btn btn-outline-dark w-100 mb-2" onClick={() => handlerDeleteOrder(order.id)}>Cancelar pedido</button>
-                                                        )}
-                                                        {!order.pagado && (
-                                                            <PaymentComponent orderID={order.id} cost={order.precio_total} updatePageData={updatePageData} seller_id={order.vendedor_id} />
-                                                        )}
+
                                                     </td>
 
                                                 </tr>

@@ -101,8 +101,8 @@ const User_inbox = () => {
             try {
                 const orderData = await actions.getOrderById(orderId);
                 orderData.emisor = emisor.username
-                console.log(orderData)
-                navigate('/messages/message/order', { state: { orderData } });
+                sessionStorage.setItem('currentOrderData', JSON.stringify(orderData))
+                navigate('/messages/message/order');
             } catch (error) {
                 console.error('Error fetching order data:', error);
             }
