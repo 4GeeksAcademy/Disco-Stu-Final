@@ -15,6 +15,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from urllib.parse import urlparse
+import traceback
 
 utils_api = Blueprint('utils_api', __name__)
 
@@ -146,6 +147,8 @@ def load_initial_file():
         print("Curiosities are created...")
         print("inserción de datos e imagenes terminada")
     except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()
         session.rollback()
         print(f"Transaction failed: {e}")
     finally:

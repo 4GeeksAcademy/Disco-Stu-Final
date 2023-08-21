@@ -102,6 +102,7 @@ const Article = ({ mode }) => {
         //console.log("handleImageUpload triggered");
         //console.log(event.target.files[0]);
         imageFile = event.target.files[0];
+        console.log("iamge file is loaded: " + imageFile);
     }
 
     const handleSubmit = async (values, { resetForm }) => {
@@ -145,7 +146,7 @@ const Article = ({ mode }) => {
 
     return (
         initialValues && (
-            <div className="container">
+            <div className="container mt-4 mb-4">
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
@@ -153,6 +154,13 @@ const Article = ({ mode }) => {
                 >
                     {({ values, setFieldValue }) => (
                         <div className="row">
+                            <div className="col-md-6 offset-md-3 mb-3">
+                                {mode && mode === 'edit' ? (
+                                    <h2>Editar artículo</h2>
+                                ) : (
+                                    <h2>Alta de artículo</h2>
+                                )}
+                            </div>
                             <div className="col-md-6 offset-md-3">
                                 {successNoti && (
                                     <div className="row mt-3">
