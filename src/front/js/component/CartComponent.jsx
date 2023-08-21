@@ -9,7 +9,6 @@ const CartComponent = ({ data }) => {
 
   const { store, actions } = useContext(Context)
   const [totalPrice, setTotalPrice] = useState(0)
-  const [totalTax, setTotalTax] = useState(0)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,10 +18,8 @@ const CartComponent = ({ data }) => {
     });
 
     const formattedTotalPrice = newTotalPrice.toFixed(2);
-    const formattedTotalTax = (newTotalPrice * 0.05).toFixed(2);
 
     setTotalPrice(formattedTotalPrice);
-    setTotalTax(formattedTotalTax);
   }, [store.cart]);
 
   const handlerDeleteItem = (element) => {
@@ -57,9 +54,7 @@ const CartComponent = ({ data }) => {
       const usuario_id = localStorage.getItem('userID');
       const pedido_id = generateRandomOrderNumber();
       const articles_ids = data.offers.map(offer => offer.articulo_id);
-      const precio_envio = 10;
       const precio_total = data.offers.reduce((total, element) => total + element.precio, 0);
-      const impuesto = precio_total * 0.05;
       const condicion_funda = data.offers[0].condicion_funda;
       const condicion_soporte = data.offers[0].condicion_soporte;
       const vendedor_id = data.seller.id;
@@ -79,9 +74,7 @@ const CartComponent = ({ data }) => {
           usuario_id,
           pedido_id,
           articles_ids,
-          precio_envio,
           precio_total,
-          impuesto,
           condicion_funda,
           condicion_soporte,
           vendedor_id,
@@ -136,11 +129,7 @@ const CartComponent = ({ data }) => {
               </div>
               <div className='d-flex justify-content-between'>
                 <p>Envío:</p>
-                <p>$10</p>
-              </div>
-              <div className='d-flex justify-content-between'>
-                <p>Impuesto:</p>
-                <p>${totalTax} USD</p>
+                <p>A determinar por el vendedor</p>
               </div>
               <div className='d-flex justify-content-between'>
                 <p><strong>TOTAL:</strong></p>

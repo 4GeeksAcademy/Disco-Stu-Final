@@ -2,7 +2,7 @@
 This module takes ordere of starting the API Server for users, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pedido, pedido_articulos
+from api.models import db, User, Pedido, pedido_articulos, Bandeja_de_entrada
 from api.utils import generate_sitemap, APIException
 from datetime import datetime
 
@@ -20,7 +20,6 @@ def create_order():
         articles_ids = data.get('articles_ids', [])
         precio_envio = data.get('precio_envio', 0)
         precio_total = data.get('precio_total', 0)
-        impuesto = data.get('impuesto', 0)
         condicion_funda = data.get('condicion_funda', '')
         condicion_soporte = data.get('condicion_soporte', '')
         vendedor_id = data.get('vendedor_id')
@@ -36,15 +35,31 @@ def create_order():
         pedido = Pedido(
             precio_envio=precio_envio,
             precio_total=precio_total,
-            impuesto=impuesto,
             condicion_funda=condicion_funda,
             condicion_soporte=condicion_soporte,
             user_id=user_id,
             vendedor_id=vendedor_id,
-            pagado=pagado
+            pagado=pagado,
+        )
+        db.session.add(pedido)
+        db.session.commit()
+
+        fecha_actual = datetime.now()
+        dia = str(fecha_actual.day)
+        mes = str(fecha_actual.month)
+        anio = str(fecha_actual.year)
+        pedido_id = str(pedido.id)
+
+        fecha_formateada = dia + '/' + mes + '/' + anio
+        mensaje_vendedor = Bandeja_de_entrada(
+            emisor_id=user_id,
+            receptor_id=vendedor_id,
+            fecha=fecha_formateada,
+            asunto='Pedido #' + pedido_id,
+            isMessage=False
         )
 
-        db.session.add(pedido)
+        db.session.add(mensaje_vendedor)
         db.session.commit()
 
         for article_id in articles_ids:
@@ -60,7 +75,7 @@ def create_order():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Ruta para obtener el pedido
+# Ruta para obtener todos los pedidos de un usario
 
 
 @order_api.route('/<int:user_id>', methods=['GET'])
@@ -76,13 +91,13 @@ def get_pedidos_by_user_id(user_id):
                 'id': pedido.id,
                 'precio_envio': pedido.precio_envio,
                 'precio_total': pedido.precio_total,
-                'impuesto': pedido.impuesto,
                 'vendedor_id': pedido.vendedor_id,
                 'condicion_funda': pedido.condicion_funda,
                 'condicion_soporte': pedido.condicion_soporte,
                 'articulos': [],
                 'pagado': pedido.pagado,
-                'valorado': pedido.valorado
+                'valorado': pedido.valorado,
+                'haveShipping': pedido.haveShipping
             }
 
             for articulo in pedido.articulos:
@@ -98,6 +113,62 @@ def get_pedidos_by_user_id(user_id):
         return jsonify({'pedidos': pedidos_list}), 200
 
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Ruta para obtener un pedido
+
+
+@order_api.route('/order/<int:order_id>', methods=['GET'])
+def get_order_by_id(order_id):
+    try:
+        pedido = Pedido.query.get(order_id)
+        if not pedido:
+            return jsonify({'message': 'No se encontró el pedido'}), 404
+
+        pedido_data = {
+            'id': pedido.id,
+            'precio_total': pedido.precio_total,
+            'precio_envio': pedido.precio_envio,
+            'vendedor_id': pedido.vendedor_id,
+            'condicion_funda': pedido.condicion_funda,
+            'condicion_soporte': pedido.condicion_soporte,
+            'articulos': [],
+            'pagado': pedido.pagado,
+            'valorado': pedido.valorado,
+            'haveShipping': pedido.haveShipping
+        }
+
+        for articulo in pedido.articulos:
+            articulo_data = {
+                'id': articulo.id,
+                'titulo': articulo.titulo,
+            }
+
+            pedido_data['articulos'].append(articulo_data)
+
+        return jsonify(pedido_data), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+#Ruta para establcer precio de envío
+
+@order_api.route('/order', methods=['PUT'])
+def set_shipping_cost():
+    try:
+        order_id=request.json.get('order_id')
+        shipping_cost=request.json.get('shipping_cost')
+
+        order=Pedido.query.get(order_id)
+
+        order.precio_envio=shipping_cost
+        order.haveShipping=True
+        db.session.commit()
+
+        return jsonify('COMPLETED')
+    
+    except Exception as e:
+        print("Error:", str(e)) 
         return jsonify({'error': str(e)}), 500
 
 # Ruta para borrar un pedido
@@ -144,9 +215,12 @@ def actualizar_estado_pago_pedido(pedido_id):
     else:
         return jsonify({'message': 'Pedido no encontrado'}), 404
 
+# Ruta para actualizar valoraciones
+
+
 @order_api.route('/upload_rating', methods=['PUT'])
-def actualizar_valoracion(): 
-    
+def actualizar_valoracion():
+
     vendedor_id = request.json.get('vendedor_id')
     positivo_o_negativo = request.json.get('positivo_o_negativo')
 
@@ -159,9 +233,11 @@ def actualizar_valoracion():
             vendedor.valoraciones_negativas += 1
             vendedor.cantidad_de_valoraciones += 1
 
-        total_valoraciones = vendedor.valoraciones_positivas + vendedor.valoraciones_negativas
+        total_valoraciones = vendedor.valoraciones_positivas + \
+            vendedor.valoraciones_negativas
         if total_valoraciones > 0:
-            valoracion = (vendedor.valoraciones_positivas / total_valoraciones) * 100
+            valoracion = (vendedor.valoraciones_positivas /
+                          total_valoraciones) * 100
         else:
             valoracion = 0
 
@@ -172,6 +248,3 @@ def actualizar_valoracion():
         return jsonify('COMPLETED'), 200
     else:
         return jsonify({'error': 'Vendedor no encontrado.'}), 404
-
-
-

@@ -48,26 +48,62 @@ export const UserDeletedMessages = () => {
     }
 
     const toggleSelectMessage = (messageId) => {
-        setSelectedItems((prevSelectedItems) => {
-            if (prevSelectedItems.includes(messageId)) {
-                return prevSelectedItems.filter((selected) => selected !== messageId);
+        setSelectedItems((prevSelectedMessages) => {
+            if (prevSelectedMessages.includes(messageId)) {
+                return prevSelectedMessages.filter((selected) => selected !== messageId);
             } else {
-                return [...prevSelectedItems, messageId];
+                return [...prevSelectedMessages, messageId];
             }
         });
     };
 
-    const handleRecoverMessage = async () => {
+    const handleDeleteMessage = async () => {
+        const selectedItemsCopy = [...selectedItems]
+        setSelectedItems([])
+        const fetchMessages = await actions.deleteTrashMessages(selectedItemsCopy)
+        if (fetchMessages == 'COMPLETED') {
+            window.location.reload();
+        }
+    }
+
+    const handleRecoverMessages = async () => {
         try {
-            await Promise.all(selectedItems.map(async (messageId) => {
-                const response = await actions.recoverDeletedMessage(messageId); // Cambia esto a la acción real para recuperar mensajes
-                console.log('Message recovered successfully', response);
-            }));
-            setSelectedItems([]);
-            // Actualiza la lista de mensajes eliminados después de la recuperación
-            await actions.getDeletedMessages(userId); // Cambia esto a la acción real para obtener los mensajes eliminados
+            const selectedItemsCopy = [...selectedItems]
+            setSelectedItems([])
+            const fetchMessages = await actions.recoverDeletedMessages(selectedItemsCopy)
+            if (fetchMessages == 'COMPLETED') {
+                window.location.reload();
+            }
         } catch (error) {
             console.log('Error recovering messages:', error);
+        }
+    };
+
+    const handleViewMessage = (element) => {
+        if (users.length > 0) {
+            console.log('entre')
+            const emisor = users.find((user) => user.id === element.emisor_id);
+            const receptor = users.find((user) => user.id == element.receptor_id)
+            const emisorName = emisor.username;
+            const receptorName = receptor.username;
+            const messageData = {
+                'emisor': emisorName,
+                'receptor': receptorName,
+                'fecha': element.fecha,
+                'mensaje': element.mensaje,
+                'asunto': element.asunto
+            }
+            navigate('/messages/message', { state: { messageData } });
+        }
+
+    };
+
+    const handleSelectAllMessages = () => {
+        if (selectedItems.length === data.deleted_messages.length) {
+            setSelectedItems([]);
+        } else {
+            const allMessageIds = data.deleted_messages.map(element => element.id);
+            setSelectedItems(allMessageIds);
         }
     };
 
@@ -112,12 +148,19 @@ export const UserDeletedMessages = () => {
                         <div id="messages_center" className="col-md-9">
                             <div className="mb-3 d-flex justify-content-end">
                                 <button onClick={() => handleDeleteMessage()} className="btn btn-outline-dark">Eliminar</button>
+                                <button style={{ marginLeft: '10px' }} onClick={() => handleRecoverMessages()} className="btn btn-outline-dark">Recuperar mensajes</button>
                             </div>
                             <div className="table-responsive">
                                 <table className="table table-hover">
                                     <thead className="bg-light">
                                         <tr>
-                                            <th className="col"><input type="checkbox" /></th>
+                                        {
+                                                data.deleted_messages.length > 0 ? (
+                                                    <th className="col"><input type="checkbox" onChange={handleSelectAllMessages} checked={selectedItems.length === data.deleted_messages.length} /></th>
+                                                ) : (
+                                                <th className="col">{''}</th>
+                                                )
+                                            }                                            
                                             <th className="col">Para</th>
                                             <th className="col">Asunto</th>
                                             <th className="col">Enviado</th>
@@ -132,9 +175,15 @@ export const UserDeletedMessages = () => {
 
                                                 return (
                                                     <tr key={element.id}>
-                                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input onChange={() => toggleSelectMessage(element.id)} type="checkbox" /></td>
+                                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                onChange={() => toggleSelectMessage(element.id)}
+                                                                checked={selectedItems.includes(element.id)}
+                                                            />
+                                                        </td>
                                                         <td style={{ width: '25%' }}>{emisorName}</td>
-                                                        <td style={{ width: '54%' }}>{element.asunto}</td>
+                                                        <td onClick={() => handleViewMessage(element)} style={{ width: '54%', cursor: 'pointer', textDecoration: 'underline' }}>{element.asunto}</td>
                                                         <td style={{ width: '18%' }}>{element.fecha}</td>
                                                     </tr>
                                                 );

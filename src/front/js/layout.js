@@ -28,6 +28,8 @@ import { UserFavorites } from "./pages/userFavorites.jsx";
 import Cart from './pages/Cart.jsx'
 import { UserDeletedMessages } from "./pages/UserDeletedMessages.jsx";
 import { UserComposeMessage } from "./pages/UserComposeMessage.jsx";
+import { UserViewMessage } from "./pages/UserViewMessage.jsx";
+import { UserViewOrderMessage } from "./pages/UserViewOrderMessage.jsx";
 import Explorer from './pages/Explorer.jsx'
 import Article from "./pages/Article.jsx";
 import ArticleDetails from "./pages/ArticleDetails.jsx";
@@ -89,6 +91,8 @@ const Layout = () => {
                                 <Route element={<UserSentMessages />} path="/messages/sent" />
                                 <Route element={<UserDeletedMessages />} path="/messages/trash" />
                                 <Route element={<UserComposeMessage />} path="/messages/compose" />
+                                <Route element={<UserViewMessage />} path="/messages/message" />
+                                <Route element={<UserViewOrderMessage />} path="/messages/message/order" />
                                 <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
                                 <Route element={<Article />} path="/articles/add" />
                             </Route>
