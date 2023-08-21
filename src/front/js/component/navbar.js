@@ -17,7 +17,8 @@ export const Navbar = () => {
 	const logged = localStorage.getItem('token');
 	const { actions } = useContext(Context);
 
-	const handlerNavigateToExplorer = () => {
+	const handlerNavigateToExplorer = async () => {
+		await actions.search();
 		navigate('/explorer')
 	}
 

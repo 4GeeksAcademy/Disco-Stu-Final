@@ -38,6 +38,7 @@ import Offers from './pages/Offers.jsx'
 import InitializeAsSeller from "./pages/InitializeAsSeller.jsx";
 import { ArticleReview } from "./pages/AdminReviewArticle.jsx";
 import EditHome from "./pages/EditHome.jsx";
+import ForgotPassword from "./pages/forgotPassword.jsx";
 
 //Components
 import { Artist } from "./pages/artist";
@@ -92,13 +93,14 @@ const Layout = () => {
                                 <Route element={<UserComposeMessage />} path="/messages/compose" />
                                 <Route element={<UserViewMessage />} path="/messages/message" />
                                 <Route element={<UserViewOrderMessage />} path="/messages/message/order" />
+                                <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
+                                <Route element={<Article />} path="/articles/add" />
                             </Route>
+                            <Route element={<ForgotPassword />} path="/forgot-password" />
                             <Route element={<About />} path="/about" />
                             <Route element={<Contact />} path="/contact" />
                             <Route element={<Artist />} path="/artists" />
                             <Route element={<GalleryTemplate />} path="/gallery_template" />
-                            <Route element={<Article mode='edit' />} path="/articles/edit/:id" />
-                            <Route element={<Article />} path="/articles/add" />
                             <Route element={<ArticleDetails />} path="/article/:id" />
                             <Route element={<Explorer />} path='/explorer' />
                             <Route element={<Demo />} path="/demo" />

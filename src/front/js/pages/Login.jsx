@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 import fondo from '../../img/LOGO2.png';
@@ -155,6 +155,11 @@ export const Login = () => {
                                         </span>
                                     </div>
                                 </div>
+                                <p className="text-center mt-3">
+                                    <Link to="/forgot-password" className="ms-2">
+                                        ¿Ha olvidado su contraseña?
+                                    </Link>
+                                </p>
                             </div>
                             <div className="d-grid gap-2 mt-4">
                                 <button
@@ -167,9 +172,9 @@ export const Login = () => {
                             </div>
                             <p className="text-center mt-3">
                                 ¿No eres usuario de DiscoStu?
-                                <a href="/signup" className="ms-2">
+                                <Link to="/signup" className="ms-2">
                                     Crea una cuenta
-                                </a>
+                                </Link>
                             </p>
                         </form>
                     </div>

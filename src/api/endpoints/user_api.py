@@ -1,19 +1,35 @@
 """
 This module takes care of starting the API Server for users, Loading the DB and Adding the endpoints
 """
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity, unset_access_cookies
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, unset_access_cookies
+from flask import Flask, request, jsonify, Blueprint, render_template, app
 from datetime import timedelta, datetime, timezone
 from api.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from api.endpoints.decorators import admin_required, regular_user_required
 from sqlalchemy.exc import SQLAlchemyError
+from flask_mail import Mail, Message
+from threading import Thread
+import secrets
+import os
+
+reset_tokens = {}
+reset_request_times = {}
 
 user_api = Blueprint('user_api', __name__)
 
 jwt_manager = JWTManager()
+
+mail = Mail()
+
+backend_url = os.getenv("FRONTEND_URL")
+
+
+def send_welcome_email(recipient, username):
+    welcome_subject = "¡Bienvenido a Disco Stu!"
+    welcome_html = f"Bienvenido, {username}! Gracias por unirte a Disco Stu. Haz clic <a href='{backend_url}login'>aquí</a> para iniciar sesión."
+    send_email(recipient, welcome_subject, welcome_html)
 
 
 @user_api.route('/signup', methods=['POST'])
@@ -36,6 +52,8 @@ def signup():
                     correo=email, contrasenha=password_hash, is_admin=admin_default)
     db.session.add(new_user)
     db.session.commit()
+
+    send_welcome_email(email, username)
 
     return jsonify({"mensaje": "Usuario creado exitosamente."}), 201
 
@@ -284,9 +302,10 @@ def became_seller(user_id):
 
     return jsonify('COMPLETED')
 
+
 @user_api.route('/validate_seller/<int:user_id>', methods=['GET'])
 def validate_seller(user_id):
-    
+
     user = User.query.get(user_id)
 
     isSeller = user.isSeller
@@ -295,4 +314,81 @@ def validate_seller(user_id):
         return jsonify('VALIDATED')
     else:
         return jsonify('NOT VALIDATED')
-    
+
+######### Email ########
+
+
+def generate_token():
+    return secrets.token_urlsafe(32)
+
+
+def send_email(recipient, subject, html_body):
+    msg = Message(subject=subject, recipients=[
+                  recipient], sender='discostustore@gmail.com')  # O utiliza sender=None
+    msg.html = html_body
+    mail.send(msg)
+
+
+@user_api.route('/reset_password_request', methods=['POST'])
+def reset_password_request():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+
+        # Verificar si ha pasado suficiente tiempo desde la última solicitud
+        last_request_time = reset_request_times.get(email)
+        if last_request_time and datetime.now() - last_request_time < timedelta(minutes=10):
+            return jsonify({"error": "Debes esperar un tiempo antes de enviar otra solicitud"}), 429
+
+        user = User.query.filter_by(correo=email).first()
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        reset_token = generate_token()
+        reset_tokens[reset_token] = {
+            'user_id': user.id, 'timestamp': datetime.now()}
+
+        reset_link = f"https://didactic-doodle-v76w7w75544hr4w-3001.app.github.dev/api/users/reset-password/{reset_token}"
+        reset_email_subject = "Reset Your Password"
+        reset_email_html = f"Click <a href='{reset_link}'>here</a> to reset your password."
+
+        send_email(user.correo, reset_email_subject, reset_email_html)
+
+        return jsonify({"message": "Token de restablecimiento de contraseña enviado"}), 200
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": "Ocurrió un error al solicitar el restablecimiento de contraseña"}), 500
+
+
+@user_api.route('/reset_password/<reset_token>', methods=['GET'])
+def reset_password_with_token(reset_token):
+    try:
+        if reset_token in reset_tokens:
+            token_info = reset_tokens[reset_token]
+            user_id = token_info['user_id']
+            timestamp = token_info['timestamp']
+
+            if datetime.datetime.now() - timestamp > datetime.timedelta(hours=24):
+                return jsonify({"error": "El token de restablecimiento ha expirado"}), 400
+
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
+            data = request.get_json()
+            new_password = data.get('new_password')
+
+            new_password_hash = generate_password_hash(new_password)
+            user.contrasenha = new_password_hash
+            db.session.commit()
+
+            del reset_tokens[reset_token]
+
+            return jsonify({"message": "Contraseña restablecida exitosamente"}), 200
+
+        else:
+            return jsonify({"error": "Token de restablecimiento inválido"}), 400
+
+    except Exception as e:
+        return jsonify({"error": "Ocurrió un error al restablecer la contraseña"}), 500

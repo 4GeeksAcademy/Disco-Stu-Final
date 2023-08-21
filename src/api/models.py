@@ -64,6 +64,14 @@ class Articulo(db.Model):
         'Tracks', back_populates='articulo', cascade='all, delete-orphan')
 
     def to_dict(self):
+        tracks_list = []
+        for track in self.tracks:
+            tracks_list.append({
+                'id': track.id,
+                'nombre': track.nombre,
+                "posicion": track.posicion
+            })
+
         return {
             'id': self.id,
             'url_imagen': self.url_imagen,
@@ -74,13 +82,15 @@ class Articulo(db.Model):
             'pais': self.pais,
             'publicado': self.publicado,
             'genero': self.genero,
-            'estilos': self.estilos
+            'estilos': self.estilos,
+            'tracks': tracks_list
         }
 
 
 class Aprobaciones(db.Model):
     __tablename__ = 'aprobaciones'
     id = db.Column(db.Integer, primary_key=True)
+    articulo_id = db.Column(db.Integer, nullable=True)
     url_imagen = db.Column(db.String(250))
     artista_id = db.Column(db.Integer, nullable=False)
     titulo = db.Column(db.String(250), nullable=False)
@@ -101,6 +111,7 @@ class Aprobaciones(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            "articulo_id": self.articulo_id,
             'url_imagen': self.url_imagen,
             'artista_id': self.artista_id,
             'titulo': self.titulo,
@@ -126,7 +137,6 @@ class Tracks(db.Model):
     nombre = db.Column(db.String(250))
     posicion = db.Column(db.String(250))
 
-    # articulo = db.relationship('Articulo', backref='tracks', overlaps="tracks_relacion")
     articulo = db.relationship('Articulo', back_populates='tracks')
 
     def to_dict(self):
@@ -223,9 +233,11 @@ class Ofertas(db.Model):
 
 # Tabla intermedia para la relación many-to-many entre Pedido y Articulo
 pedido_articulos = db.Table('pedido_articulos',
-    db.Column('pedido_id', db.Integer, db.ForeignKey('pedido.id'), primary_key=True),
-    db.Column('articulo_id', db.Integer, db.ForeignKey('articulo.id'), primary_key=True)
-)
+                            db.Column('pedido_id', db.Integer, db.ForeignKey(
+                                'pedido.id'), primary_key=True),
+                            db.Column('articulo_id', db.Integer, db.ForeignKey(
+                                'articulo.id'), primary_key=True)
+                            )
 
 
 class Pedido(db.Model):
@@ -242,12 +254,16 @@ class Pedido(db.Model):
     valorado = db.Column(db.Boolean, default=False)
     haveShipping = db.Column(db.Boolean, default=False)
 
-    user = db.relationship('User', foreign_keys=[user_id], backref='pedidos_realizados')
-    vendedor = db.relationship('User', foreign_keys=[vendedor_id], backref='pedidos_vendidos')
-    articulos = db.relationship('Articulo', secondary=pedido_articulos, backref=db.backref('pedidos', lazy='dynamic'))
+    user = db.relationship('User', foreign_keys=[
+                           user_id], backref='pedidos_realizados')
+    vendedor = db.relationship('User', foreign_keys=[
+                               vendedor_id], backref='pedidos_vendidos')
+    articulos = db.relationship(
+        'Articulo', secondary=pedido_articulos, backref=db.backref('pedidos', lazy='dynamic'))
 
     def marcar_como_pagado(self):
         self.pagado = True
+
 
 class Artista(db.Model):
     __tablename__ = 'artista'
@@ -270,11 +286,12 @@ class Artista(db.Model):
             'perfil': self.perfil
         }
 
+
 class Curiosidades_home(db.Model):
-    __tablename__='home_content'
+    __tablename__ = 'home_content'
     id = db.Column(db.Integer, primary_key=True)
     posicion = db.Column(db.Integer)
-    titulo = db.Column(db.String(100))
-    subtitulo = db.Column(db.String(100))
+    titulo = db.Column(db.String(300))
+    subtitulo = db.Column(db.String(300))
     descripcion = db.Column(db.String(4000))
-    url_imagen = db.Column(db.String(250))
+    url_imagen = db.Column(db.String(350))

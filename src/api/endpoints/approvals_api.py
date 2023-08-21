@@ -37,44 +37,50 @@ def reject():
 
 @approvals_api.route('/add', methods=['POST'])
 def add():
+    print("adding approval")
     data = json.loads(request.form.get('article'))
-    file = request.files['file']
-    file_name = file.filename
+    file = None
+    file_name = None
 
-    print(file_name)
+    if 'file' in request.files:
+        file = request.files['file']
+        file_name = file.filename
 
     session = db.session()
 
-    if data and file:
+    if data:
         if data['tipo'] == "add":
             try:
                 session.begin()
                 aprobacion = Aprobaciones(**data)
                 artist = Artista.query.get(aprobacion.artista_id)
                 aprobacion.titulo = artist.nombre + " - " + aprobacion.titulo
-                aprobacion.url_imagen = save_to_cloudinary(
-                    file, file_name, False)
+                if file is not None:
+                    aprobacion.url_imagen = save_to_cloudinary(
+                        file, file_name, True)
                 db.session.add(aprobacion)
                 db.session.commit()
 
-                return jsonify({'mensaje:': "Articulo agregado para aprobación"}), 200
+                return jsonify({'mensaje': "Articulo agregado para aprobación"}), 200
             except Exception as e:
                 db.session.rollback()
-                return jsonify({'mensaje:': "Error al guardar el articulo para aprobación"}), 405
+                return jsonify({'mensaje': "Error al guardar el articulo para aprobación"}), 405
         elif data['tipo'] == "edit":
             try:
                 session.begin()
-                if data.get('id') and data.get('id') > 0:
+                if data.get('articulo_id') and data.get('articulo_id') > 0:
                     aprobacion = Aprobaciones(**data)
                     artist = Artista.query.get(aprobacion.artista_id)
                     aprobacion.titulo = artist.nombre + " - " + aprobacion.titulo
-                    aprobacion.url_imagen = save_to_cloudinary(file, file_name)
+                    if file is not None:
+                        aprobacion.url_imagen = save_to_cloudinary(file, file_name, True)
                     db.session.add(aprobacion)
                     db.session.commit()
 
-                    return jsonify({'mensaje:': "Articulo agregado para aprobación"}), 200
+                    return jsonify({'mensaje': "Articulo agregado para aprobación"}), 200
             except Exception as e:
                 db.session.rollback()
+                return jsonify({'mensaje': "Error al guardar el articulo para aprobación"}), 405
 
 
 @approvals_api.route('/<int:approval_id>', methods=['DELETE'])
