@@ -8,9 +8,9 @@ const User_sent_messages = () => {
     const navigate = useNavigate()
     const { store, actions } = useContext(Context)
     const [selectedItems, setSelectedItems] = useState([]);
-    const userId = localStorage.getItem('userID');
     const [data, setData] = useState({ sent_messages: [] });
     const [users, setUsers] = useState([]);
+    const userId = localStorage.getItem('userID');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +23,19 @@ const User_sent_messages = () => {
         };
         fetchData();
     }, [actions, userId]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const fetchUsers = await actions.getAllUsersInfo(userId)
+                console.log('entramos', fetchUsers)
+                setUsers(fetchUsers);
+            } catch (error) {
+                console.log('Error fetching data: ', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleNavigateInbox = () => {
         navigate('/messages')
@@ -41,24 +54,50 @@ const User_sent_messages = () => {
     }
 
     const toggleSelectMessage = (messageId) => {
-        setSelectedItems((prevSelectedItems) => {
-            if (prevSelectedItems.includes(messageId)) {
-                return prevSelectedItems.filter((selected) => selected !== messageId);
+        setSelectedItems((prevSelectedMessages) => {
+            if (prevSelectedMessages.includes(messageId)) {
+                return prevSelectedMessages.filter((selected) => selected !== messageId);
             } else {
-                return [...prevSelectedItems, messageId];
+                return [...prevSelectedMessages, messageId];
             }
         });
     };
 
-    const handleDeleteMessage = () => {
-        const selectedItemsCopy = [...selectedItems];
-        setSelectedItems([]);
-        selectedItemsCopy.forEach((messageId) => {
-            const message_data = {
-                'message_id': messageId
-            };
-            actions.deleteSentMessage(message_data);
-        });
+    const handleDeleteMessage = async () => {
+        const selectedItemsCopy = [...selectedItems]
+        setSelectedItems([])
+        const fetchMessages = await actions.deleteSentMessages(selectedItemsCopy)
+        if (fetchMessages == 'COMPLETED') {
+            window.location.reload();
+        }
+    }
+
+    const handleViewMessage = (element) => {
+        if (users.length > 0) {
+            console.log('entre')
+            const emisor = users.find((user) => user.id === element.emisor_id);
+            const receptor = users.find((user) => user.id == element.receptor_id)
+            const emisorName = emisor.username;
+            const receptorName = receptor.username;
+            const messageData = {
+                'emisor': emisorName,
+                'receptor': receptorName,
+                'fecha': element.fecha,
+                'mensaje': element.mensaje,
+                'asunto': element.asunto
+            }
+            navigate('/messages/message', { state: { messageData } });
+        }
+
+    };
+
+    const handleSelectAllMessages = () => {
+        if (selectedItems.length === data.sent_messages.length) {
+            setSelectedItems([]);
+        } else {
+            const allMessageIds = data.sent_messages.map(element => element.id);
+            setSelectedItems(allMessageIds);
+        }
     };
 
     return (
@@ -107,23 +146,34 @@ const User_sent_messages = () => {
                                 <table className="table table-hover">
                                     <thead className="bg-light">
                                         <tr>
-                                            <th className="col"><input type="checkbox" /></th>
+                                            {
+                                                data.sent_messages.length > 0 ? (
+                                                    <th className="col"><input type="checkbox" onChange={handleSelectAllMessages} checked={selectedItems.length === data.sent_messages.length} /></th>
+                                                ) : (
+                                                    <th className="col">{''}</th>
+                                                )
+                                            }                                           
                                             <th className="col">Para</th>
                                             <th className="col">Asunto</th>
                                             <th className="col">Enviado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.sent_messages.length > 0 ? (
+                                        {data.sent_messages.length > 0 & users.length > 0 ? (
                                             data.sent_messages.map((element, index) => {
-                                                const emisor = users.find((user) => user.id === element.emisor_id);
+                                                const receptor = users.find((user) => user.id == element.receptor_id);
                                                 // Si se encuentra el emisor, muestra el nombre, de lo contrario, muestra "Emisor desconocido"
-                                                const emisorName = emisor ? emisor.username : 'Emisor desconocido';
+                                                const receptorName = receptor ? receptor.username : 'Receptor desconocido';
                                                 return (
                                                     <tr key={element.id}>
-                                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}><input onChange={() => toggleSelectMessage(element.id)} type="checkbox" /></td>
-                                                        <td style={{ width: '25%' }}>{emisorName}</td>
-                                                        <td style={{ width: '54%' }}>{element.asunto}</td>
+                                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                onChange={() => toggleSelectMessage(element.id)}
+                                                                checked={selectedItems.includes(element.id)}
+                                                            />
+                                                        </td>                                                        <td style={{ width: '25%' }}>{receptorName}</td>
+                                                        <td onClick={() => handleViewMessage(element)} style={{ width: '54%', cursor: 'pointer', textDecoration: 'underline' }}>{element.asunto}</td>
                                                         <td style={{ width: '18%' }}>{element.fecha}</td>
                                                     </tr>
                                                 );

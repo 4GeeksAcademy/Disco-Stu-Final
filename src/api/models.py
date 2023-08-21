@@ -168,6 +168,7 @@ class Bandeja_de_entrada(db.Model):
     asunto = db.Column(db.String(250))
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
+    isMessage = db.Column(db.Boolean, default=True)
 
 
 class Bandeja_de_entrada_admin(db.Model):
@@ -196,6 +197,7 @@ class Mensajes_enviados(db.Model):
     asunto = db.Column(db.String(250))
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
+    isMessage = db.Column(db.Boolean, default=True)
 
 
 class Mensajes_eliminados(db.Model):
@@ -206,7 +208,7 @@ class Mensajes_eliminados(db.Model):
     asunto = db.Column(db.String(250))
     mensaje = db.Column(db.String(250))
     fecha = db.Column(db.String(250))
-
+    isMessage = db.Column(db.Boolean, default=True)
 
 class Ofertas(db.Model):
     __tablename__ = 'ofertas'
@@ -229,7 +231,7 @@ pedido_articulos = db.Table('pedido_articulos',
 class Pedido(db.Model):
     __tablename__ = 'pedido'
     id = db.Column(db.Integer, primary_key=True)
-    precio_envio = db.Column(db.Integer)
+    precio_envio = db.Column(db.Integer, default=None)
     precio_total = db.Column(db.Integer)
     impuesto = db.Column(db.Integer)
     condicion_funda = db.Column(db.String(250))
@@ -238,6 +240,7 @@ class Pedido(db.Model):
     vendedor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     pagado = db.Column(db.Boolean, default=False)
     valorado = db.Column(db.Boolean, default=False)
+    haveShipping = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', foreign_keys=[user_id], backref='pedidos_realizados')
     vendedor = db.relationship('User', foreign_keys=[vendedor_id], backref='pedidos_vendidos')

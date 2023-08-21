@@ -248,13 +248,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			deleteMessage: async (selectedMessageId) => {
+			deleteMessage: async (selectedItems) => {
 				try {
 					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/trash";
-					await Promise.all(selectedMessageIds.map(async (messageId) => {
 						const response = await fetch(backendUrl, {
 							method: 'POST',
-							body: JSON.stringify({ message_id: messageId }),
+							body: JSON.stringify({ message_ids: selectedItems }),
 							headers: {
 								"Content-Type": "application/json"
 							}
@@ -265,55 +264,75 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 
 						const data = await response.json();
-						console.log('Message deleted successfully', data);
-					}));
-
-					setSelectedItems([]);
-					actions.getAllMessages(userId);
+						return data
 				} catch (error) {
 					console.log('Error deleting messages:', error);
 				}
 			},
 
-			recoverDeletedMessage: async (message_data) => {
+			recoverDeletedMessages: async (selectedItems) => {
 				try {
-					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages', {
-						method: 'POST',
-						body: JSON.stringify(message_data),
-						headers: {
-							"Content-Type": "application/json"
+					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages";
+						const response = await fetch(backendUrl, {
+							method: 'POST',
+							body: JSON.stringify({ message_ids: selectedItems }),
+							headers: {
+								"Content-Type": "application/json"
+							}
+						});
+
+						if (!response.ok) {
+							console.log('Response error:', response.status);
 						}
-					})
-					if (!response.ok) {
-						throw new Error('Response error')
-					}
-					const data = await response.json()
-					console.log('Message recovered succesfully', data)
-					const { getAllMessages } = getActions()
-					getAllMessages()
+
+						const data = await response.json();
+						return data
 				} catch (error) {
-					console.log('Error recovering message: ', error)
+					console.log('Error recovering messages:', error);
 				}
 			},
 
-			deleteSentMessage: async (message_data) => {
+			deleteSentMessages: async (selectedItems) => {
 				try {
-					const response = await fetch('https://karai2mil-urban-space-tribble-5wgr9ppv6gwc6qv-3001.preview.app.github.dev/api/inbox_user/messages/sent', {
-						method: 'DELETE',
-						body: JSON.stringify(message_data),
-						headers: {
-							"Content-Type": "application/json"
+					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/sent";
+						const response = await fetch(backendUrl, {
+							method: 'DELETE',
+							body: JSON.stringify({ message_ids: selectedItems }),
+							headers: {
+								"Content-Type": "application/json"
+							}
+						});
+
+						if (!response.ok) {
+							console.log('Response error:', response.status);
 						}
-					})
-					if (!response.ok) {
-						throw new Error('Response error')
-					}
-					const data = await response.json()
-					console.log('Sent message deleted succesfully', data)
-					const { getAllMessages } = getActions()
-					getAllMessages()
+
+						const data = await response.json();
+						return data
 				} catch (error) {
-					console.log('Error deleting sent message: ', error)
+					console.log('Error deleting messages:', error);
+				}
+			},
+
+			deleteTrashMessages: async (selectedItems) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + "api/inbox_user/messages/trash";
+						const response = await fetch(backendUrl, {
+							method: 'DELETE',
+							body: JSON.stringify({ message_ids: selectedItems }),
+							headers: {
+								"Content-Type": "application/json"
+							}
+						});
+
+						if (!response.ok) {
+							console.log('Response error:', response.status);
+						}
+
+						const data = await response.json();
+						return data
+				} catch (error) {
+					console.log('Error deleting messages:', error);
 				}
 			},
 
@@ -963,6 +982,57 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				} catch (error) {
 					console.error('Error getting the orders:', error);
+					throw error;
+				}
+			},
+
+			getOrderById: async (order_id) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + `/api/orders/order/${order_id}`;
+					const response = await fetch(backendUrl, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+
+					if (!response.ok) {
+						throw new Error('Unable to get order information.');
+					}
+
+					const data = await response.json();
+					const order = data;
+
+					return order;
+
+				} catch (error) {
+					console.error('Error getting the order:', error);
+					throw error;
+				}
+			},
+
+			sendShippingCost: async (data) => {
+				try {
+					const backendUrl = process.env.BACKEND_URL + '/api/orders/order';
+					const response = await fetch(backendUrl, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(data),
+					});
+
+					if (!response.ok) {
+						throw new Error('Unable to set order shipping.');
+					}
+
+					const data = await response.json();
+					const order = data;
+
+					return order;
+
+				} catch (error) {
+					console.error('Error setting order shipping:', error);
 					throw error;
 				}
 			},

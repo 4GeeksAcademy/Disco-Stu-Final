@@ -2,15 +2,20 @@ import React, { useContext, useState, useEffect } from 'react'
 import { Context } from '../store/appContext'
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 export const UserComposeMessage = () => {
     const navigate = useNavigate()
     const { actions } = useContext(Context)
-    const [messageTo, setMessageTo] = useState()
+    const [messageTo, setMessageTo] = useState('')
     const [subject, setSubject] = useState('')
     const [message, setMessage] = useState('')
     const [users, setUsers] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formErrors, setFormErrors] = useState({
+        messageTo: '',
+        subject: '',
+        message: '',
+    });
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -23,7 +28,6 @@ export const UserComposeMessage = () => {
         };
         fetchUsers();
     }, [actions]);
-
 
     const handleNavigateInbox = () => {
         navigate('/messages')
@@ -40,18 +44,55 @@ export const UserComposeMessage = () => {
     }
 
     const handleMessageTo = (value) => {
-        setMessageTo(value)
-    }
+        setMessageTo(value);
+        setFormErrors({ ...formErrors, messageTo: '' });
+    };
 
     const handleSubject = (value) => {
-        setSubject(value)
-    }
+        setSubject(value);
+        setFormErrors({ ...formErrors, subject: '' });
+    };
 
     const handleMessage = (value) => {
-        setMessage(value)
-    }
+        setMessage(value);
+        setFormErrors({ ...formErrors, message: '' });
+    };
 
-    const sendMessage = async () => {
+    const validateForm = () => {
+        const newErrors = {
+            messageTo: '',
+            subject: '',
+            message: '',
+        };
+
+        let isValid = true;
+
+        if (messageTo.trim() === '') {
+            newErrors.messageTo = 'El campo "Enviar mensaje a" es obligatorio.';
+            isValid = false;
+        }
+
+        if (subject.trim() === '') {
+            newErrors.subject = 'El campo "Asunto" es obligatorio.';
+            isValid = false;
+        }
+
+        if (message.trim() === '') {
+            newErrors.message = 'El campo "Mensaje" es obligatorio.';
+            isValid = false;
+        }
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
+
+    const handleSendMessage = async () => {
+        setIsSubmitting(true);
+
+        if (!validateForm()) {
+            setIsSubmitting(false);
+            return;
+        }
         try {
             const fechaActual = new Date();
             const dia = fechaActual.getDate().toString().padStart(2, '0');
@@ -71,7 +112,7 @@ export const UserComposeMessage = () => {
                 };
             }
 
-            Swal.fire({
+            const result = await Swal.fire({
                 title: '¿Enviar mensaje?',
                 text: '¿Estás seguro de que deseas enviar este mensaje?',
                 icon: 'question',
@@ -80,25 +121,27 @@ export const UserComposeMessage = () => {
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Enviar',
                 cancelButtonText: 'Cancelar'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    // Lógica para enviar el mensaje
-                    await actions.sendMessage(senderID, message_data);
-
-                    Swal.fire({
-                        title: '¡Mensaje enviado!',
-                        text: 'El mensaje se ha enviado correctamente.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar'
-                    }).then(() => {
-                        // Redirigir a la página de mensajes
-                        navigate('/messages');
-                    });
-                }
             });
+
+            if (result.isConfirmed) {
+                // Lógica para enviar el mensaje
+                await actions.sendMessage(senderID, message_data);
+
+                Swal.fire({
+                    title: '¡Mensaje enviado!',
+                    text: 'El mensaje se ha enviado correctamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // Redirigir a la página de mensajes
+                    navigate('/messages');
+                });
+            }
 
         } catch (error) {
             console.error('Error sending message:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -139,80 +182,67 @@ export const UserComposeMessage = () => {
                         </div>
                         <div className="col-md-9">
                             <div id='messages_center'>
-                                <Formik
-                                    initialValues={{ subject: '', message: '' }}
-                                    validate={values => {
-                                        const errors = {};
-                                        if (!values.subject) {
-                                            errors.subject = 'Campo requerido';
-                                        }
-                                        if (!values.message) {
-                                            errors.message = 'Campo requerido';
-                                        }
-                                        return errors;
-                                    }}
-                                    onSubmit={(values, { setSubmitting }) => {
-                                        sendMessage(values);
-                                        setSubmitting(false);
-                                    }}
-                                >
-                                    {({ isSubmitting }) => (
-                                        <Form className="border rounded p-3">
-                                            <fieldset>
-                                                <legend className="bg-light p-2"><strong>Crear un nuevo mensaje</strong></legend>
-                                                <div className="p-3">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="to">Enviar mensaje a</label>
+                                <div className="border rounded p-3">
+                                    <fieldset>
+                                        <legend className="bg-light p-2"><strong>Crear un nuevo mensaje</strong></legend>
+                                        <form onSubmit={handleSendMessage}>
+                                            <div className="p-3">
+                                                <div className={`mb-3 form-group ${formErrors.messageTo && 'has-error'}`}>
+                                                    <label htmlFor="to">Enviar mensaje a</label>
+                                                    <input
+                                                        onChange={(e) => handleMessageTo(e.target.value)}
+                                                        id="to"
+                                                        name="to"
+                                                        className="form-control"
+                                                        required={true}
+                                                        size="50"
+                                                        type="text"
+                                                        value={messageTo}
+                                                    />
+                                                    {formErrors.messageTo && <div className="error">{formErrors.messageTo}</div>}
+                                                </div>
+                                                <div className={`mb-3 form-group ${formErrors.subject && 'has-error'}`}>
+                                                    <label htmlFor="subject">Asunto</label>
+                                                    <div className="d-flex">
                                                         <input
-                                                            onChange={(e) => handleMessageTo(e.target.value)}
-                                                            id="to"
-                                                            name="to"
+                                                            onChange={(e) => handleSubject(e.target.value)}
+                                                            id="subject"
+                                                            name="subject"
                                                             className="form-control"
                                                             required={true}
-                                                            size="50"
+                                                            size="80"
                                                             type="text"
-                                                            value={messageTo}
+                                                            value={subject}
                                                         />
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label htmlFor="subject">Asunto</label>
-                                                        <div className="d-flex">
-                                                            <Field
-                                                                id="subject"
-                                                                maxLength="80"
-                                                                name="subject"
-                                                                className="form-control"
-                                                                required={true}
-                                                                size="50"
-                                                            />
-                                                            <span id="input_counter_subject" className="input_counter ml-2 my-auto">
-                                                                <ErrorMessage name="subject" component="span" className="error-message" />
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label htmlFor="message">Mensaje</label>
-                                                        <Field
-                                                            as="textarea"
-                                                            // onChange={(e) => handleMessage(e.target.value)}
-                                                            style={{ height: '150px' }}
-                                                            className="form-control"
-                                                            id="message"
-                                                            maxLength="1600"
-                                                            name="message"
-                                                        />
-                                                        <span id="input_counter_message" className="input_counter ml-2 my-auto">
-                                                            <ErrorMessage name="message" component="span" className="error-message" />
-                                                        </span>
-                                                    </div>
-                                                    <button type="submit" className="btn btn-outline-dark" disabled={isSubmitting}>
+                                                    {formErrors.subject && <div className="error">{formErrors.subject}</div>}
+                                                </div>
+                                                <div className={`mb-3 form-group ${formErrors.message && 'has-error'}`}>
+                                                    <label htmlFor="message">Mensaje</label>
+                                                    <textarea
+                                                        onChange={(e) => handleMessage(e.target.value)}
+                                                        style={{ height: '150px' }}
+                                                        className="form-control"
+                                                        id="message"
+                                                        maxLength="1600"
+                                                        name="message"
+                                                        value={message}
+                                                    />
+                                                    {formErrors.message && <div className="error">{formErrors.message}</div>}
+                                                </div>
+                                                <div className='d-flex justify-content-end'>
+                                                    <button
+                                                        onClick={() => handleSendMessage()}
+                                                        className="btn btn-outline-dark "
+                                                        disabled={isSubmitting}
+                                                    >
                                                         Enviar
                                                     </button>
                                                 </div>
-                                            </fieldset>
-                                        </Form>
-                                    )}
-                                </Formik>
+                                            </div>
+                                        </form>
+                                    </fieldset>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -221,4 +251,3 @@ export const UserComposeMessage = () => {
         </div>
     )
 }
-
