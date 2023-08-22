@@ -3,6 +3,8 @@ import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import fondo from '../../img/LOGOFONDOBLANCO.png';
+
 export const Signup = () => {
     const { actions } = useContext(Context);
     const [emailValid, setEmailValid] = useState(true);
@@ -87,6 +89,7 @@ export const Signup = () => {
                     <div className="col-lg-3 col-md-3 col-sm-2 col-xs-3">
                     </div>
                     <div className="col-lg-6 col-md-6 col-sm-8 col-xs-6">
+                        <img src={fondo} className="img-fluid mb-4 p-3 rounded" style={{width: '500px', marginLeft: '65px'}} alt="store-logo" />
                         <h1 className="text-center mb-4">Crea una cuenta en Disco Stu</h1>
                         <form className="mb-3" onSubmit={handleSubmit}>
                             <div className="form-group mb-3">

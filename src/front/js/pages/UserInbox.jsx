@@ -119,7 +119,7 @@ const User_inbox = () => {
     };
 
     return (
-        <div>
+        <div style={{marginBottom: '180px'}}>
             {/* Header */}
             <div className="card bg-black rounded-0 border-0">
                 <div

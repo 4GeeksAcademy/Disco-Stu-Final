@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-import fondo from '../../img/LOGO2.png';
+import fondo from '../../img/LOGOFONDOBLANCO.png';
 
 export const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -74,12 +74,12 @@ export const Login = () => {
     };
 
     return (
-        <div className="container mt-3">
+        <div className="container mt-3" style={{marginBottom: '46px'}}>
             <main>
                 <div className="row">
                     <div className="col-lg-3 col-md-3 col-sm-2 col-xs-3"></div>
                     <div className="col-lg-6 col-md-6 col-sm-8 col-xs-6">
-                        <img src={fondo} className="img-fluid bg-black mb-4 p-3 rounded" alt="store-logo" />
+                        <img src={fondo} className="img-fluid mb-4 p-3 rounded" style={{width: '500px', marginLeft: '65px'}} alt="store-logo" />
                         <h1 className="text-center mb-4">Inicia sesión en DiscoStu</h1>
                         <form className="mb-3" ref={formRef}>
                             <div className="form-group mb-3">

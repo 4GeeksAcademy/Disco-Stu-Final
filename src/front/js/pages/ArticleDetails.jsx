@@ -66,7 +66,7 @@ const ArticleDetails = () => {
     }
 
     return (
-        <div className="container mt-3">
+        <div className="container mt-3" style={{marginBottom: '145px'}}>
             <div className="row">
                 <div className="col-md-3">
                     <img src={article.url_imagen} alt="{article.title}"
@@ -75,7 +75,7 @@ const ArticleDetails = () => {
                 <div className="col-md-7">
                     <div className="row mb-3">
                         <div className="col-md-7">
-                            <h3>{title}</h3>
+                            <h3>{artist} - {title}</h3>
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -84,14 +84,6 @@ const ArticleDetails = () => {
                         </div>
                         <div className="col-md-3">
                             {article.id}
-                        </div>
-                    </div>
-                    <div className="row mb-2">
-                        <div className="col-md-2">
-                            <strong>Arista:</strong>
-                        </div>
-                        <div className="col-md-3">
-                            {artist}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -138,24 +130,25 @@ const ArticleDetails = () => {
                         <div className="col-md-2">
                             <strong>Estilos:</strong>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-4">
                             {article.estilos}
                         </div>
                     </div>
                 </div>
                 <div className="col-md-2">
                     <div className="btn-group-vertical btn-block" role="group">
-                        <button className="btn btn-success mb-2" onClick={() => handleAddFavorites({ user_id, articulo_id: article.id })}>Agregar a deseados</button>                        <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-secondary mb-2">Comprar Vinilo</button>
-                        <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-secondary mb-2">Vender Vinilo</button>
-                        <button onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }} className="btn btn-secondary mb-2">
+                        <button className="btn btn-dark mb-2" onClick={() => handleAddFavorites({ user_id, articulo_id: article.id })}>Agregar a deseados</button>                        
+                        <button onClick={() => navigate(`/offers/${article.id}`)} className="btn btn-dark mb-2">Comprar Vinilo</button>
+                        <button onClick={() => navigate(`/sell/${article.id}`)} className="btn btn-dark mb-2">Vender Vinilo</button>
+                        <button onClick={() => navigate(`/articles/edit/${article.id}`)} style={{ cursor: 'pointer' }} className="btn btn-dark mb-2">
                             Editar artículo
                         </button>
-                        <button onClick={() => window.history.back()} className="btn btn-secondary mb-2">Regresar</button>
+                        <button onClick={() => window.history.back()} className="btn btn-dark mb-2">Regresar</button>
                     </div>
                 </div>
             </div>
             <div className="row">
-                <h3>Lista de pistas</h3>
+                <h3 style={{marginTop: '30px'}}>Lista de pistas</h3>
                 <table className="table">
                     <thead className="table-dark">
                         <tr>

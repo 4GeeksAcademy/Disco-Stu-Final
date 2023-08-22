@@ -92,6 +92,11 @@ export const AdminNavbar = () => {
                             <li className="nav-item dropdown mx-3">
                                 <div className="d-flex align-items-center">
                                     <div className="nav-item me-3 me-lg-0">
+                                        <Link to="/home-edition" className="nav-link text-white">
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </Link>
+                                    </div>
+                                    <div className="nav-item me-3 me-lg-0">
                                         <Link to="/admin-panel" className="nav-link text-white">
                                             <i className="fa-solid fa-users"></i>
                                         </Link>

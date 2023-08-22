@@ -5,6 +5,7 @@ import { Context } from "../store/appContext";
 import * as Yup from 'yup';
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
+import Swal from 'sweetalert2';
 
 const Article = ({ mode }) => {
     const { actions, store } = useContext(Context);
@@ -128,11 +129,23 @@ const Article = ({ mode }) => {
                 setSuccessNoti(true);
                 mode = null;
                 resetForm();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Artículo guardado satisfactoriamente.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             } catch (error) {
                 console.log(error);
                 setIsSubmitting(false);
                 setErrorNoti(true);
                 resetForm();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al guardar el artículo',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
 
         }, 2000);
@@ -252,6 +265,13 @@ const Article = ({ mode }) => {
                                     </div>
                                     <button className="form-control btn btn-success mt-3" type="submit">
                                         {isSubmitting ? 'Procesando...' : "Enviar"}
+                                    </button>
+                                    <button
+                                        className="form-control btn btn-outline-dark mt-3 mr-2"
+                                        type="button"
+                                        onClick={() => navigate('/explorer')}
+                                    >
+                                        Regresar
                                     </button>
                                 </Form>
                             </div>

@@ -29,7 +29,7 @@ export const AdminApprovals = () => {
     }
 
     return (
-        <div>
+        <div style={{marginBottom: '209px'}}>
             <div className="container-fluid px-0 mx-0">
                 <div className="card border-0 rounded-0">
                     <div
@@ -45,7 +45,7 @@ export const AdminApprovals = () => {
             </div>
 
             {/* Tabla y menu izquierdo */}
-            <div className="container-">
+            <div className="container" style={{border: '1px solid #eeeeee'}}>
                 <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
                     <div className="container-fluid" style={{ margin: '30px' }}>
                         <div className="row" style={{ margin: '30px 100px' }}>
@@ -59,9 +59,6 @@ export const AdminApprovals = () => {
                                 <div className="table-responsive">
                                     <table className="table table-hover">
                                         <tr>
-                                            <th>
-                                                <input type="checkbox" />
-                                            </th>
                                             <th>Titulo:</th>
                                             <th>Usuario: </th>
                                             <th>Genero:</th>
@@ -70,11 +67,8 @@ export const AdminApprovals = () => {
                                         <tbody>
                                             {approvalData.map((item, index) => (
                                                 <tr key={index}>
-                                                    <td style={{ width: "30px", padding: "0.5rem" }}>
-                                                        <input type="checkbox" />
-                                                    </td>
                                                     <td>
-                                                        <a onClick={() => handleArticleReview(item)}>{item.titulo}</a>
+                                                        <a style={{cursor: 'pointer'}} onClick={() => handleArticleReview(item)}>{item.titulo}</a>
                                                     </td>
                                                     <td>{item.user.usuario}</td>
                                                     <td>{item.genero}</td>
