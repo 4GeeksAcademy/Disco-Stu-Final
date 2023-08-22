@@ -10,6 +10,7 @@ const User_inbox = () => {
     const [selectedItems, setSelectedItems] = useState([]);
     const userId = localStorage.getItem('userID');
     const [data, setData] = useState({ inbox: [] });
+    const [users, setUsers] = useState([]);
 
     const handleNavigateSent = () => {
         navigate('/messages/sent')
@@ -42,27 +43,80 @@ const User_inbox = () => {
         fetchData();
     }, []);
 
-    const toggleSelectMessage = (index) => {
-        // Verificar si el índice ya está seleccionado para añadirlo o removerlo de la lista
-        setSelectedItems((prevSelectedItems) => {
-            if (prevSelectedItems.includes(index)) {
-                return prevSelectedItems.filter((selected) => selected !== index);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const fetchUsers = await actions.getAllUsersInfo(userId)
+                console.log('entramos', fetchUsers)
+                setUsers(fetchUsers);
+            } catch (error) {
+                console.log('Error fetching data: ', error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const toggleSelectMessage = (messageId) => {
+        setSelectedItems((prevSelectedMessages) => {
+            if (prevSelectedMessages.includes(messageId)) {
+                return prevSelectedMessages.filter((selected) => selected !== messageId);
             } else {
-                return [...prevSelectedItems, index];
+                return [...prevSelectedMessages, messageId];
             }
         });
     };
 
-    const handleDeleteMessage = () => {
+    const handleDeleteMessage = async () => {
         const selectedItemsCopy = [...selectedItems]
         setSelectedItems([])
-        selectedItemsCopy.map(element => {
-            const message_data = {
-                'message_id': element
-            }
-            actions.deleteMessage(message_data)
-        })
+        const fetchMessages = await actions.deleteMessage(selectedItemsCopy)
+        if (fetchMessages == 'COMPLETED') {
+            window.location.reload();
+        }
     }
+
+    const handleViewMessage = async (element) => {
+        if (element.isMessage == 'True'){
+            if (users.length > 0) {
+                console.log('entre')
+                const emisor = users.find((user) => user.id === element.emisor_id);
+                const receptor = users.find((user) => user.id == element.receptor_id)
+                const emisorName = emisor.username;
+                const receptorName = receptor.username;
+                const messageData = {
+                    'emisor': emisorName,
+                    'receptor': receptorName,
+                    'fecha': element.fecha,
+                    'mensaje': element.mensaje,
+                    'asunto': element.asunto
+                }
+                navigate('/messages/message', { state: { messageData } });
+            }
+        }
+        if (element.isMessage == 'False'){
+            const parts = element.asunto.split(' ');
+            const orderIdWithHash = parts[parts.length - 1];
+            const orderId = orderIdWithHash.replace('#', '');
+            const emisor = users.find((user) => user.id === element.emisor_id);
+            try {
+                const orderData = await actions.getOrderById(orderId);
+                orderData.emisor = emisor.username
+                sessionStorage.setItem('currentOrderData', JSON.stringify(orderData))
+                navigate('/messages/message/order');
+            } catch (error) {
+                console.error('Error fetching order data:', error);
+            }
+        }
+    };
+
+    const handleSelectAllMessages = () => {
+        if (selectedItems.length === data.inbox.length) {
+            setSelectedItems([]);
+        } else {
+            const allMessageIds = data.inbox.map(element => element.id);
+            setSelectedItems(allMessageIds);
+        }
+    };
 
     return (
         <div>
@@ -110,24 +164,38 @@ const User_inbox = () => {
                                 <table className="table table-hover">
                                     <thead className="bg-light">
                                         <tr>
-                                            <th className="col"><input type="checkbox" /></th>
+                                            {
+                                                data.inbox.length > 0 ? (
+                                                    <th className="col"><input type="checkbox" onChange={handleSelectAllMessages} checked={selectedItems.length === data.inbox.length} /></th>
+                                                ) : (
+                                                <th className="col">{''}</th>
+                                                )
+                                            }
                                             <th className="col">De</th>
                                             <th className="col">Asunto</th>
                                             <th className="col">Enviado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.inbox.length > 0 ? (
-                                            data.inbox.map((element, index) => (
-                                                <tr key={element.id}>
-                                                    <td style={{ width: '30px', padding: '0.5rem' }}>
-                                                        <input type="checkbox" onChange={() => toggleSelectMessage(element.id)} />
-                                                    </td>
-                                                    <td style={{ width: '25%' }}>{element.emisor_id}</td>
-                                                    <td style={{ width: '54%' }}>{element.asunto}</td>
-                                                    <td style={{ width: '18%' }}>{element.fecha}</td>
-                                                </tr>
-                                            ))
+                                        {data.inbox.length > 0 & users.length > 0 ? (
+                                            data.inbox.map((element, index) => {
+                                                const emisor = users.find((user) => user.id == element.emisor_id);
+                                                const emisorName = emisor ? emisor.username : 'Emisor desconocido';
+                                                return (
+                                                    <tr key={element.id}>
+                                                        <td style={{ width: '30px', padding: '2px 0px 0px 5px' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                onChange={() => toggleSelectMessage(element.id)}
+                                                                checked={selectedItems.includes(element.id)}
+                                                            />
+                                                        </td>
+                                                        <td style={{ width: '25%' }}>{emisorName}</td>
+                                                        <td onClick={() => handleViewMessage(element)} style={{ width: '54%', cursor: 'pointer', textDecoration: 'underline' }}>{element.asunto}</td>
+                                                        <td style={{ width: '18%' }}>{element.fecha}</td>
+                                                    </tr>
+                                                )
+                                            })
                                         ) : (
                                             <tr>
                                                 <td className="col">No hay mensajes en la bandeja de enviados.</td>
