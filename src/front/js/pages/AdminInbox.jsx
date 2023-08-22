@@ -88,7 +88,7 @@ export const AdminInbox = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
+            <div style={{ display: 'flex', margin: '30px 100px 30px 100px', border: '1px solid #eeeeee' }}>
                 <div className="container-fluid" style={{ margin: '30px' }}>
                     <div className="row" style={{ margin: '30px 100px' }}>
                         <div className="col-md-3">

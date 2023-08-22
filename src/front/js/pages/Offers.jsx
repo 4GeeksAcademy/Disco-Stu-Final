@@ -68,7 +68,7 @@ const Offers = () => {
             </div>
 
             <div id='offers'>
-                <table className={styles.table}>
+                <table className={styles.table}  style={{marginBottom: '320px'}}>
                     <thead className={styles.tableHead}>
                         <tr>
                             <th style={{ width: '40%', paddingLeft: '10px' }}>Articulo</th>
@@ -118,9 +118,9 @@ const Offers = () => {
                                 );
                             })
                         ) : (
-                            <tr>
-                                <td colSpan="4"></td>
-                            </tr>
+                            <div className='p-2'>
+                                <p><strong>No existen ofertas para este articulo</strong></p>
+                            </div>
                         )}
                     </tbody>
                 </table>

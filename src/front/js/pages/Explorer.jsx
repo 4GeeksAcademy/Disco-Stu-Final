@@ -105,16 +105,13 @@ const Explorer = () => {
     return (
         <div id='general_div' className={styles.generalDiv}>
             <div id='filter_center' className={styles.filterCenter}>
-                <div id='button-section'>
-                    <Link className='btn btn-dark mb-3' to={'/articles/add'}>Agregar nuevo Artículo</Link>
-                </div>
-                <div id='genres_filters'>
+                <div id='genres_filters' className='mb-3'>
                     <p><strong>Género</strong></p>
                     {generos && generos.map((genero, index) => (
                         <p onClick={() => handleFetchGeneros(genero)} style={{ cursor: 'pointer' }}>{genero}</p>
                     ))}
                 </div>
-                <div id='styles_filters'>
+                <div id='styles_filters' className='mb-3'>
                     <p><strong>Estilo</strong></p>
                     {estilos && estilos.map((estilo, index) => (
                         <p onClick={() => handleFetchEstilos(estilo)} style={{ cursor: 'pointer' }}>{estilo}</p>
@@ -128,14 +125,13 @@ const Explorer = () => {
                 </div>
             </div>
             <div id='content_center' className={styles.contentCenter}>
-                <div id='upper_filter'>
-                    <ul className={styles.upperFilter}>
-                        <li>Todo</li>
-                        <li style={{ paddingLeft: '100px' }}>Publicaciones</li>
-                        <li style={{ paddingLeft: '100px' }}>Artistas</li>
-                    </ul>
+                <div className='d-flex justify-content-between'>
+                    <h4>Explorar articulos y artistas</h4>
+                    <div id='button-section' style={{marginRight: '76px'}}>
+                        <Link className='btn btn-dark mb-3' to={'/articles/add'}>Agregar nuevo artículo</Link>
+                    </div>
                 </div>
-                <h4>Explorar articulos y artistas</h4>
+
                 <div id='content'>
                     <ul className={styles.content}>
                         {articles &&

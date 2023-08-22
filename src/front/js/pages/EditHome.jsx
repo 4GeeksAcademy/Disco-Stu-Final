@@ -69,7 +69,7 @@ const EditHome = () => {
                 </div>
             </div>
 
-            <div id='content' style={{ padding: '20px 80px', border: '1px solid #eeeeee', width: '90%', marginLeft: 'auto', marginRight: 'auto' }}>
+            <div id='content' style={{ padding: '20px 80px', border: '1px solid #eeeeee', width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '60px' }}>
                 <h1>Editar curiosidades</h1>
                 <div style={{ marginTop: '20px' }}>
                     <label htmlFor="posicion">Posicion del recuadro</label>

@@ -123,7 +123,7 @@ export const UserOrders = () => {
     };
 
     return (
-        <div>
+        <div style={{ marginBottom: '232px' }}>
             {/* Header */}
             <div className="card bg-black rounded-0 border-0">
                 <div className="text-white d-flex flex-row w-100 border-0">
@@ -148,91 +148,98 @@ export const UserOrders = () => {
                                 </div>
                             </div>
                         </div>
-                        <div id="messages_center" className="col-md-10" style={{marginRight: '10px', width: '80%'}}>
-                            {sortedOrdersList.map(order => (
-                                <div>
-                                    <div className="table-responsive">
-                                        <table className="table table-bordered table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Pedido</th>
-                                                    <th>Fecha de Creación</th>
-                                                    <th>Estado</th>
-                                                    <th>Artículo ID</th>
-                                                    <th>Artículo</th>
-                                                    <th><td>
-                                                        {(order.haveShipping === false) ? (
-                                                            <p>Subtotal</p>
-                                                        ) : (
-                                                            <p>Total</p>
-                                                        )}
-                                                    </td>
-                                                    </th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr key={order.id}>
-                                                    <td>{order.id}</td>
-                                                    <td>{formatDate(new Date())}</td>
-                                                    <td>{order.pagado ? "Pagado" : "Pendiente"}</td>
-                                                    <td>{order.articulos.map(articulo => articulo.id).join(', ')}</td>
-                                                    <td>{order.articulos.map(articulo => articulo.titulo).join(', ')}</td>
-                                                    <td><span>${order.precio_total + order.precio_envio}</span></td>
-                                                    <td>
-                                                        {(order.haveShipping === false) ? (
-                                                            <p>Contacta al vendedor para establecer precio de envío</p>
-                                                        ) : (
-                                                            <div>
-                                                                {!order.pagado && (
-                                                                    <button className="btn btn-outline-dark w-100 mb-2" onClick={() => handlerDeleteOrder(order.id)}>Cancelar pedido</button>
+                        <div id="messages_center" className="col-md-10" style={{ marginRight: '10px', width: '80%', border: '1px solid #eeeeee' }}>
+                            {sortedOrdersList.length > 0 ?
+                                (
+                                    sortedOrdersList.map(order => (
+                                        <div>
+                                            <div className="table-responsive">
+                                                <table className="table table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Pedido</th>
+                                                            <th>Fecha de Creación</th>
+                                                            <th>Estado</th>
+                                                            <th>Artículo ID</th>
+                                                            <th>Artículo</th>
+                                                            <th><td>
+                                                                {(order.haveShipping === false) ? (
+                                                                    <p>Subtotal</p>
+                                                                ) : (
+                                                                    <p>Total</p>
                                                                 )}
-                                                                {!order.pagado && (
-                                                                    <PaymentComponent orderID={order.id} cost={order.precio_total} updatePageData={updatePageData} seller_id={order.vendedor_id} />
+                                                            </td>
+                                                            </th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr key={order.id}>
+                                                            <td>{order.id}</td>
+                                                            <td>{formatDate(new Date())}</td>
+                                                            <td>{order.pagado ? "Pagado" : "Pendiente"}</td>
+                                                            <td>{order.articulos.map(articulo => articulo.id).join(', ')}</td>
+                                                            <td>{order.articulos.map(articulo => articulo.titulo).join(', ')}</td>
+                                                            <td><span>${order.precio_total + order.precio_envio}</span></td>
+                                                            <td>
+                                                                {(order.haveShipping === false) ? (
+                                                                    <p>Contacta al vendedor para establecer precio de envío</p>
+                                                                ) : (
+                                                                    <div>
+                                                                        {!order.pagado && (
+                                                                            <button className="btn btn-outline-dark w-100 mb-2" onClick={() => handlerDeleteOrder(order.id)}>Cancelar pedido</button>
+                                                                        )}
+                                                                        {!order.pagado && (
+                                                                            <PaymentComponent orderID={order.id} cost={order.precio_total} updatePageData={updatePageData} seller_id={order.vendedor_id} />
+                                                                        )}
+                                                                    </div>
                                                                 )}
-                                                            </div>
-                                                        )}
 
-                                                    </td>
+                                                            </td>
 
-                                                </tr>
+                                                        </tr>
 
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {order.pagado &&
-                                        <div className='d-flex mt-0 align-items-center' style={{ borderLeft: '1px solid #eeeeee', borderBottom: '1px solid #eeeeee', paddingLeft: '10px' }}>
-                                            <p><strong>Enviar valoracion al vendedor:</strong></p>
-                                            <div className='d-flex align-items-center' style={{ marginLeft: '30px' }}>
-                                                <input type="checkbox"
-                                                    checked={valoracionPositiva}
-                                                    onChange={() => {
-                                                        setValoracionPositiva(true);
-                                                        setValoracionNegativa(false);
-                                                    }}
-                                                    style={{ marginRight: '5px' }}
-                                                />
-                                                <i className="fa-solid fa-circle-check" style={{ color: '#239a4d' }}></i>
-                                                <p><strong>Positivo</strong></p>
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <div className='d-flex align-items-center' style={{ marginLeft: '30px' }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={valoracionNegativa}
-                                                    onChange={() => {
-                                                        setValoracionPositiva(false);
-                                                        setValoracionNegativa(true);
-                                                    }}
-                                                    style={{ marginRight: '5px' }}
-                                                />
-                                                <i className="fa-solid fa-xmark" style={{ color: '#cf0707' }}></i>
-                                                <p><strong>Negativo</strong></p>
-                                            </div>
-                                            <button style={{ marginLeft: 'auto', marginRight: '5px' }} onClick={() => handleEnviarValoracion(order.vendedor_id)} type='button' className='btn btn-dark'>Enviar</button>
+                                            {order.pagado &&
+                                                <div className='d-flex mt-0 align-items-center' style={{ borderLeft: '1px solid #eeeeee', borderBottom: '1px solid #eeeeee', paddingLeft: '10px' }}>
+                                                    <p><strong>Enviar valoracion al vendedor:</strong></p>
+                                                    <div className='d-flex align-items-center' style={{ marginLeft: '30px' }}>
+                                                        <input type="checkbox"
+                                                            checked={valoracionPositiva}
+                                                            onChange={() => {
+                                                                setValoracionPositiva(true);
+                                                                setValoracionNegativa(false);
+                                                            }}
+                                                            style={{ marginRight: '5px' }}
+                                                        />
+                                                        <i className="fa-solid fa-circle-check" style={{ color: '#239a4d' }}></i>
+                                                        <p><strong>Positivo</strong></p>
+                                                    </div>
+                                                    <div className='d-flex align-items-center' style={{ marginLeft: '30px' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={valoracionNegativa}
+                                                            onChange={() => {
+                                                                setValoracionPositiva(false);
+                                                                setValoracionNegativa(true);
+                                                            }}
+                                                            style={{ marginRight: '5px' }}
+                                                        />
+                                                        <i className="fa-solid fa-xmark" style={{ color: '#cf0707' }}></i>
+                                                        <p><strong>Negativo</strong></p>
+                                                    </div>
+                                                    <button style={{ marginLeft: 'auto', marginRight: '5px' }} onClick={() => handleEnviarValoracion(order.vendedor_id)} type='button' className='btn btn-dark'>Enviar</button>
+                                                </div>
+                                            }
                                         </div>
-                                    }
-                                </div>
-                            ))}
+                                    ))
+
+                                ) : (
+                                    <img src="" alt="" />
+                                )
+                            }
                         </div>
 
                     </div>

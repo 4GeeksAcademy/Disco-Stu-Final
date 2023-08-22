@@ -3,6 +3,7 @@ import { Context } from '../store/appContext'
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import "../../styles/home.css";
+import sindeseos from '../../img/sindeseos.png'
 
 export const UserFavorites = () => {
     const { actions } = useContext(Context);
@@ -109,54 +110,57 @@ export const UserFavorites = () => {
                 </div>
             </div>
 
+            {
+                articleIds.length > 0 ? (
+                    <div className="container">
+                        <div className="row">
+                            {articleIds.map((articleId, index) => {
+                                const favorite = favoritesData.favorites.find(fav => fav.articulo_id === articleId);
+                                const article = articlesData.find(article => article.id === articleId);
+                                const artist = artistData.find(artist => artist.id === (article ? article.id : null))
 
-            {/* Tabla */}
-            <div className="container">
-                <div className="row">
-                    {articleIds.map((articleId, index) => {
-                        const favorite = favoritesData.favorites.find(fav => fav.articulo_id === articleId);
-                        const article = articlesData.find(article => article.id === articleId);
-                        const artist = artistData.find(artist => artist.id === (article ? article.id : null))
+                                if (!article) {
+                                    // Si no se encuentra el artículo, mostrar un mensaje de "No encontrado"
+                                    return (
+                                        <div key={`not-found-${index}`} className="col-md-3 mb-4">
+                                            <div className="card d-flex flex-column align-items-center justify-content-center">
+                                                <p>No encontrado</p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
 
-                        if (!article) {
-                            // Si no se encuentra el artículo, mostrar un mensaje de "No encontrado"
-                            return (
-                                <div key={`not-found-${index}`} className="col-md-3 mb-4">
-                                    <div className="card d-flex flex-column align-items-center justify-content-center">
-                                        <p>No encontrado</p>
+                                return (
+                                    <div key={`${articleId}-${index}`} className="col-md-3 mb-4">
+                                        <div className="card d-flex flex-column">
+                                            <span onClick={() => handleImageClick(article)} style={{ cursor: 'pointer' }}>
+                                                <img src={article ? article.url_imagen : 'ruta-de-imagen-por-defecto.jpg'} alt={article ? article.title : 'Título no disponible'} className="card-img-top img-fluid" />
+                                            </span>
+                                            <div className="card-body d-flex flex-column align-items-center">
+                                                <button className="btn btn-sm btn-dark position-absolute top-0 start-0 m-2" onClick={() => handleDelete(user_id, articleId, favorite.id)}>
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                                <h5 className="card-title">{article ? article.titulo : 'Título no disponible'}</h5>
+                                                <p className="card-text">Género: {article ? article.genero : 'Género no disponible'}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        }
-
-                        return (
-                            <div key={`${articleId}-${index}`} className="col-md-3 mb-4">
-                                <div className="card d-flex flex-column">
-                                    <span onClick={() => handleImageClick(article)} style={{ cursor: 'pointer' }}>
-                                        <img src={article ? article.url_imagen : 'ruta-de-imagen-por-defecto.jpg'} alt={article ? article.title : 'Título no disponible'} className="card-img-top img-fluid" />
-                                    </span>
-                                    <div className="card-body d-flex flex-column align-items-center">
-                                        <button className="btn btn-sm btn-dark position-absolute top-0 start-0 m-2" onClick={() => handleDelete(user_id, articleId, favorite.id)}>
-                                            <i className="fas fa-trash"></i>
-                                        </button>
-                                        <h5 className="card-title">{article ? article.title : 'Título no disponible'}</h5>
-                                        <p className="card-text">Artista: {artist ? artist.nombre : 'Artista no disponible'}</p>
-                                        <p className="card-text">Género: {article ? article.genero : 'Género no disponible'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <div className="text-center my-4">
+                                );
+                            })}
+                        </div>
+                    </div>
+                ) : (
+                    <div className='d-flex' style={{width: '100%'}}>
+                        <img style={{width: '100%', marginBottom: '39px'}} src={sindeseos} alt="" />
+                    </div>
+                )
+            }
+            <div className="text-center" style={{marginBottom: '39px'}}>
                 <button className="btn btn-outline-dark" onClick={() => navigate('/explorer')}>
                     Regresar al Explorador
                 </button>
             </div>
-
-        </div>
+        </div >
 
     );
 };

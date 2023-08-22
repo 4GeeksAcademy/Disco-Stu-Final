@@ -82,7 +82,7 @@ export const ArticleReview = ({ id }) => {
                 </div>
             </div>
 
-            <div className="container mt-3">
+            <div className="container mt-3" style={{marginBottom: '212px'}}>
                 {articleInReview && (
                     <div key={articleInReview.id} className="row">
                         <div className="col-md-4">

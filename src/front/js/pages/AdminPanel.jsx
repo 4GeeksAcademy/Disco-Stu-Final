@@ -109,7 +109,7 @@ export const AdminPanel = () => {
             </div>
 
             {/* Tabla y menu izquierdo */}
-            <div className="container-">
+            <div className="container" style={{border: '1px solid #eeeeee'}}>
                 <div style={{ display: 'flex', margin: '30px 100px 30px 100px' }}>
                     <div className="container-fluid" style={{ margin: '30px' }}>
                         <div className="row" style={{ margin: '30px 100px' }}>
